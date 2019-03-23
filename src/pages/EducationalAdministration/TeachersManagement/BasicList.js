@@ -132,10 +132,8 @@ class BasicList extends PureComponent {
       ? { footer: null, onCancel: this.handleDone }
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
-
     const extraContent = (
       <div className={styles.extraContent}>
-
         <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
       </div>
     );
@@ -147,7 +145,7 @@ class BasicList extends PureComponent {
       total: 50,
     };
 
-    const ListContent = ({ data: { owner, createdAt, } }) => (
+    const ListContent = ({ data: { owner, createdAt } }) => (
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
           <span>Owner</span>
@@ -235,7 +233,6 @@ class BasicList extends PureComponent {
     return (
       <PageHeaderWrapper>
         <div className={styles.standardList}>
-
           <Card
             className={styles.listCard}
             bordered={false}
@@ -278,7 +275,6 @@ class BasicList extends PureComponent {
                   ]}
                 >
                   <List.Item.Meta
-
                     title={<a href={item.href}>{item.title}</a>}
                     description={item.subDescription}
                   />

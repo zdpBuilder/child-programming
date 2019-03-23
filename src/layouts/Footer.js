@@ -15,7 +15,7 @@ const FooterView = () => (
         },
         {
           key: '小童编程屋',
-          title: "小童编程屋",
+          title: '小童编程屋',
           href: ' http://192.168.11.184:8601/',
           blankTarget: true,
         },
@@ -28,7 +28,7 @@ const FooterView = () => (
       ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2019   zdpBuilder
+          Copyright <Icon type="copyright" /> 2019 zdpBuilder
         </Fragment>
       }
     />

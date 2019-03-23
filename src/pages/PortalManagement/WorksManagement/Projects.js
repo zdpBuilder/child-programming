@@ -4,7 +4,6 @@ import { connect } from 'dva';
 import { Row, Col, Form, Card, Select, List, Button, Icon } from 'antd';
 
 import TagSelect from '@/components/TagSelect';
-import AvatarList from '@/components/AvatarList';
 import Ellipsis from '@/components/Ellipsis';
 import StandardFormRow from '@/components/StandardFormRow';
 
@@ -52,12 +51,12 @@ class CoverCardList extends PureComponent {
     } = this.props;
     const { getFieldDecorator } = form;
 
-    const cardList =
+    const cardList = (
       <List
         rowKey="id"
         loading={loading}
         grid={{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }}
-        dataSource={['',...list]}
+        dataSource={['', ...list]}
         renderItem={item =>
           item ? (
             <List.Item>
@@ -77,14 +76,16 @@ class CoverCardList extends PureComponent {
                 </div>
               </Card>
             </List.Item>
-        ):(
-          <List.Item>
-            <Button type="dashed" className={styles.newButton}>
-              <Icon type="plus" /> 新增作品
-            </Button>
-          </List.Item>
-        )}
-      />;
+          ) : (
+            <List.Item>
+              <Button type="dashed" className={styles.newButton}>
+                <Icon type="plus" /> 新增作品
+              </Button>
+            </List.Item>
+          )
+        }
+      />
+    );
 
     const formItemLayout = {
       wrapperCol: {

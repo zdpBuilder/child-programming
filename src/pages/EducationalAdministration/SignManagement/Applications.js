@@ -1,15 +1,11 @@
 import React, { PureComponent } from 'react';
-import numeral from 'numeral';
 import { connect } from 'dva';
-import { Row, Col, Form, Card, Select, Icon, Avatar, List, Tooltip, Dropdown, Menu,Input } from 'antd';
+import { Row, Col, Form, Card, Icon, Avatar, List, Tooltip, Input } from 'antd';
 import TagSelect from '@/components/TagSelect';
 import StandardFormRow from '@/components/StandardFormRow';
 
-import { formatWan } from '@/utils/utils';
-
 import styles from './Applications.less';
 
-const { Option } = Select;
 const FormItem = Form.Item;
 
 @connect(({ list, loading }) => ({
@@ -69,25 +65,25 @@ class FilterCardList extends PureComponent {
       },
     };
 
-    const itemMenu = (
-      <Menu>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
-            1st menu item
-          </a>
-        </Menu.Item>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
-            2nd menu item
-          </a>
-        </Menu.Item>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">
-            3d menu item
-          </a>
-        </Menu.Item>
-      </Menu>
-    );
+    /* const itemMenu = (
+       <Menu>
+         <Menu.Item>
+           <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
+             1st menu item
+           </a>
+         </Menu.Item>
+         <Menu.Item>
+           <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
+             2nd menu item
+           </a>
+         </Menu.Item>
+         <Menu.Item>
+           <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">
+             3d menu item
+           </a>
+         </Menu.Item>
+       </Menu>
+     ); */
 
     return (
       <div className={styles.filterCardList}>
@@ -118,11 +114,14 @@ class FilterCardList extends PureComponent {
                 <Col lg={8} md={10} sm={10} xs={24}>
                   <FormItem {...formItemLayout} label="学生姓名">
                     {getFieldDecorator('author', {})(
-                      <Input.Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
+                      <Input.Search
+                        className={styles.extraContentSearch}
+                        placeholder="请输入"
+                        onSearch={() => ({})}
+                      />
                     )}
                   </FormItem>
                 </Col>
-
               </Row>
             </StandardFormRow>
           </Form>
@@ -139,7 +138,6 @@ class FilterCardList extends PureComponent {
                 hoverable
                 bodyStyle={{ paddingBottom: 20 }}
                 actions={[
-
                   <Tooltip title="签到">
                     <Icon type="smile" theme="twoTone" />
                   </Tooltip>,
@@ -147,10 +145,7 @@ class FilterCardList extends PureComponent {
               >
                 <Card.Meta avatar={<Avatar size="small" src={item.avatar} />} title={item.title} />
                 <div className={styles.cardItemContent}>
-                  <CardInfo
-                    activeUser="20次"
-                    newUser="0次"
-                  />
+                  <CardInfo activeUser="20次" newUser="0次" />
                 </div>
               </Card>
             </List.Item>

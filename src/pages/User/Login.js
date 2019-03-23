@@ -5,6 +5,7 @@ import Link from 'umi/link';
 import { Checkbox, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
+import globalData from '@/utils/globalData';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
@@ -15,8 +16,10 @@ const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 class LoginPage extends Component {
   state = {
     type: 'account',
-    autoLogin: true,
+    autoLogin: false,
   };
+
+  current = {};
 
   onTabChange = type => {
     this.setState({ type });
@@ -57,14 +60,14 @@ class LoginPage extends Component {
     this.setState({
       autoLogin: e.target.checked,
     });
+  };
+
   renderMessage = content => (
     <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
   );
-};
 
-
-render() {
-    const { login, submitting} = this.props;
+  render() {
+    const { login, submitting } = this.props;
     const { type, autoLogin } = this.state;
     return (
       <div className={styles.main}>
@@ -77,12 +80,12 @@ render() {
           }}
         >
           <Tab key="account" tab={formatMessage({ id: 'app.login.tab-login-credentials' })}>
-            {login.status === 'error' &&
+            {login.status === globalData.errorCode &&
               login.type === 'account' &&
               !submitting &&
-              this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
+              this.renderMessage(login.msg)}
             <UserName
-              name="userName"
+              name="loginId"
               placeholder={`${formatMessage({ id: 'app.login.userName' })}: admin or user`}
               rules={[
                 {

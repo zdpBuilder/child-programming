@@ -26,9 +26,9 @@ const FormItem = Form.Item;
 const SelectOption = Select.Option;
 const { Search, TextArea } = Input;
 
-@connect(({ list, loading }) => ({
-  list,
-  loading: loading.models.list,
+@connect(({ campus, loading }) => ({
+  list: campus.list,
+  loading: loading.models.campus,
 }))
 @Form.create()
 class BasicList extends PureComponent {
@@ -42,7 +42,7 @@ class BasicList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'list/fetch',
+      type: 'campus/fetch',
       payload: {
         count: 5,
       },
@@ -91,7 +91,7 @@ class BasicList extends PureComponent {
         done: true,
       });
       dispatch({
-        type: 'list/submit',
+        type: 'campus/submit',
         payload: { id, ...fieldsValue },
       });
     });
@@ -100,16 +100,14 @@ class BasicList extends PureComponent {
   deleteItem = id => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'list/submit',
+      type: 'campus/submit',
       payload: { id },
     });
   };
 
   render() {
-    const {
-      list: { list },
-      loading,
-    } = this.props;
+    const { list, loading } = this.props;
+
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -132,10 +130,8 @@ class BasicList extends PureComponent {
       ? { footer: null, onCancel: this.handleDone }
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
-
     const extraContent = (
       <div className={styles.extraContent}>
-
         <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
       </div>
     );
@@ -147,15 +143,29 @@ class BasicList extends PureComponent {
       total: 50,
     };
 
-    const ListContent = ({ data: { owner, createdAt, } }) => (
+    const ListContent = ({
+      data: { name, address, chargeUserName, chargeUserPhone, createTime },
+    }) => (
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
-          <span>Owner</span>
-          <p>{owner}</p>
+          <span>校区名称</span>
+          <p>{name}</p>
+        </div>
+        <div className={styles.listContentItem}>
+          <span>地址</span>
+          <p>{address}</p>
+        </div>
+        <div className={styles.listContentItem}>
+          <span>负责人</span>
+          <p>{chargeUserName}</p>
+        </div>
+        <div className={styles.listContentItem}>
+          <span>联系电话</span>
+          <p>{chargeUserPhone}</p>
         </div>
         <div className={styles.listContentItem}>
           <span>新增时间</span>
-          <p>{moment(createdAt).format('YYYY-MM-DD HH:mm')}</p>
+          <p>{moment(createTime).format('YYYY-MM-DD HH:mm')}</p>
         </div>
       </div>
     );
@@ -235,7 +245,6 @@ class BasicList extends PureComponent {
     return (
       <PageHeaderWrapper>
         <div className={styles.standardList}>
-
           <Card
             className={styles.listCard}
             bordered={false}
@@ -277,11 +286,7 @@ class BasicList extends PureComponent {
                     <MoreBtn current={item} />,
                   ]}
                 >
-                  <List.Item.Meta
-
-                    title={<a href={item.href}>{item.title}</a>}
-                    description={item.subDescription}
-                  />
+                  <List.Item.Meta title="介绍" description={item.introduction} />
                   <ListContent data={item} />
                 </List.Item>
               )}
@@ -289,7 +294,7 @@ class BasicList extends PureComponent {
           </Card>
         </div>
         <Modal
-          title={done ? null : `校区${current ? '编辑' : '添加'}`}
+          title={done ? null : `校区${current.id ? '编辑' : '添加'}`}
           className={styles.standardListForm}
           width={640}
           bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}

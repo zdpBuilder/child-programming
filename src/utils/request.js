@@ -82,6 +82,7 @@ export default function request(url, option) {
     credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };
+  // const newOptions = {...options};
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||
@@ -130,7 +131,9 @@ export default function request(url, option) {
       return response.json();
     })
     .catch(e => {
+      console.log(e);
       const status = e.name;
+
       if (status === 401) {
         // @HACK
         /* eslint-disable no-underscore-dangle */

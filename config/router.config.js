@@ -4,6 +4,7 @@ export default [
     path: '/user',
     component: '../layouts/UserLayout',
     routes: [
+      { path: '/', redirect: '/user/login' },
       { path: '/user', redirect: '/user/login' },
       { path: '/user/login', component: './User/Login' },
       { path: '/user/register', component: './User/Register' },
@@ -18,13 +19,13 @@ export default [
     authority: ['admin', 'user'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/dashboard/workplace' },
+      // { path: '/', redirect: '/dashboard/workplace' },
       {
         path: '/dashboard',
         name: 'dashboard',
         icon: 'dashboard',
         routes: [
-        /*  {
+          /*  {
             path: '/dashboard/analysis',
             name: 'analysis',
             component: './Dashboard/Analysis',
@@ -41,7 +42,7 @@ export default [
           },
         ],
       },
-  /*    // forms
+      /*    // forms
       {
         path: '/form',
         icon: 'form',
@@ -88,7 +89,7 @@ export default [
         ],
       },*/
       // list
-    /*  {
+      /*  {
         path: '/list',
         icon: 'table',
         name: 'list',
@@ -146,7 +147,7 @@ export default [
             path: '/webAdmin/worksManagement',
             name: 'worksManagement',
             component: './PortalManagement/WorksManagement/Projects',
-      },
+          },
           {
             path: '/webAdmin/materialManagement',
             name: 'materialManagement',
@@ -157,14 +158,14 @@ export default [
             name: 'paymentRecord',
             component: './PortalManagement/paymentRecord/BasicList',
           },
-        /*  {
+          /*  {
             path: '/webAdmin/privilegeManagement',
             name: 'privilegeManagement',
             component: './PortalManagement/privilegeManagement/TableList',
           },*/
         ],
       },
-      //教务系统管理
+      // 教务系统管理
       {
         path: '/educationalAdministration',
         icon: 'table',
@@ -173,7 +174,7 @@ export default [
           {
             path: '/educationalAdministration/campusManagement',
             name: 'campusManagement',
-            component: './educationalAdministration/campusManagement/BasicList',
+            component: './educationalAdministration/campusManagement/TableList',
           },
           {
             path: '/educationalAdministration/studentsManagement',
@@ -189,7 +190,7 @@ export default [
             path: '/educationalAdministration/coursesManagement',
             name: 'coursesManagement',
             component: './educationalAdministration/coursesManagement/List',
-            routes:[
+            routes: [
               {
                 path: '/educationalAdministration/coursesManagement',
                 redirect: '/educationalAdministration/coursesManagement/typeManagement',
@@ -210,7 +211,6 @@ export default [
                 component: './educationalAdministration/coursesManagement/Articles',
               },
             ],
-
           },
           {
             path: '/educationalAdministration/classManagement',

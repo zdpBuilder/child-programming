@@ -1,9 +1,11 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin, getFakeCaptcha } from '@/services/api';
+import { getFakeCaptcha } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
+import { accountLogin } from '@/services/login';
+import globalData from '@/utils/globalData';
 
 export default {
   namespace: 'login',
@@ -14,13 +16,18 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(accountLogin, payload);
+      // TODO 此处用户类型先为默认的account登陆
+      response.type = payload.type;
+
       yield put({
         type: 'changeLoginStatus',
         payload: response,
       });
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.status === globalData.successCode) {
+        // 放入session
+        window.sessionStorage.setItem('currentUserInfo', JSON.stringify(response.data));
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -37,7 +44,7 @@ export default {
             return;
           }
         }
-        yield put(routerRedux.replace(redirect || '/'));
+        yield put(routerRedux.replace(redirect || '/dashboard/workplace'));
       }
     },
 
@@ -67,11 +74,10 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      setAuthority(payload.data.currentAuthority);
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        ...payload,
       };
     },
   },

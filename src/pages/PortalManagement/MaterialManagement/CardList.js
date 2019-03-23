@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Icon, List,Input } from 'antd';
+import { Card, Button, Icon, List, Input } from 'antd';
 
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -32,37 +32,8 @@ class CardList extends PureComponent {
       worksManagement: { list },
       loading,
     } = this.props;
- console.info(this.props)
-    const content = (
-      <div className={styles.pageHeaderContent}>
-        <p>
-         yamp
-        </p>
-        <div className={styles.contentLink}>
-          <a>
-            <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/MjEImQtenlyueSmVEfUD.svg" />{' '}
-            快速开始
-          </a>
-          <a>
-            <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/NbuDUAuBlIApFuDvWiND.svg" />{' '}
-            产品简介
-          </a>
-          <a>
-            <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/ohOEPSYdDTNnyMbGuyLb.svg" />{' '}
-            产品文档
-          </a>
-        </div>
-      </div>
-    );
+    console.info(this.props);
 
-    const extraContent = (
-      <div className={styles.extraImg}>
-        <img
-          alt="这是一个标题"
-          src="https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png"
-        />
-      </div>
-    );
     const mainSearch = (
       <div style={{ textAlign: 'center' }}>
         <Input.Search
@@ -76,10 +47,7 @@ class CardList extends PureComponent {
     );
 
     return (
-      <PageHeaderWrapper
-        title="资料列表"
-        content={mainSearch}
-      >
+      <PageHeaderWrapper title="资料列表" content={mainSearch}>
         <div className={styles.cardList}>
           <List
             rowKey="id"
@@ -91,7 +59,7 @@ class CardList extends PureComponent {
                 <List.Item key={item.id}>
                   <Card hoverable className={styles.card} actions={[<a>编辑</a>, <a>删除</a>]}>
                     <Card.Meta
-                     /* avatar={<img alt="" className={styles.cardAvatar} src={item.avatar} />} */
+                      /* avatar={<img alt="" className={styles.cardAvatar} src={item.avatar} />} */
                       title={<a>{item.title}</a>}
                       description={
                         <Ellipsis className={styles.item} lines={3}>

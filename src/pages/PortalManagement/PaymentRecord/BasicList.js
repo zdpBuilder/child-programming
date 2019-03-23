@@ -5,16 +5,11 @@ import { connect } from 'dva';
 import {
   List,
   Card,
-  Row,
-  Col,
-  Radio,
   Input,
-  Progress,
   Button,
   Icon,
   Dropdown,
   Menu,
-  Avatar,
   Modal,
   Form,
   DatePicker,
@@ -27,8 +22,6 @@ import Result from '@/components/Result';
 import styles from './BasicList.less';
 
 const FormItem = Form.Item;
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
 const SelectOption = Select.Option;
 const { Search, TextArea } = Input;
 
@@ -138,21 +131,8 @@ class BasicList extends PureComponent {
       ? { footer: null, onCancel: this.handleDone }
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
-    const Info = ({ title, value, bordered }) => (
-      <div className={styles.headerInfo}>
-        <span>{title}</span>
-        <p>{value}</p>
-        {bordered && <em />}
-      </div>
-    );
-
     const extraContent = (
       <div className={styles.extraContent}>
-      {/*  <RadioGroup defaultValue="all">
-          <RadioButton value="all">全部</RadioButton>
-          <RadioButton value="progress">进行中</RadioButton>
-          <RadioButton value="waiting">等待中</RadioButton>
-        </RadioGroup>*/}
         <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
       </div>
     );
@@ -164,7 +144,7 @@ class BasicList extends PureComponent {
       total: 50,
     };
 
-    const ListContent = ({ data: { owner, createdAt, percent, status } }) => (
+    const ListContent = ({ data: { owner, createdAt } }) => (
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
           <span>Owner</span>
@@ -174,9 +154,6 @@ class BasicList extends PureComponent {
           <span>缴费时间</span>
           <p>{moment(createdAt).format('YYYY-MM-DD HH:mm')}</p>
         </div>
-       {/* <div className={styles.listContentItem}>
-          <Progress percent={percent} status={status} strokeWidth={6} style={{ width: 180 }} />
-        </div>*/}
       </div>
     );
 
@@ -255,7 +232,6 @@ class BasicList extends PureComponent {
     return (
       <PageHeaderWrapper>
         <div className={styles.standardList}>
-
           <Card
             className={styles.listCard}
             bordered={false}
@@ -298,7 +274,6 @@ class BasicList extends PureComponent {
                   ]}
                 >
                   <List.Item.Meta
-                /*    avatar={<Avatar src={item.logo} shape="square" size="large" />}*/
                     title={<a href={item.href}>{item.title}</a>}
                     description={item.subDescription}
                   />

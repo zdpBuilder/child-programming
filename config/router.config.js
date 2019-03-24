@@ -177,6 +177,11 @@ export default [
             component: './educationalAdministration/campusManagement/TableList',
           },
           {
+            path: '/educationalAdministration/classroomManagement',
+            name: 'classroomManagement',
+            component: './educationalAdministration/classroomManagement/TableList',
+          },
+          {
             path: '/educationalAdministration/studentsManagement',
             name: 'studentsManagement',
             component: './educationalAdministration/studentsManagement/BasicList',

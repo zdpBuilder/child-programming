@@ -42,6 +42,7 @@ export default {
   'menu.portalManagement.privilegeManagement': ' 权限管理',
   'menu.educationalAdministration': '教务管理',
   'menu.educationalAdministration.campusManagement': '校区管理',
+  'menu.educationalAdministration.classroomManagement': '教室管理',
   'menu.educationalAdministration.studentsManagement': '学生信息管理',
   'menu.educationalAdministration.teachersManagement': '教师信息管理',
   'menu.educationalAdministration.coursesManagement': '课程管理',

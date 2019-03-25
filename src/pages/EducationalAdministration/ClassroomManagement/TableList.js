@@ -47,8 +47,8 @@ const ShowViewModal = props => {
         <Description term="校区名称">{current.schoolName}</Description>
         <Description term="教室编号">{current.code}</Description>
         <Description term="最大容量">{current.maxCapacity}</Description>
-        <Description term="备注">
-          <TextArea value={current.comment} rows={4} />
+        <Description term="备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注">
+          {current.comment}
         </Description>
       </DescriptionList>
     </Modal>
@@ -379,7 +379,7 @@ class TableList extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="校区管理">
+      <PageHeaderWrapper title="教室管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm(schoolSelectData)}</div>

@@ -30,15 +30,17 @@ const ShowViewModal = props => {
       cancelText="关闭"
       footer={null}
     >
-      <DescriptionList size="small" style={{ marginBottom: 32, marginLeft: 50 }} col={1}>
-        <Description term="校区名称">{current.name}</Description>
-        <Description term="地址">{current.address}</Description>
-        <Description term="负责人">{current.chargeUserName}</Description>
-        <Description term="联系电话">{current.chargeUserPhone}</Description>
-        <Description term="校区描述">
-          <TextArea value={current.introduction} rows={4} />
-        </Description>
-      </DescriptionList>
+      <Card bordered={false}>
+        <DescriptionList size="small" col={1} style={{ marginLeft: 0 }}>
+          <Description term="校区名称">{current.name}</Description>
+          <Description term="地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址">
+            {current.address}
+          </Description>
+          <Description term="负&nbsp;&nbsp;责&nbsp;&nbsp;人">{current.chargeUserName}</Description>
+          <Description term="联系电话">{current.chargeUserPhone}</Description>
+          <Description term="校区描述">{current.introduction}</Description>
+        </DescriptionList>
+      </Card>
     </Modal>
   );
 };

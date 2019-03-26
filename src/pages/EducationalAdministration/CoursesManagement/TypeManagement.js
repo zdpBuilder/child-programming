@@ -1,303 +1,390 @@
-import React, { PureComponent } from 'react';
-import { findDOMNode } from 'react-dom';
-import moment from 'moment';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  List,
-  Card,
-  Input,
-  Button,
-  Icon,
-  Dropdown,
-  Menu,
-  Modal,
-  Form,
-  DatePicker,
-  Select,
-} from 'antd';
-
+import moment from 'moment';
+import { Row, Col, Card, Form, Input, Button, Modal, message, Divider } from 'antd';
+import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import Result from '@/components/Result';
+import DescriptionList from '@/components/DescriptionList';
 
-import styles from './TypeManagement.less';
+import styles from '@/layouts/TableList.less';
+import globalData from '@/utils/globalData';
 
 const FormItem = Form.Item;
+const { TextArea } = Input;
+const { Description } = DescriptionList;
 
-const SelectOption = Select.Option;
-const { Search, TextArea } = Input;
+const formLayout = {
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
+};
 
-@connect(({ list, loading }) => ({
-  list,
-  loading: loading.models.list,
+const ShowViewModal = props => {
+  const { showModalVisible, handleShowModalVisible, current = {} } = props;
+
+  return (
+    <Modal
+      destroyOnClose
+      title="校区查看"
+      visible={showModalVisible}
+      onCancel={() => handleShowModalVisible()}
+      cancelText="关闭"
+      footer={null}
+    >
+      <Card bordered={false}>
+        <DescriptionList size="small" col={1} style={{ marginLeft: 0 }}>
+          <Description term="校区名称">{current.name}</Description>
+          <Description term="地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址">
+            {current.address}
+          </Description>
+          <Description term="负&nbsp;&nbsp;责&nbsp;&nbsp;人">{current.chargeUserName}</Description>
+          <Description term="联系电话">{current.chargeUserPhone}</Description>
+          <Description term="校区描述">{current.introduction}</Description>
+        </DescriptionList>
+      </Card>
+    </Modal>
+  );
+};
+
+const CreateForm = Form.create()(props => {
+  const { modalVisible, handleAddAndEdit, form, handleAddModalVisible, current = {} } = props;
+  const {
+    form: { getFieldDecorator },
+  } = props;
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      handleAddAndEdit(fieldsValue);
+    });
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title={`校区${current.id ? '编辑' : '添加'}`}
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleAddModalVisible()}
+    >
+      <FormItem>
+        {getFieldDecorator('id', {
+          initialValue: current.id,
+        })(<Input type="hidden" />)}
+      </FormItem>
+      <FormItem label="校区名称" {...formLayout}>
+        {getFieldDecorator('name', {
+          rules: [{ required: true, message: '请输入校区名称！', max: 50 }],
+          initialValue: current.name,
+        })(<Input placeholder="请输入校区名称" />)}
+      </FormItem>
+      <FormItem label="地址" {...formLayout}>
+        {getFieldDecorator('address', {
+          rules: [{ required: true, message: '请输入地址！', max: 50 }],
+          initialValue: current.address,
+        })(<Input placeholder="请输入地址" />)}
+      </FormItem>
+      <FormItem label="负责人" {...formLayout}>
+        {getFieldDecorator('chargeUserName', {
+          rules: [{ required: true, message: '请输入负责人姓名！', max: 50 }],
+          initialValue: current.chargeUserName,
+        })(<Input placeholder="请输入负责人姓名" />)}
+      </FormItem>
+      <FormItem label="联系电话" {...formLayout}>
+        {getFieldDecorator('chargeUserPhone', {
+          rules: [{ required: true, message: '请输入联系电话！', max: 50 }],
+          initialValue: current.chargeUserPhone,
+        })(<Input placeholder="请输入联系电话" />)}
+      </FormItem>
+      <FormItem label="校区描述" {...formLayout}>
+        {getFieldDecorator('introduction', {
+          rules: [{ message: '请输入至少五个字符的校区描述！', min: 5, max: 500 }],
+          initialValue: current.introduction,
+        })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
+      </FormItem>
+    </Modal>
+  );
+});
+
+/* eslint react/no-multi-comp:0 */
+@connect(({ campus, loading }) => ({
+  campus,
+  loading: loading.models.campus,
 }))
 @Form.create()
-class TypeManagement extends PureComponent {
-  state = { visible: false, done: false };
-
-  formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 13 },
+class TableList extends PureComponent {
+  state = {
+    modalVisible: false,
+    selectedRows: [],
+    current: {},
+    showModalVisible: false,
   };
+
+  columns = [
+    {
+      title: '校区名称',
+      dataIndex: 'name',
+    },
+    {
+      title: '地址',
+      dataIndex: 'address',
+    },
+    {
+      title: '负责人',
+      dataIndex: 'chargeUserName',
+    },
+    {
+      title: '联系电话',
+      dataIndex: 'chargeUserPhone',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.deleteSchool(record.id)}>删除</a>
+        </Fragment>
+      ),
+    },
+  ];
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'list/fetch',
-      payload: {
-        count: 5,
-      },
+      type: 'campus/fetchList',
     });
   }
 
-  showModal = () => {
+  // 处理表格分页
+  handleStandardTableChange = pagination => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'campus/changeTable',
+      payload: {
+        ...pagination,
+      },
+    });
+  };
+
+  // 搜索条件重置
+  handleFormReset = () => {
+    const { form, dispatch } = this.props;
+    form.resetFields();
+    this.setState({});
+    dispatch({
+      type: 'campus/fetchList',
+      payload: {},
+    });
+  };
+
+  // 删除多行
+  handleDeleteRows = () => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+    if (!selectedRows) return;
+    dispatch({
+      type: 'campus/remove',
+      payload: {
+        idsStr: selectedRows.map(row => row.id).join(','),
+      },
+      callback: response => {
+        this.handleResultData(response);
+        this.setState({
+          selectedRows: [],
+        });
+      },
+    });
+  };
+
+  handleSelectRows = rows => {
     this.setState({
-      visible: true,
+      selectedRows: rows,
+    });
+  };
+
+  // 按条件搜索
+  handleSearch = e => {
+    e.preventDefault();
+
+    const { dispatch, form } = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      const values = {
+        ...fieldsValue,
+      };
+
+      dispatch({
+        type: 'campus/fetchList',
+        payload: values,
+      });
+    });
+  };
+
+  // 添加弹出框
+  handleAddModalVisible = flag => {
+    this.setState({
+      modalVisible: !!flag,
       current: undefined,
     });
   };
 
-  showEditModal = item => {
+  //  编辑弹出框
+  handleEditModalVisible = (flag, item) => {
     this.setState({
-      visible: true,
+      modalVisible: !!flag,
       current: item,
     });
   };
 
-  handleDone = () => {
-    setTimeout(() => this.addBtn.blur(), 0);
-    this.setState({
-      done: false,
-      visible: false,
-    });
-  };
-
-  handleCancel = () => {
-    setTimeout(() => this.addBtn.blur(), 0);
-    this.setState({
-      visible: false,
-    });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    const { current } = this.state;
-    const id = current ? current.id : '';
-
-    setTimeout(() => this.addBtn.blur(), 0);
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      this.setState({
-        done: true,
-      });
-      dispatch({
-        type: 'list/submit',
-        payload: { id, ...fieldsValue },
-      });
-    });
-  };
-
-  deleteItem = id => {
+  // 添加、编辑处理
+  handleAddAndEdit = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'list/submit',
-      payload: { id },
+      type: 'campus/addAndUpdate',
+      payload: {
+        ...fields,
+      },
+      callback: response => {
+        this.handleResultData(response);
+      },
     });
   };
 
-  render() {
-    const {
-      list: { list },
-      loading,
-    } = this.props;
+  //  查看弹出框
+  handleShowModalVisible = (flag, item) => {
+    this.setState({
+      showModalVisible: !!flag,
+      current: item,
+    });
+  };
+
+  // 删除单个提示
+  deleteSchool = id => {
+    Modal.confirm({
+      title: '删除校区',
+      content: '确定删除该校区吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.handleDeleteItem(id),
+    });
+  };
+
+  // 删除单个处理
+  handleDeleteItem = id => {
+    const idsStr = `${id}`;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'campus/remove',
+      payload: {
+        idsStr,
+      },
+      callback: response => {
+        this.handleResultData(response);
+      },
+    });
+  };
+
+  // 添加、编辑、删除返回结果处理
+  handleResultData = response => {
+    console.log(response);
+    const { dispatch } = this.props;
+    if (globalData.successCode === response.status) {
+      dispatch({
+        type: 'campus/fetchList',
+      });
+      message.success(response.msg);
+      this.handleAddModalVisible();
+    } else message.error(response.msg);
+  };
+
+  // 搜索
+  renderSimpleForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, done, current = {} } = this.state;
-
-    const editAndDelete = (key, currentItem) => {
-      if (key === 'edit') this.showEditModal(currentItem);
-      else if (key === 'delete') {
-        Modal.confirm({
-          title: '删除类别',
-          content: '确定删除该类别吗？',
-          okText: '确认',
-          cancelText: '取消',
-          onOk: () => this.deleteItem(currentItem.id),
-        });
-      }
-    };
-
-    const modalFooter = done
-      ? { footer: null, onCancel: this.handleDone }
-      : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
-
-    const extraContent = (
-      <div className={styles.extraContent}>
-        <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
-      </div>
-    );
-
-    const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: true,
-      pageSize: 5,
-      total: 50,
-    };
-
-    const ListContent = ({ data: { owner, createdAt } }) => (
-      <div className={styles.listContent}>
-        <div className={styles.listContentItem}>
-          <span>Owner</span>
-          <p>{owner}</p>
-        </div>
-        <div className={styles.listContentItem}>
-          <span>新增时间</span>
-          <p>{moment(createdAt).format('YYYY-MM-DD HH:mm')}</p>
-        </div>
-      </div>
-    );
-
-    const MoreBtn = props => (
-      <Dropdown
-        overlay={
-          <Menu onClick={({ key }) => editAndDelete(key, props.current)}>
-            <Menu.Item key="edit">编辑</Menu.Item>
-            <Menu.Item key="delete">删除</Menu.Item>
-          </Menu>
-        }
-      >
-        <a>
-          更多 <Icon type="down" />
-        </a>
-      </Dropdown>
-    );
-
-    const getModalContent = () => {
-      if (done) {
-        return (
-          <Result
-            type="success"
-            title="操作成功"
-            description="一系列的信息描述，很短同样也可以带标点。"
-            actions={
-              <Button type="primary" onClick={this.handleDone}>
-                知道了
-              </Button>
-            }
-            className={styles.formResult}
-          />
-        );
-      }
-      return (
-        <Form onSubmit={this.handleSubmit}>
-          <FormItem label="类别名称" {...this.formLayout}>
-            {getFieldDecorator('title', {
-              rules: [{ required: true, message: '请输入类别名称' }],
-              initialValue: current.title,
-            })(<Input placeholder="请输入" />)}
-          </FormItem>
-          <FormItem label="新增时间" {...this.formLayout}>
-            {getFieldDecorator('createdAt', {
-              rules: [{ required: true, message: '请选择新增时间' }],
-              initialValue: current.createdAt ? moment(current.createdAt) : null,
-            })(
-              <DatePicker
-                showTime
-                placeholder="请选择"
-                format="YYYY-MM-DD HH:mm:ss"
-                style={{ width: '100%' }}
-              />
-            )}
-          </FormItem>
-          <FormItem label="类别负责人" {...this.formLayout}>
-            {getFieldDecorator('owner', {
-              rules: [{ required: true, message: '请选择类别负责人' }],
-              initialValue: current.owner,
-            })(
-              <Select placeholder="请选择">
-                <SelectOption value="付晓晓">付晓晓</SelectOption>
-                <SelectOption value="周毛毛">周毛毛</SelectOption>
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...this.formLayout} label="类别描述">
-            {getFieldDecorator('subDescription', {
-              rules: [{ message: '请输入至少五个字符的类别描述！', min: 5 }],
-              initialValue: current.subDescription,
-            })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
-          </FormItem>
-        </Form>
-      );
-    };
     return (
-      <PageHeaderWrapper>
-        <div className={styles.standardList}>
-          <Card
-            className={styles.listCard}
-            bordered={false}
-            title="类别列表"
-            style={{ marginTop: 24 }}
-            bodyStyle={{ padding: '0 32px 40px 32px' }}
-            extra={extraContent}
-          >
-            <Button
-              type="dashed"
-              style={{ width: '100%', marginBottom: 8 }}
-              icon="plus"
-              onClick={this.showModal}
-              ref={component => {
-                /* eslint-disable */
-                this.addBtn = findDOMNode(component);
-                /* eslint-enable */
-              }}
-            >
-              添加
-            </Button>
-            <List
-              size="large"
-              rowKey="id"
-              loading={loading}
-              pagination={paginationProps}
-              dataSource={list}
-              renderItem={item => (
-                <List.Item
-                  actions={[
-                    <a
-                      onClick={e => {
-                        e.preventDefault();
-                        this.showEditModal(item);
-                      }}
-                    >
-                      编辑
-                    </a>,
-                    <MoreBtn current={item} />,
-                  ]}
-                >
-                  <List.Item.Meta
-                    title={<a href={item.href}>{item.title}</a>}
-                    description={item.subDescription}
-                  />
-                  <ListContent data={item} />
-                </List.Item>
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="校区名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                重置
+              </Button>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+
+  render() {
+    const {
+      campus: { list, pagination },
+      loading,
+    } = this.props;
+    console.log(loading);
+    const { selectedRows, modalVisible, current, showModalVisible } = this.state;
+
+    const parentMethods = {
+      handleAddAndEdit: this.handleAddAndEdit,
+      handleAddModalVisible: this.handleAddModalVisible,
+    };
+
+    return (
+      <PageHeaderWrapper title="校区管理">
+        <Card bordered={false}>
+          <div className={styles.tableList}>
+            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <div className={styles.tableListOperator}>
+              <Button icon="plus" type="primary" onClick={() => this.handleAddModalVisible(true)}>
+                新建
+              </Button>
+              {selectedRows.length > 0 && (
+                <span>
+                  <Button onClick={this.handleDeleteRows}>批量删除</Button>
+                </span>
               )}
+            </div>
+            <StandardTable
+              rowKey="id"
+              selectedRows={selectedRows}
+              loading={loading}
+              data={list}
+              columns={this.columns}
+              onSelectRow={this.handleSelectRows}
+              paginationData={pagination}
+              onChange={this.handleStandardTableChange}
             />
-          </Card>
-        </div>
-        <Modal
-          title={done ? null : `类别${current ? '编辑' : '添加'}`}
-          className={styles.standardListForm}
-          width={640}
-          bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
-          destroyOnClose
-          visible={visible}
-          {...modalFooter}
-        >
-          {getModalContent()}
-        </Modal>
+          </div>
+        </Card>
+        <CreateForm {...parentMethods} modalVisible={modalVisible} current={current} />
+        <ShowViewModal
+          showModalVisible={showModalVisible}
+          current={current}
+          handleShowModalVisible={this.handleShowModalVisible}
+        />
       </PageHeaderWrapper>
     );
   }
 }
 
-export default TypeManagement;
+export default TableList;

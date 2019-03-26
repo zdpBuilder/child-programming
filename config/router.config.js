@@ -184,12 +184,12 @@ export default [
           {
             path: '/educationalAdministration/studentsManagement',
             name: 'studentsManagement',
-            component: './educationalAdministration/studentsManagement/BasicList',
+            component: './educationalAdministration/studentsManagement/TableList',
           },
           {
             path: '/educationalAdministration/teachersManagement',
             name: 'teachersManagement',
-            component: './educationalAdministration/teachersManagement/BasicList',
+            component: './educationalAdministration/teachersManagement/TableList',
           },
           {
             path: '/educationalAdministration/coursesManagement',
@@ -220,7 +220,7 @@ export default [
           {
             path: '/educationalAdministration/classManagement',
             name: 'classManagement',
-            component: './educationalAdministration/classManagement/BasicList',
+            component: './educationalAdministration/classManagement/TableList',
           },
           {
             path: '/educationalAdministration/signManagement',

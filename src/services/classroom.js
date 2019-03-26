@@ -4,7 +4,7 @@ import globalData from '@/utils/globalData';
 
 export async function getList(params) {
   return request(
-    `${globalData.baseUrl + globalData.projectName}/school/getList?${stringify(params)}`,
+    `${globalData.baseUrl + globalData.projectName}/classroom/getList?${stringify(params)}`,
     {
       method: globalData.GET,
     }
@@ -12,7 +12,7 @@ export async function getList(params) {
 }
 
 export async function save(params) {
-  return request(`${globalData.baseUrl + globalData.projectName}/school/save`, {
+  return request(`${globalData.baseUrl + globalData.projectName}/classroom/save`, {
     method: globalData.POST,
     body: params,
   });
@@ -20,7 +20,7 @@ export async function save(params) {
 
 export async function deleteBatch(params) {
   return request(
-    `${globalData.baseUrl + globalData.projectName}/school/delete?${stringify(params)}`,
+    `${globalData.baseUrl + globalData.projectName}/classroom/delete?${stringify(params)}`,
     {
       method: globalData.GET,
     }

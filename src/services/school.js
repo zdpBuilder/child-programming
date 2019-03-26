@@ -26,3 +26,9 @@ export async function deleteBatch(params) {
     }
   );
 }
+
+export async function getSchoolInfoSelect() {
+  return request(`${globalData.baseUrl + globalData.projectName}/school/getSchoolInfoSelect`, {
+    method: globalData.GET,
+  });
+}

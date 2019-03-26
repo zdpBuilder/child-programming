@@ -1,7 +1,19 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Modal, message, Divider } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Modal,
+  message,
+  Divider,
+  Select,
+  InputNumber,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
@@ -12,6 +24,7 @@ import globalData from '@/utils/globalData';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Description } = DescriptionList;
+const { Option } = Select;
 
 const formLayout = {
   labelCol: { span: 7 },
@@ -24,29 +37,33 @@ const ShowViewModal = props => {
   return (
     <Modal
       destroyOnClose
-      title="校区查看"
+      title="教室查看"
       visible={showModalVisible}
       onCancel={() => handleShowModalVisible()}
       cancelText="关闭"
       footer={null}
     >
-      <Card bordered={false}>
-        <DescriptionList size="small" col={1} style={{ marginLeft: 0 }}>
-          <Description term="校区名称">{current.name}</Description>
-          <Description term="地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址">
-            {current.address}
-          </Description>
-          <Description term="负&nbsp;&nbsp;责&nbsp;&nbsp;人">{current.chargeUserName}</Description>
-          <Description term="联系电话">{current.chargeUserPhone}</Description>
-          <Description term="校区描述">{current.introduction}</Description>
-        </DescriptionList>
-      </Card>
+      <DescriptionList size="small" style={{ marginBottom: 32, marginLeft: 50 }} col={1}>
+        <Description term="校区名称">{current.schoolName}</Description>
+        <Description term="教室编号">{current.code}</Description>
+        <Description term="最大容量">{current.maxCapacity}</Description>
+        <Description term="备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注">
+          {current.comment}
+        </Description>
+      </DescriptionList>
     </Modal>
   );
 };
 
 const CreateForm = Form.create()(props => {
-  const { modalVisible, handleAddAndEdit, form, handleAddModalVisible, current = {} } = props;
+  const {
+    modalVisible,
+    handleAddAndEdit,
+    form,
+    handleAddModalVisible,
+    current = {},
+    schoolSelectData,
+  } = props;
   const {
     form: { getFieldDecorator },
   } = props;
@@ -62,7 +79,7 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={`校区${current.id ? '编辑' : '添加'}`}
+      title={`教室${current.id ? '编辑' : '添加'}`}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleAddModalVisible()}
@@ -73,33 +90,42 @@ const CreateForm = Form.create()(props => {
         })(<Input type="hidden" />)}
       </FormItem>
       <FormItem label="校区名称" {...formLayout}>
-        {getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入校区名称！', max: 50 }],
-          initialValue: current.name,
-        })(<Input placeholder="请输入校区名称" />)}
+        {getFieldDecorator('schoolId', {
+          rules: [{ required: true, message: '请选择校区名称！' }],
+          initialValue: current.schoolId ? `${current.schoolId}` : '',
+        })(
+          <Select placeholder="请选择校区名称" style={{ width: 255 }}>
+            {schoolSelectData.map(item => (
+              <Option key={item.key}>{item.value}</Option>
+            ))}
+          </Select>
+        )}
       </FormItem>
-      <FormItem label="地址" {...formLayout}>
-        {getFieldDecorator('address', {
-          rules: [{ required: true, message: '请输入地址！', max: 50 }],
-          initialValue: current.address,
-        })(<Input placeholder="请输入地址" />)}
+      <FormItem label="教室编号" {...formLayout}>
+        {getFieldDecorator('code', {
+          rules: [{ required: true, type: 'number', message: '请输入三位数字教室编号！' }],
+          initialValue: current.code,
+        })(
+          <InputNumber
+            style={{ width: 255 }}
+            min={100}
+            max={999}
+            placeholder="请输入三位数字教室编号"
+          />
+        )}
       </FormItem>
-      <FormItem label="负责人" {...formLayout}>
-        {getFieldDecorator('chargeUserName', {
-          rules: [{ required: true, message: '请输入负责人姓名！', max: 50 }],
-          initialValue: current.chargeUserName,
-        })(<Input placeholder="请输入负责人姓名" />)}
+      <FormItem label="最大容量" {...formLayout}>
+        {getFieldDecorator('maxCapacity', {
+          rules: [
+            { required: true, type: 'number', message: '请输入最大容量,不得超过1000！', max: 50 },
+          ],
+          initialValue: current.maxCapacity,
+        })(<InputNumber style={{ width: 255 }} min={0} max={1000} placeholder="请输入最大容量" />)}
       </FormItem>
-      <FormItem label="联系电话" {...formLayout}>
-        {getFieldDecorator('chargeUserPhone', {
-          rules: [{ required: true, message: '请输入联系电话！', max: 50 }],
-          initialValue: current.chargeUserPhone,
-        })(<Input placeholder="请输入联系电话" />)}
-      </FormItem>
-      <FormItem label="校区描述" {...formLayout}>
-        {getFieldDecorator('introduction', {
-          rules: [{ message: '请输入至少五个字符的校区描述！', min: 5, max: 500 }],
-          initialValue: current.introduction,
+      <FormItem label="备注" {...formLayout}>
+        {getFieldDecorator('comment', {
+          rules: [{ message: '请输入至少五个字符的备注！', min: 5, max: 500 }],
+          initialValue: current.comment,
         })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
       </FormItem>
     </Modal>
@@ -107,9 +133,9 @@ const CreateForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ campus, loading }) => ({
-  campus,
-  loading: loading.models.campus,
+@connect(({ classroom, loading }) => ({
+  classroom,
+  loading: loading.models.classroom,
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -123,19 +149,15 @@ class TableList extends PureComponent {
   columns = [
     {
       title: '校区名称',
-      dataIndex: 'name',
+      dataIndex: 'schoolName',
     },
     {
-      title: '地址',
-      dataIndex: 'address',
+      title: '教室编码',
+      dataIndex: 'code',
     },
     {
-      title: '负责人',
-      dataIndex: 'chargeUserName',
-    },
-    {
-      title: '联系电话',
-      dataIndex: 'chargeUserPhone',
+      title: '最大容量',
+      dataIndex: 'maxCapacity',
     },
     {
       title: '创建时间',
@@ -150,7 +172,7 @@ class TableList extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => this.deleteSchool(record.id)}>删除</a>
+          <a onClick={() => this.deleteOne(record.id)}>删除</a>
         </Fragment>
       ),
     },
@@ -159,7 +181,10 @@ class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'campus/fetchList',
+      type: 'classroom/fetchList',
+    });
+    dispatch({
+      type: 'classroom/fetchSchoolInfoList',
     });
   }
 
@@ -168,7 +193,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'campus/changeTable',
+      type: 'classroom/changeTable',
       payload: {
         ...pagination,
       },
@@ -181,7 +206,7 @@ class TableList extends PureComponent {
     form.resetFields();
     this.setState({});
     dispatch({
-      type: 'campus/fetchList',
+      type: 'classroom/fetchList',
       payload: {},
     });
   };
@@ -192,7 +217,7 @@ class TableList extends PureComponent {
     const { selectedRows } = this.state;
     if (!selectedRows) return;
     dispatch({
-      type: 'campus/remove',
+      type: 'classroom/remove',
       payload: {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
@@ -225,7 +250,7 @@ class TableList extends PureComponent {
       };
 
       dispatch({
-        type: 'campus/fetchList',
+        type: 'classroom/fetchList',
         payload: values,
       });
     });
@@ -251,7 +276,7 @@ class TableList extends PureComponent {
   handleAddAndEdit = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'campus/addAndUpdate',
+      type: 'classroom/addAndUpdate',
       payload: {
         ...fields,
       },
@@ -270,7 +295,7 @@ class TableList extends PureComponent {
   };
 
   // 删除单个提示
-  deleteSchool = id => {
+  deleteOne = id => {
     Modal.confirm({
       title: '删除校区',
       content: '确定删除该校区吗？',
@@ -285,7 +310,7 @@ class TableList extends PureComponent {
     const idsStr = `${id}`;
     const { dispatch } = this.props;
     dispatch({
-      type: 'campus/remove',
+      type: 'classroom/remove',
       payload: {
         idsStr,
       },
@@ -297,11 +322,10 @@ class TableList extends PureComponent {
 
   // 添加、编辑、删除返回结果处理
   handleResultData = response => {
-    console.log(response);
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
       dispatch({
-        type: 'campus/fetchList',
+        type: 'classroom/fetchList',
       });
       message.success(response.msg);
       this.handleAddModalVisible();
@@ -309,7 +333,7 @@ class TableList extends PureComponent {
   };
 
   // 搜索
-  renderSimpleForm() {
+  renderSimpleForm(schoolSelectData) {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -318,7 +342,13 @@ class TableList extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="校区名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('schoolId')(
+                <Select placeholder="请选择校区名称" style={{ width: 150 }}>
+                  {schoolSelectData.map(item => (
+                    <Option key={item.key}>{item.value}</Option>
+                  ))}
+                </Select>
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -338,10 +368,9 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      campus: { list, pagination },
+      classroom: { list, pagination, schoolSelectData },
       loading,
     } = this.props;
-    console.log(loading);
     const { selectedRows, modalVisible, current, showModalVisible } = this.state;
 
     const parentMethods = {
@@ -350,10 +379,10 @@ class TableList extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="校区管理">
+      <PageHeaderWrapper title="教室管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <div className={styles.tableListForm}>{this.renderSimpleForm(schoolSelectData)}</div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.handleAddModalVisible(true)}>
                 新建
@@ -376,7 +405,12 @@ class TableList extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} current={current} />
+        <CreateForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          current={current}
+          schoolSelectData={schoolSelectData}
+        />
         <ShowViewModal
           showModalVisible={showModalVisible}
           current={current}

@@ -107,9 +107,9 @@ const CreateForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ campus, loading }) => ({
-  campus,
-  loading: loading.models.campus,
+@connect(({ school, loading }) => ({
+  school,
+  loading: loading.models.school,
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -159,7 +159,7 @@ class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'campus/fetchList',
+      type: 'school/fetchList',
     });
   }
 
@@ -168,9 +168,9 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'campus/changeTable',
+      type: 'school/save',
       payload: {
-        ...pagination,
+        pagination,
       },
     });
   };
@@ -181,7 +181,7 @@ class TableList extends PureComponent {
     form.resetFields();
     this.setState({});
     dispatch({
-      type: 'campus/fetchList',
+      type: 'school/fetchList',
       payload: {},
     });
   };
@@ -192,7 +192,7 @@ class TableList extends PureComponent {
     const { selectedRows } = this.state;
     if (!selectedRows) return;
     dispatch({
-      type: 'campus/remove',
+      type: 'school/remove',
       payload: {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
@@ -225,7 +225,7 @@ class TableList extends PureComponent {
       };
 
       dispatch({
-        type: 'campus/fetchList',
+        type: 'school/fetchList',
         payload: values,
       });
     });
@@ -251,7 +251,7 @@ class TableList extends PureComponent {
   handleAddAndEdit = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'campus/addAndUpdate',
+      type: 'school/addAndUpdate',
       payload: {
         ...fields,
       },
@@ -285,7 +285,7 @@ class TableList extends PureComponent {
     const idsStr = `${id}`;
     const { dispatch } = this.props;
     dispatch({
-      type: 'campus/remove',
+      type: 'school/remove',
       payload: {
         idsStr,
       },
@@ -301,7 +301,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
       dispatch({
-        type: 'campus/fetchList',
+        type: 'school/fetchList',
       });
       message.success(response.msg);
       this.handleAddModalVisible();
@@ -338,7 +338,7 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      campus: { list, pagination },
+      school: { list, pagination },
       loading,
     } = this.props;
     console.log(loading);

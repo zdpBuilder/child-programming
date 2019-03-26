@@ -172,9 +172,9 @@ export default [
         name: 'educationalAdministration',
         routes: [
           {
-            path: '/educationalAdministration/campusManagement',
-            name: 'campusManagement',
-            component: './educationalAdministration/campusManagement/TableList',
+            path: '/educationalAdministration/schoolManagement',
+            name: 'schoolManagement',
+            component: './educationalAdministration/schoolManagement/TableList',
           },
           {
             path: '/educationalAdministration/classroomManagement',
@@ -218,9 +218,9 @@ export default [
             ],
           },
           {
-            path: '/educationalAdministration/classManagement',
-            name: 'classManagement',
-            component: './educationalAdministration/classManagement/TableList',
+            path: '/educationalAdministration/gradeManagement',
+            name: 'gradeManagement',
+            component: './educationalAdministration/gradeManagement/TableList',
           },
           {
             path: '/educationalAdministration/signManagement',

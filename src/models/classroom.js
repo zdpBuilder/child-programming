@@ -1,4 +1,5 @@
-import * as classroomService from '../service/classroom';
+import * as classroomService from '@/services/classroom';
+import * as schoolService from '@/services/school';
 import globalData from '@/utils/globalData';
 
 export default {
@@ -14,16 +15,23 @@ export default {
     *fetchList({ payload }, { call, put }) {
       const response = yield call(classroomService.getList, payload);
       yield put({
-        type: 'queryList',
-        payload: response,
+        type: 'save',
+        payload: {
+          list: response,
+          pagination: {
+            total: response ? response.length : 0,
+          },
+        },
       });
     },
 
     *fetchSchoolInfoList({ payload }, { call, put }) {
-      const response = yield call(classroomService.getSchoolInfoSelect, payload);
+      const response = yield call(schoolService.getSchoolInfoSelect, payload);
       yield put({
-        type: 'querySchoolInfoList',
-        payload: response,
+        type: 'save',
+        payload: {
+          schoolSelectData: response || [],
+        },
       });
     },
 
@@ -46,33 +54,10 @@ export default {
   },
 
   reducers: {
-    queryList(state, action) {
+    save(state, action) {
       return {
         ...state,
-        list: action.payload,
-        pagination: {
-          total: action.payload ? action.payload.length : 0,
-        },
-      };
-    },
-
-    querySchoolInfoList(state, action) {
-      return {
-        ...state,
-        schoolSelectData: action.payload || [],
-      };
-    },
-
-    save(state) {
-      return {
-        ...state,
-      };
-    },
-
-    changeTable(state, action) {
-      return {
-        ...state,
-        pagination: action.payload,
+        ...action.payload,
       };
     },
   },

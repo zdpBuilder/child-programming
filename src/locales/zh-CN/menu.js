@@ -41,7 +41,7 @@ export default {
   'menu.portalManagement.paymentRecord': '缴费记录管理',
   'menu.portalManagement.privilegeManagement': ' 权限管理',
   'menu.educationalAdministration': '教务管理',
-  'menu.educationalAdministration.campusManagement': '校区管理',
+  'menu.educationalAdministration.schoolManagement': '校区管理',
   'menu.educationalAdministration.classroomManagement': '教室管理',
   'menu.educationalAdministration.studentsManagement': '学生信息管理',
   'menu.educationalAdministration.teachersManagement': '教师信息管理',
@@ -49,6 +49,6 @@ export default {
   'menu.educationalAdministration.coursesManagement.typeManagement': ' 课程类别管理',
   'menu.educationalAdministration.coursesManagement.classScheduleCard': ' 课程表管理',
   'menu.educationalAdministration.coursesManagement.classAdjustment': ' 调课管理',
-  'menu.educationalAdministration.classManagement': ' 班级管理',
+  'menu.educationalAdministration.gradeManagement': ' 班级管理',
   'menu.educationalAdministration.signManagement': ' 签到管理',
 };

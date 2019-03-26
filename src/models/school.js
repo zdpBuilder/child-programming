@@ -1,8 +1,8 @@
-import * as campusService from '../service/class';
+import * as campusService from '@/services/school';
 import globalData from '@/utils/globalData';
 
 export default {
-  namespace: 'class',
+  namespace: 'school',
 
   state: {
     list: [],
@@ -13,8 +13,13 @@ export default {
     *fetchList({ payload }, { call, put }) {
       const response = yield call(campusService.getList, payload);
       yield put({
-        type: 'queryList',
-        payload: response,
+        type: 'save',
+        payload: {
+          list: response,
+          pagination: {
+            total: response ? response.length : 0,
+          },
+        },
       });
     },
 
@@ -37,26 +42,10 @@ export default {
   },
 
   reducers: {
-    queryList(state, action) {
+    save(state, action) {
       return {
         ...state,
-        list: action.payload,
-        pagination: {
-          total: action.payload ? action.payload.length : 0,
-        },
-      };
-    },
-
-    save(state) {
-      return {
-        ...state,
-      };
-    },
-
-    changeTable(state, action) {
-      return {
-        ...state,
-        pagination: action.payload,
+        ...action.payload,
       };
     },
   },

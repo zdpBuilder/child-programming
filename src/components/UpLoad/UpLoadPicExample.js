@@ -16,7 +16,7 @@ class UpLoadPicExample extends React.Component {
   };
 
   componentWillMount() {
-    if (!this.props.defaultImgUrl) {
+    if (this.props.defaultImgUrl) {
       this.setState({
         fileList: [
           {

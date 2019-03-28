@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-brace-presence */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -35,8 +36,10 @@ const ShowViewModal = props => {
           <Description term="学生姓名">{current.name}</Description>
           <Description term="学生性别">{current.sex}</Description>
           <Description term="学生年龄">{current.age}</Description>
-          <Description term="学生头像">{current.photoUrl}</Description>
           <Description term="家庭住址">{current.address}</Description>
+          <Description term="学生头像">
+            <img alt="example" style={{ width: '100%' }} src={current.photoUrl} />
+          </Description>
         </DescriptionList>
         <Divider />
         <DescriptionList col={2} title="监护人基本信息">
@@ -310,8 +313,8 @@ class TableList extends PureComponent {
   // 删除单个提示
   deleteStudent = id => {
     Modal.confirm({
-      title: '删除校区',
-      content: '确定删除该校区吗？',
+      title: '删除学生',
+      content: '确定删除该学生吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDeleteItem(id),

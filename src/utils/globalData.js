@@ -11,4 +11,11 @@ export default {
     current: 1,
     pageSize: 10,
   },
+  UPLOAD_IMG: {
+    URL: 'http://localhost:8080/child-programming-background/upload/uploadFile?businessType=',
+    MAX_SIZE: 2, // MB
+  },
+  FILE_UPLOAD_DIRECTORY_NAME: {
+    STUDENT: 'student',
+  },
 };

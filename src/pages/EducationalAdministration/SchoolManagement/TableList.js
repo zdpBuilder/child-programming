@@ -197,7 +197,7 @@ class TableList extends PureComponent {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
       callback: response => {
-        this.handleResultData(response);
+        this.handleDeleteResultData(response);
         this.setState({
           selectedRows: [],
         });
@@ -290,14 +290,13 @@ class TableList extends PureComponent {
         idsStr,
       },
       callback: response => {
-        this.handleResultData(response);
+        this.handleDeleteResultData(response);
       },
     });
   };
 
-  // 添加、编辑、删除返回结果处理
+  // 添加、编辑返回结果处理
   handleResultData = response => {
-    console.log(response);
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
       dispatch({
@@ -306,6 +305,28 @@ class TableList extends PureComponent {
       message.success(response.msg);
       this.handleAddModalVisible();
     } else message.error(response.msg);
+  };
+
+  // 删除返回结果处理
+  handleDeleteResultData = response => {
+    if (globalData.successCode === response.status) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'school/fetchList',
+      });
+      message.success(response.msg);
+    } else if (globalData.failCode === response.status && response.data) {
+      const { data } = response;
+      let contentStr = [];
+      data.forEach(item => {
+        contentStr += `编号${item.classroomCode}教室占用校区${item.schoolName},`;
+      });
+      Modal.warning({
+        title: '删除失败',
+        okText: '关闭',
+        content: <p>{contentStr}</p>,
+      });
+    }
   };
 
   // 搜索

@@ -11,4 +11,8 @@ export default {
     current: 1,
     pageSize: 10,
   },
+  UPLOAD_IMG: {
+    URL: '//jsonplaceholder.typicode.com/posts/',
+    MAX_SIZE: 2, // MB
+  },
 };

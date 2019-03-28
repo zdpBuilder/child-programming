@@ -12,7 +12,10 @@ export default {
     pageSize: 10,
   },
   UPLOAD_IMG: {
-    URL: '//jsonplaceholder.typicode.com/posts/',
+    URL: 'http://localhost:8080/child-programming-background/upload/uploadFile?businessType=',
     MAX_SIZE: 2, // MB
+  },
+  FILE_UPLOAD_DIRECTORY_NAME: {
+    STUDENT: 'student',
   },
 };

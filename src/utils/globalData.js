@@ -11,13 +11,13 @@ export default {
     current: 1,
     pageSize: 10,
   },
-  UPLOAD_IMG: {
-    URL: 'http://localhost:8080/child-programming-background/upload/uploadFile?businessType=',
-    MAX_SIZE: 2, // MB
+  upLoadImgSetting: {
+    url: 'http://localhost:8080/child-programming-background/upload/uploadFile?businessType=',
+    maxSize: 2, // MB
   },
-  FILE_UPLOAD_DIRECTORY_NAME: {
-    STUDENT: 'student',
-    TEACHER: 'teacher',
+  fileUpLoadDirectoryName: {
+    student: 'student',
+    teacher: 'teacher',
   },
   photoBaseUrl: 'http://localhost:8080/child-programming-background/upload_files/', // 图片访问基础路径
 };

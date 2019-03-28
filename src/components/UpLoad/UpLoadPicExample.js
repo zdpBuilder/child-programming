@@ -1,4 +1,4 @@
-/* eslint-disable react/destructuring-assignment,react/require-default-props */
+/* eslint-disable react/destructuring-assignment,react/require-default-props,object-shorthand */
 import React from 'react';
 import { Modal, Upload, Icon, Input, message } from 'antd';
 import PropTypes from 'prop-types';
@@ -23,7 +23,7 @@ class UpLoadPicExample extends React.Component {
             uid: '-1',
             name: 'xxx.png',
             status: 'done',
-            url: this.props.defaultImgUrl,
+            url: globalData.photoBaseUrl + this.props.defaultImgUrl,
             response: this.props.defaultImgUrl,
           },
         ],
@@ -47,7 +47,7 @@ class UpLoadPicExample extends React.Component {
     if (!isJPG) {
       message.error('只允许上传JPG');
     }
-    const isLt2M = file.size / 1024 / 1024 < globalData.UPLOAD_IMG.MAX_SIZE;
+    const isLt2M = file.size / 1024 / 1024 < globalData.upLoadImgSetting.maxSize;
     if (!isLt2M) {
       message.error('图片大小不能超过2MB');
     }
@@ -72,7 +72,7 @@ class UpLoadPicExample extends React.Component {
         })(<Input type="hidden" />)}
 
         <Upload
-          action={globalData.UPLOAD_IMG.URL + this.props.fileUpLoadDirectoryName}
+          action={globalData.upLoadImgSetting.url + this.props.fileUpLoadDirectoryName}
           listType="picture-card"
           fileList={fileList}
           onPreview={this.handlePreview}

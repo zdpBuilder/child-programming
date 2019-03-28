@@ -38,7 +38,11 @@ const ShowViewModal = props => {
           <Description term="学生年龄">{current.age}</Description>
           <Description term="家庭住址">{current.address}</Description>
           <Description term="学生头像">
-            <img alt="example" style={{ width: '100%' }} src={current.photoUrl} />
+            <img
+              alt="example"
+              style={{ width: '100%' }}
+              src={globalData.photoBaseUrl + current.photoUrl}
+            />
           </Description>
         </DescriptionList>
         <Divider />
@@ -101,7 +105,7 @@ const CreateForm = Form.create()(props => {
           props={props}
           formFieldPropsKey="photoUrl"
           defaultImgUrl={current.photoUrl}
-          fileUpLoadDirectoryName={globalData.FILE_UPLOAD_DIRECTORY_NAME.STUDENT}
+          fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.student}
         />
       </FormItem>
       <FormItem label="学生年龄" {...formLayout}>

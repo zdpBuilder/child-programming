@@ -100,8 +100,8 @@ const CreateForm = Form.create()(props => {
         <UpLoadPicExample
           props={props}
           formFieldPropsKey="photoUrl"
-          defaultImgUrl={globalData.photoBaseUrl + current.photoUrl}
-          fileUpLoadDirectoryName={globalData.FILE_UPLOAD_DIRECTORY_NAME.TEACHER}
+          defaultImgUrl={current.photoUrl}
+          fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.teacher}
         />
       </FormItem>
       <FormItem label="证书" {...formLayout} />

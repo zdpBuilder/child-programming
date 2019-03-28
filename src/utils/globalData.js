@@ -17,5 +17,7 @@ export default {
   },
   FILE_UPLOAD_DIRECTORY_NAME: {
     STUDENT: 'student',
+    TEACHER: 'teacher',
   },
+  photoBaseUrl: 'http://localhost:8080/child-programming-background/upload_files/', // 图片访问基础路径
 };

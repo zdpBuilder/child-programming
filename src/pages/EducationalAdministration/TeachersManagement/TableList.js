@@ -8,6 +8,7 @@ import DescriptionList from '@/components/DescriptionList';
 
 import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
+import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -34,7 +35,13 @@ const ShowViewModal = props => {
         <Description term="登陆账号">{current.loginId}</Description>
         <Description term="姓名">{current.name}</Description>
         <Description term="手机号">{current.phone}</Description>
-        <Description term="照片">{current.phone}</Description>
+        <Description term="照片">
+          <img
+            alt="example"
+            style={{ width: '100%' }}
+            src={globalData.photoBaseUrl + current.photoUrl}
+          />
+        </Description>
         <Description term="证书">{current.phone}</Description>
         <Description term="简&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;介">
           {current.introduction}
@@ -89,7 +96,14 @@ const CreateForm = Form.create()(props => {
           initialValue: current.phone,
         })(<Input placeholder="请输入手机号" />)}
       </FormItem>
-      <FormItem label="照片" {...formLayout} />
+      <FormItem label="照片" {...formLayout}>
+        <UpLoadPicExample
+          props={props}
+          formFieldPropsKey="photoUrl"
+          defaultImgUrl={globalData.photoBaseUrl + current.photoUrl}
+          fileUpLoadDirectoryName={globalData.FILE_UPLOAD_DIRECTORY_NAME.TEACHER}
+        />
+      </FormItem>
       <FormItem label="证书" {...formLayout} />
 
       <FormItem label="备注" {...formLayout}>

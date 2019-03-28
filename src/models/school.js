@@ -15,7 +15,7 @@ export default {
       yield put({
         type: 'save',
         payload: {
-          list: response,
+          list: response || [],
           pagination: {
             total: response ? response.length : 0,
           },

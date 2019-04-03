@@ -317,14 +317,18 @@ class TableList extends PureComponent {
       message.success(response.msg);
     } else if (globalData.failCode === response.status && response.data) {
       const { data } = response;
-      let contentStr = [];
-      data.forEach(item => {
-        contentStr += `编号${item.classroomCode}教室占用校区${item.schoolName},`;
-      });
       Modal.warning({
         title: '删除失败',
         okText: '关闭',
-        content: <p>{contentStr}</p>,
+        content: (
+          <div>
+            {data.map(item => (
+              <div key={item.classroomCode}>
+                {`编号${item.classroomCode}教室占用校区${item.schoolName}`}
+              </div>
+            ))}
+          </div>
+        ),
       });
     }
   };

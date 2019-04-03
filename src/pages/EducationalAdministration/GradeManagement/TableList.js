@@ -14,7 +14,6 @@ import {
   Select,
   InputNumber,
   Cascader,
-  DatePicker,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -27,7 +26,6 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Description } = DescriptionList;
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 
 const formLayout = {
   labelCol: { span: 7 },
@@ -51,7 +49,7 @@ const ShowViewModal = props => {
         <Description term="教室编号">{current.code}</Description>
         <Description term="最大容量">{current.maxCapacity}</Description>
         <Description term="备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注">
-          {current.comment}
+          {current.description}
         </Description>
       </DescriptionList>
     </Modal>
@@ -82,7 +80,7 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={`教室${current.id ? '编辑' : '添加'}`}
+      title={`班级${current.id ? '编辑' : '添加'}`}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleAddModalVisible()}
@@ -95,19 +93,21 @@ const CreateForm = Form.create()(props => {
       <FormItem label="老师" {...formLayout}>
         {getFieldDecorator('teacherId', {
           rules: [{ required: true, message: '请选择老师！' }],
-          initialValue: current.teacherId ? `${current.teacherId}` : '',
+          initialValue: current.teacherId || '',
         })(
           <Select placeholder="请选择老师" style={{ width: 255 }}>
             {teacherInfoList.map(item => (
-              <Option key={item.value}>{item.label}</Option>
+              <Option key={item.value} value={item.value}>
+                {item.label}
+              </Option>
             ))}
           </Select>
         )}
       </FormItem>
       <FormItem label="校区教室" {...formLayout}>
-        {getFieldDecorator('schoolAndClassroomId', {
+        {getFieldDecorator('classroomId', {
           rules: [{ required: true, message: '请选择校区教室！' }],
-          initialValue: current.schoolId ? `${current.schoolId}` : '',
+          initialValue: current.schoolAndClassroomId || [],
         })(
           <Cascader
             placeholder="请选择校区教室"
@@ -119,7 +119,7 @@ const CreateForm = Form.create()(props => {
       <FormItem label="班级名称" {...formLayout}>
         {getFieldDecorator('name', {
           rules: [{ required: true, message: '请输入班级名称，不得超过50！', max: 50 }],
-          initialValue: current.maxCapacity,
+          initialValue: current.name,
         })(<Input placeholder="请输入班级名称" />)}
       </FormItem>
       <FormItem label="最大容量" {...formLayout}>
@@ -129,11 +129,6 @@ const CreateForm = Form.create()(props => {
           ],
           initialValue: current.maxCapacity,
         })(<InputNumber style={{ width: 255 }} min={0} max={1000} placeholder="请输入最大容量" />)}
-      </FormItem>
-      <FormItem label="起止日期" {...formLayout}>
-        {getFieldDecorator('date', {
-          rules: [{ required: true, message: '请选择起止日期！' }],
-        })(<RangePicker />)}
       </FormItem>
       <FormItem label="描述" {...formLayout}>
         {getFieldDecorator('description', {
@@ -272,11 +267,7 @@ class TableList extends PureComponent {
 
   // 添加弹出框
   handleAddModalVisible = flag => {
-    // 初始化select框数据
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'grade/init',
-    });
+    this.handleInitData(flag);
     this.setState({
       modalVisible: !!flag,
       current: undefined,
@@ -285,15 +276,28 @@ class TableList extends PureComponent {
 
   //  编辑弹出框
   handleEditModalVisible = (flag, item) => {
+    this.handleInitData(flag);
     this.setState({
       modalVisible: !!flag,
       current: item,
     });
   };
 
+  // 新增、编辑时请求初始化数据
+  handleInitData = flag => {
+    if (flag) {
+      const { dispatch } = this.props;
+      // 初始化新增、编辑页面信息
+      dispatch({
+        type: 'grade/init',
+      });
+    }
+  };
+
   // 添加、编辑处理
   handleAddAndEdit = fields => {
     const { dispatch } = this.props;
+    this.handleFormField(fields);
     dispatch({
       type: 'grade/addAndUpdate',
       payload: {
@@ -303,6 +307,13 @@ class TableList extends PureComponent {
         this.handleResultData(response);
       },
     });
+  };
+
+  // 处理表单数据
+  handleFormField = fields => {
+    const formData = fields;
+    const { classroomId } = fields;
+    ({ 1: formData.classroomId } = classroomId);
   };
 
   //  查看弹出框

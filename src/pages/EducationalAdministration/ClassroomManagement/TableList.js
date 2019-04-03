@@ -92,11 +92,13 @@ const CreateForm = Form.create()(props => {
       <FormItem label="校区名称" {...formLayout}>
         {getFieldDecorator('schoolId', {
           rules: [{ required: true, message: '请选择校区！' }],
-          initialValue: current.schoolId ? `${current.schoolId}` : '',
+          initialValue: current.schoolId ? current.schoolId : '',
         })(
           <Select placeholder="请选择校区名称" style={{ width: 255 }}>
             {schoolSelectData.map(item => (
-              <Option key={item.value}>{item.label}</Option>
+              <Option key={item.value} value={item.value}>
+                {item.label}
+              </Option>
             ))}
           </Select>
         )}
@@ -345,7 +347,9 @@ class TableList extends PureComponent {
               {getFieldDecorator('schoolId')(
                 <Select placeholder="请选择校区名称" style={{ width: 150 }}>
                   {schoolSelectData.map(item => (
-                    <Option key={item.value}>{item.label}</Option>
+                    <Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Option>
                   ))}
                 </Select>
               )}

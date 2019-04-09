@@ -18,23 +18,13 @@ export default [
     Routes: ['src/pages/Authorized'],
     authority: ['admin', 'user'],
     routes: [
-      // dashboard
-      // { path: '/', redirect: '/dashboard/workplace' },
+      // 登陆
+      { path: '/', redirect: '/user/login' },
       {
         path: '/dashboard',
         name: 'dashboard',
         icon: 'dashboard',
         routes: [
-          /*  {
-            path: '/dashboard/analysis',
-            name: 'analysis',
-            component: './Dashboard/Analysis',
-          },
-          {
-            path: '/dashboard/monitor',
-            name: 'monitor',
-            component: './Dashboard/Monitor',
-          },*/
           {
             path: '/dashboard/workplace',
             name: 'workplace',
@@ -42,101 +32,6 @@ export default [
           },
         ],
       },
-      /*    // forms
-      {
-        path: '/form',
-        icon: 'form',
-        name: 'form',
-        routes: [
-          {
-            path: '/form/basic-form',
-            name: 'basicform',
-            component: './Forms/BasicForm',
-          },
-          {
-            path: '/form/step-form',
-            name: 'stepform',
-            component: './Forms/StepForm',
-            hideChildrenInMenu: true,
-            routes: [
-              {
-                path: '/form/step-form',
-                redirect: '/form/step-form/info',
-              },
-              {
-                path: '/form/step-form/info',
-                name: 'info',
-                component: './Forms/StepForm/Step1',
-              },
-              {
-                path: '/form/step-form/confirm',
-                name: 'confirm',
-                component: './Forms/StepForm/Step2',
-              },
-              {
-                path: '/form/step-form/result',
-                name: 'result',
-                component: './Forms/StepForm/Step3',
-              },
-            ],
-          },
-          {
-            path: '/form/advanced-form',
-            name: 'advancedform',
-            authority: ['admin'],
-            component: './Forms/AdvancedForm',
-          },
-        ],
-      },*/
-      // list
-      /*  {
-        path: '/list',
-        icon: 'table',
-        name: 'list',
-        routes: [
-          {
-            path: '/list/table-list',
-            name: 'searchtable',
-            component: './List/TableList',
-          },
-          {
-            path: '/list/basic-list',
-            name: 'basiclist',
-            component: './List/BasicList',
-          },
-          {
-            path: '/list/card-list',
-            name: 'cardlist',
-            component: './List/CardList',
-          },
-          {
-            path: '/list/search',
-            name: 'searchlist',
-            component: './List/List',
-            routes: [
-              {
-                path: '/list/search',
-                redirect: '/list/search/articles',
-              },
-              {
-                path: '/list/search/articles',
-                name: 'articles',
-                component: './List/Articles',
-              },
-              {
-                path: '/list/search/projects',
-                name: 'projects',
-                component: './List/Projects',
-              },
-              {
-                path: '/list/search/applications',
-                name: 'applications',
-                component: './List/Applications',
-              },
-            ],
-          },
-        ],
-      },*/
       // webAdmin 门户网站管理
       {
         path: '/webAdmin',
@@ -158,11 +53,6 @@ export default [
             name: 'paymentRecord',
             component: './PortalManagement/paymentRecord/BasicList',
           },
-          /*  {
-            path: '/webAdmin/privilegeManagement',
-            name: 'privilegeManagement',
-            component: './PortalManagement/privilegeManagement/TableList',
-          },*/
         ],
       },
       // 教务系统管理
@@ -187,33 +77,18 @@ export default [
             component: './educationalAdministration/studentsManagement/TableList',
           },
           {
-            path: '/educationalAdministration/teachersManagement',
-            name: 'teachersManagement',
-            component: './educationalAdministration/teachersManagement/TableList',
+            path: '/educationalAdministration/teacherManagement',
+            name: 'teacherManagement',
+            component: './educationalAdministration/teacherManagement/TableList',
           },
           {
-            path: '/educationalAdministration/coursesManagement',
-            name: 'coursesManagement',
-            component: './educationalAdministration/coursesManagement/List',
+            path: '/educationalAdministration/courseManagement',
+            name: 'courseManagement',
             routes: [
               {
-                path: '/educationalAdministration/coursesManagement',
-                redirect: '/educationalAdministration/coursesManagement/typeManagement',
-              },
-              {
-                path: '/educationalAdministration/coursesManagement/typeManagement',
-                name: 'typeManagement',
-                component: './educationalAdministration/coursesManagement/typeManagement',
-              },
-              {
-                path: '/educationalAdministration/coursesManagement/classScheduleCard',
-                name: 'classScheduleCard',
-                component: './educationalAdministration/coursesManagement/Applications',
-              },
-              {
-                path: '/educationalAdministration/coursesManagement/classAdjustment',
-                name: 'classAdjustment',
-                component: './educationalAdministration/coursesManagement/Articles',
+                path: '/educationalAdministration/courseManagement/formal',
+                name: 'formalCourseManagement',
+                component: './educationalAdministration/courseManagement/formal/TableList',
               },
             ],
           },

@@ -19,23 +19,8 @@ export default {
   fileUpLoadDirectoryName: {
     student: 'student',
     teacher: 'teacher',
+    course: 'course',
   },
   photoBaseUrl: 'http://localhost:8080/child-programming-background/upload_files/', // 图片访问基础路径
   weekendData: ['一', '二', '三', '四', '五', '六', '日'], // 一周
-  timeData: () => {
-    const time = [];
-    for (let i = 0; i < 24; i += 1) {
-      time[i] = {};
-      time[i].value = i;
-      time[i].label = `${i}时`;
-      const children = [];
-      for (let j = 0; j <= 60; j += 1) {
-        children[j] = {};
-        children[j].value = j;
-        children[j].label = `${j}分`;
-      }
-      time[i].children = children;
-    }
-    return time;
-  }, // 时分
 };

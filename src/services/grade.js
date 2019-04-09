@@ -35,3 +35,9 @@ export async function init(params) {
     }
   );
 }
+
+export async function getGradeInfoSelect() {
+  return request(`${globalData.baseUrl + globalData.projectName}/grade/getGradeInfoSelect`, {
+    method: globalData.GET,
+  });
+}

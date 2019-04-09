@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Table, Button, message, Popconfirm, Divider, Select, Cascader } from 'antd';
+import { Table, Button, message, Popconfirm, Divider, Select, TimePicker } from 'antd';
+import moment from 'moment';
 import isEqual from 'lodash/isEqual';
 import styles from './style.less';
 
@@ -54,7 +55,7 @@ class TableForm extends PureComponent {
   };
 
   newMember = () => {
-    const { data } = this.state;
+    const { data = [] } = this.state;
     const newData = data.map(item => ({ ...item }));
     newData.push({
       key: `NEW_TEMP_ID_${this.index}`,
@@ -82,12 +83,14 @@ class TableForm extends PureComponent {
     }
   }
 
-  handleFieldChange(value, fieldName, key) {
+  handleFieldChange(value, fieldName, key, timeString) {
     const { data } = this.state;
     const newData = data.map(item => ({ ...item }));
     const target = this.getRowByKey(key, newData);
     if (target) {
-      target[fieldName] = value;
+      if (value instanceof moment) target[fieldName] = timeString;
+      else target[fieldName] = value;
+
       this.setState({ data: newData });
     }
   }
@@ -103,7 +106,8 @@ class TableForm extends PureComponent {
         return;
       }
       const target = this.getRowByKey(key) || {};
-      if (!target.day || !target.startHour || !target.endHour) {
+      console.log(target);
+      if (!target.gradeId || target.day.length === 0 || !target.startHour || !target.endHour) {
         message.error('请填写完整信息。');
         e.target.focus();
         this.setState({
@@ -138,12 +142,39 @@ class TableForm extends PureComponent {
   }
 
   render() {
+    const { gradeSelectData = [] } = this.props;
     const columns = [
+      {
+        title: '班级',
+        dataIndex: 'gradeId',
+        key: 'gradeId',
+        width: '10%',
+        render: (text, record) => {
+          if (record.editable) {
+            return (
+              <Select
+                defaultValue={text}
+                onChange={value => this.handleFieldChange(value, 'gradeId', record.key)}
+                labelInValue
+                style={{ width: 100 }}
+                placeholder="班级"
+              >
+                {gradeSelectData.map(item => (
+                  <Option key={item.value} value={item.value}>
+                    {item.label}
+                  </Option>
+                ))}
+              </Select>
+            );
+          }
+          return text.label;
+        },
+      },
       {
         title: '星期',
         dataIndex: 'day',
         key: 'day',
-        width: '40%',
+        width: '35%',
         render: (text, record) => {
           if (record.editable) {
             return (
@@ -151,12 +182,12 @@ class TableForm extends PureComponent {
                 mode="multiple"
                 defaultValue={text}
                 onChange={value => this.handleFieldChange(value, 'day', record.key)}
-                style={{ width: 200 }}
+                style={{ width: 180 }}
                 placeholder="星期"
               >
                 {globalData.weekendData.map(item => (
-                  <Option key={item.value} value={item.value}>
-                    {item.label}
+                  <Option key={item} value={item}>
+                    {item}
                   </Option>
                 ))}
               </Select>
@@ -169,38 +200,44 @@ class TableForm extends PureComponent {
         title: '开始时间',
         dataIndex: 'startHour',
         key: 'startHour',
-        width: '22%',
+        width: '18%',
         render: (text, record) => {
           if (record.editable) {
             return (
-              <Cascader
+              <TimePicker
+                defaultValue={moment(text, 'HH:mm:ss')}
+                onChange={(value, timeString) =>
+                  this.handleFieldChange(value, 'startHour', record.key, timeString)
+                }
                 placeholder="开始时间"
-                defaultValue={text}
-                options={globalData.timeData()}
-                onChange={value => this.handleFieldChange(value, 'startHour', record.key)}
+                style={{ width: '100%' }}
+                getPopupContainer={trigger => trigger.parentNode}
               />
             );
           }
-          return text.join(':');
+          return text;
         },
       },
       {
         title: '结束时间',
         dataIndex: 'endHour',
         key: 'endHour',
-        width: '22%',
+        width: '18%',
         render: (text, record) => {
           if (record.editable) {
             return (
-              <Cascader
+              <TimePicker
+                defaultValue={moment(text, 'HH:mm:ss')}
+                onChange={(value, timeString) =>
+                  this.handleFieldChange(value, 'endHour', record.key, timeString)
+                }
                 placeholder="结束时间"
-                defaultValue={text}
-                options={globalData.timeData()}
-                onChange={value => this.handleFieldChange(value, 'endHour', record.key)}
+                style={{ width: '100%' }}
+                getPopupContainer={trigger => trigger.parentNode}
               />
             );
           }
-          return text.join(':');
+          return text;
         },
       },
       {

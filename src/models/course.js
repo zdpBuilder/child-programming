@@ -1,19 +1,19 @@
-import * as classroomService from '@/services/classroom';
-import { getSchoolInfoSelect } from '@/services/school';
+import * as courseService from '@/services/course';
+import { getGradeInfoSelect } from '@/services/grade';
 import globalData from '@/utils/globalData';
 
 export default {
-  namespace: 'classroom',
+  namespace: 'course',
 
   state: {
     list: [],
     pagination: globalData.initPagination,
-    schoolSelectData: [],
+    gradeSelectData: [],
   },
 
   effects: {
     *fetchList({ payload }, { call, put }) {
-      const response = yield call(classroomService.getList, payload);
+      const response = yield call(courseService.getList, payload);
       yield put({
         type: 'save',
         payload: {
@@ -25,18 +25,18 @@ export default {
       });
     },
 
-    *fetchSchoolInfoList({ payload }, { call, put }) {
-      const response = yield call(getSchoolInfoSelect, payload);
+    *fetchGradeInfoList({ payload }, { call, put }) {
+      const response = yield call(getGradeInfoSelect, payload);
       yield put({
         type: 'save',
         payload: {
-          schoolSelectData: response || [],
+          gradeSelectData: response || [],
         },
       });
     },
 
     *addAndUpdate({ payload, callback }, { call, put }) {
-      const response = yield call(classroomService.save, payload);
+      const response = yield call(courseService.save, payload);
       yield put({
         type: 'save',
       });
@@ -44,7 +44,7 @@ export default {
     },
 
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(classroomService.deleteBatch, payload);
+      const response = yield call(courseService.deleteBatch, payload);
       yield put({
         type: 'save',
         payload: response,

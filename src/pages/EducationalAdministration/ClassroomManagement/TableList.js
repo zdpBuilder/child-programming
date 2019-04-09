@@ -1,25 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Modal,
-  message,
-  Divider,
-  Select,
-  InputNumber,
-} from 'antd';
+import { Row, Col, Card, Form, Input, Button, Modal, message, Divider, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
 
 import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
+import regExp from '@/utils/regExp';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -105,24 +94,27 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="教室编号" {...formLayout}>
         {getFieldDecorator('code', {
-          rules: [{ required: true, type: 'number', message: '请输入三位数字教室编号！' }],
+          rules: [
+            {
+              required: true,
+              message: '请输入教室编号，不得超过十位！',
+              pattern: regExp.positiveIntegerPattern,
+            },
+          ],
           initialValue: current.code,
-        })(
-          <InputNumber
-            style={{ width: 255 }}
-            min={100}
-            max={999}
-            placeholder="请输入三位数字教室编号"
-          />
-        )}
+        })(<Input placeholder="请输入教室编号" />)}
       </FormItem>
       <FormItem label="最大容量" {...formLayout}>
         {getFieldDecorator('maxCapacity', {
           rules: [
-            { required: true, type: 'number', message: '请输入最大容量,不得超过1000！', max: 50 },
+            {
+              required: true,
+              message: '请输入最大容量,不得超过十位！',
+              pattern: regExp.positiveIntegerPattern,
+            },
           ],
           initialValue: current.maxCapacity,
-        })(<InputNumber style={{ width: 255 }} min={0} max={1000} placeholder="请输入最大容量" />)}
+        })(<Input placeholder="请输入最大容量" />)}
       </FormItem>
       <FormItem label="备注" {...formLayout}>
         {getFieldDecorator('comment', {

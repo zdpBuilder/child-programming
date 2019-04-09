@@ -12,7 +12,6 @@ import {
   message,
   Divider,
   Select,
-  InputNumber,
   Cascader,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
@@ -21,6 +20,7 @@ import DescriptionList from '@/components/DescriptionList';
 
 import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
+import regExp from '@/utils/regExp';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -46,7 +46,10 @@ const ShowViewModal = props => {
     >
       <DescriptionList size="small" style={{ marginBottom: 32, marginLeft: 50 }} col={1}>
         <Description term="校区名称">{current.schoolName}</Description>
-        <Description term="教室编号">{current.code}</Description>
+        <Description term="教室编号">{current.classroomCode}</Description>
+        <Description term="课程名称">{current.courseName}</Description>
+        <Description term="老师名称">{current.teacherName}</Description>
+        <Description term="班级名称">{current.name}</Description>
         <Description term="最大容量">{current.maxCapacity}</Description>
         <Description term="备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注">
           {current.description}
@@ -125,10 +128,14 @@ const CreateForm = Form.create()(props => {
       <FormItem label="最大容量" {...formLayout}>
         {getFieldDecorator('maxCapacity', {
           rules: [
-            { required: true, type: 'number', message: '请输入最大容量,不得超过1000！', max: 50 },
+            {
+              required: true,
+              message: '请输入最大容量,不得超过十位！',
+              pattern: regExp.positiveIntegerPattern,
+            },
           ],
           initialValue: current.maxCapacity,
-        })(<InputNumber style={{ width: 255 }} min={0} max={1000} placeholder="请输入最大容量" />)}
+        })(<Input placeholder="请输入最大容量" />)}
       </FormItem>
       <FormItem label="描述" {...formLayout}>
         {getFieldDecorator('description', {
@@ -364,11 +371,16 @@ class TableList extends PureComponent {
 
   // 搜索
   renderSimpleForm() {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="班级名称" />
+            <FormItem label="班级名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>

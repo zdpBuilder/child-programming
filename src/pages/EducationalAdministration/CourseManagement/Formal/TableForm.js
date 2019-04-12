@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Table, Button, message, Popconfirm, Divider, Select, TimePicker } from 'antd';
+import { Table, Button, message, Popconfirm, Divider, Select, TimePicker, DatePicker } from 'antd';
 import moment from 'moment';
 import isEqual from 'lodash/isEqual';
 import styles from './style.less';
@@ -7,6 +7,9 @@ import styles from './style.less';
 import globalData from '@/utils/globalData';
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
+const dateFormat = 'YYYY-MM-DD';
+const timeFormat = 'HH:mm:ss';
 
 class TableForm extends PureComponent {
   index = 0;
@@ -59,9 +62,10 @@ class TableForm extends PureComponent {
     const newData = data.map(item => ({ ...item }));
     newData.push({
       key: `NEW_TEMP_ID_${this.index}`,
+      gradeId: {},
       day: [],
-      startHour: [],
-      endHour: [],
+      dateRange: {},
+      timeRange: {},
       editable: true,
       isNew: true,
     });
@@ -83,14 +87,24 @@ class TableForm extends PureComponent {
     }
   }
 
-  handleFieldChange(value, fieldName, key, timeString) {
+  handleFieldChange(value, fieldName, key) {
     const { data } = this.state;
     const newData = data.map(item => ({ ...item }));
     const target = this.getRowByKey(key, newData);
     if (target) {
-      if (value instanceof moment) target[fieldName] = timeString;
+      // 时间处理
+      if (fieldName === 'startHour' || fieldName === 'endHour')
+        target.timeRange[fieldName] = value.format(timeFormat);
+      // 日期
+      else if (fieldName === 'dateRange')
+        target[fieldName] =
+          value.length === 2
+            ? {
+                startDate: value[0].format(dateFormat),
+                endDate: value[1].format(dateFormat),
+              }
+            : {};
       else target[fieldName] = value;
-
       this.setState({ data: newData });
     }
   }
@@ -107,9 +121,22 @@ class TableForm extends PureComponent {
       }
       const target = this.getRowByKey(key) || {};
       console.log(target);
-      if (!target.gradeId || target.day.length === 0 || !target.startHour || !target.endHour) {
-        message.error('请填写完整信息。');
+      if (
+        !target.gradeId ||
+        !target.dateRange.length === 0 ||
+        target.day.length === 0 ||
+        !target.timeRange.startHour ||
+        !target.timeRange.endHour
+      ) {
+        message.error('请填写完整信息！');
         e.target.focus();
+        this.setState({
+          loading: false,
+        });
+        return;
+      }
+      if (target.timeRange.startHour >= target.timeRange.endHour) {
+        message.error('请输入正确起止时间！');
         this.setState({
           loading: false,
         });
@@ -171,10 +198,43 @@ class TableForm extends PureComponent {
         },
       },
       {
+        title: '起止日期',
+        dataIndex: 'dateRange',
+        key: 'dateRange',
+        width: '28%',
+        render: (text, record) => {
+          if (record.editable) {
+            if (text.startDate && text.endDate) {
+              return (
+                <RangePicker
+                  defaultValue={[
+                    moment(text.startDate, dateFormat),
+                    moment(text.endDate, dateFormat),
+                  ]}
+                  onChange={value => this.handleFieldChange(value, 'dateRange', record.key)}
+                  placeholder={['开始日期', '结束日期']}
+                  style={{ width: '100%' }}
+                  getPopupContainer={trigger => trigger.parentNode}
+                />
+              );
+            }
+            return (
+              <RangePicker
+                onChange={value => this.handleFieldChange(value, 'dateRange', record.key)}
+                placeholder={['开始日期', '结束日期']}
+                style={{ width: '100%' }}
+                getPopupContainer={trigger => trigger.parentNode}
+              />
+            );
+          }
+          return `${text.startDate}~${text.endDate}`;
+        },
+      },
+      {
         title: '星期',
         dataIndex: 'day',
         key: 'day',
-        width: '35%',
+        width: '25%',
         render: (text, record) => {
           if (record.editable) {
             return (
@@ -197,47 +257,54 @@ class TableForm extends PureComponent {
         },
       },
       {
-        title: '开始时间',
-        dataIndex: 'startHour',
-        key: 'startHour',
+        title: '起止时间',
+        dataIndex: 'timeRange',
+        key: 'timeRange',
         width: '18%',
         render: (text, record) => {
           if (record.editable) {
+            if (text.startHour && text.endHour) {
+              return (
+                <div>
+                  <TimePicker
+                    defaultValue={moment(text.startHour, timeFormat)}
+                    onChange={value => this.handleFieldChange(value, 'startHour', record.key)}
+                    size="small"
+                    placeholder="开始时间"
+                    style={{ width: '100%' }}
+                    getPopupContainer={trigger => trigger.parentNode}
+                  />
+                  <TimePicker
+                    defaultValue={moment(text.endHour, timeFormat)}
+                    onChange={value => this.handleFieldChange(value, 'endHour', record.key)}
+                    size="small"
+                    placeholder="结束时间"
+                    style={{ width: '100%' }}
+                    getPopupContainer={trigger => trigger.parentNode}
+                  />
+                </div>
+              );
+            }
             return (
-              <TimePicker
-                defaultValue={moment(text, 'HH:mm:ss')}
-                onChange={(value, timeString) =>
-                  this.handleFieldChange(value, 'startHour', record.key, timeString)
-                }
-                placeholder="开始时间"
-                style={{ width: '100%' }}
-                getPopupContainer={trigger => trigger.parentNode}
-              />
+              <div>
+                <TimePicker
+                  onChange={value => this.handleFieldChange(value, 'startHour', record.key)}
+                  size="small"
+                  placeholder="开始时间"
+                  style={{ width: '100%' }}
+                  getPopupContainer={trigger => trigger.parentNode}
+                />
+                <TimePicker
+                  onChange={value => this.handleFieldChange(value, 'endHour', record.key)}
+                  size="small"
+                  placeholder="结束时间"
+                  style={{ width: '100%' }}
+                  getPopupContainer={trigger => trigger.parentNode}
+                />
+              </div>
             );
           }
-          return text;
-        },
-      },
-      {
-        title: '结束时间',
-        dataIndex: 'endHour',
-        key: 'endHour',
-        width: '18%',
-        render: (text, record) => {
-          if (record.editable) {
-            return (
-              <TimePicker
-                defaultValue={moment(text, 'HH:mm:ss')}
-                onChange={(value, timeString) =>
-                  this.handleFieldChange(value, 'endHour', record.key, timeString)
-                }
-                placeholder="结束时间"
-                style={{ width: '100%' }}
-                getPopupContainer={trigger => trigger.parentNode}
-              />
-            );
-          }
-          return text;
+          return `${text.startHour}~${text.endHour}`;
         },
       },
       {

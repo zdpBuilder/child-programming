@@ -10,6 +10,7 @@ import styles from '@/layouts/TableList.less';
 
 import globalData from '@/utils/globalData';
 import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
+import regExp from '@/utils/regExp';
 import TableForm from './TableForm';
 
 const FormItem = Form.Item;
@@ -61,18 +62,46 @@ const CreateForm = Form.create()(props => {
     form: { getFieldDecorator },
   } = props;
 
+  // 处理参数
+  // 未校验课时数量
+  const handleFormData = fieldsValue => {
+    // 处理时间安排
+    const { timeSchedule } = fieldsValue;
+    const timeScheduleArray = [];
+    timeSchedule.forEach(value => {
+      const data = {
+        ...value,
+        gradeId: value.gradeId.key,
+      };
+      const { key, editable, ...otherValues } = data;
+      timeScheduleArray.push(otherValues);
+    });
+
+    const formValues = {
+      ...fieldsValue,
+      timeSchedule: timeScheduleArray,
+      photoUrl: '',
+      periodCount: parseInt(fieldsValue.periodCount, 10),
+      maxCapacity: parseInt(fieldsValue.maxCapacity, 10),
+    };
+    console.log(JSON.stringify(formValues));
+    return formValues;
+  };
+
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      form.resetFields();
-      handleAddAndEdit(fieldsValue);
+      // 处理参数
+      const formData = handleFormData(fieldsValue);
+      // form.resetFields();
+      handleAddAndEdit(formData);
     });
   };
 
   return (
     <Modal
       destroyOnClose
-      width={918}
+      width={1018}
       title={`课程${current.id ? '编辑' : '添加'}`}
       visible={modalVisible}
       onOk={okHandle}
@@ -101,13 +130,31 @@ const CreateForm = Form.create()(props => {
           initialValue: current.money,
         })(<InputNumber style={{ width: 255 }} min={0} placeholder="请输入价格" />)}
       </FormItem>
+      <FormItem label="课时数量" {...formLayout}>
+        {getFieldDecorator('periodCount', {
+          rules: [
+            {
+              required: true,
+              message: '请输入课时数量,不得超过十位！',
+              pattern: regExp.positiveIntegerPattern,
+            },
+          ],
+          initialValue: current.periodCount,
+        })(<Input placeholder="请输入课时数量" />)}
+      </FormItem>
       <FormItem label="联系电话" {...formLayout}>
         {getFieldDecorator('telephone', {
           rules: [{ required: true, message: '请输入联系电话！', max: 50 }],
           initialValue: current.telephone,
         })(<Input placeholder="请输入联系电话" />)}
       </FormItem>
-      <FormItem label="宣传图片" {...formLayout}>
+      <FormItem label="简介" {...formLayout}>
+        {getFieldDecorator('introduction', {
+          rules: [{ required: true, message: '请输入至少五个字符的简介！', min: 5, max: 500 }],
+          initialValue: current.introduction,
+        })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
+      </FormItem>
+      <FormItem label="图片介绍" {...formLayout}>
         <UpLoadPicExample
           props={props}
           formFieldPropsKey="photoUrl"
@@ -115,14 +162,9 @@ const CreateForm = Form.create()(props => {
           fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.course}
         />
       </FormItem>
-      <FormItem label="简介" {...formLayout}>
-        {getFieldDecorator('introduction', {
-          rules: [{ message: '请输入至少五个字符的简介！', min: 5, max: 500 }],
-          initialValue: current.introduction,
-        })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
-      </FormItem>
       <Card title="时间安排" bordered={false}>
-        {getFieldDecorator('times', {
+        {getFieldDecorator('timeSchedule', {
+          rules: [{ required: true }],
           initialValue: current.tableData,
         })(<TableForm gradeSelectData={gradeSelectData} />)}
       </Card>

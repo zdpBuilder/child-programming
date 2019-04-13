@@ -1,6 +1,6 @@
-/* eslint-disable react/destructuring-assignment,react/require-default-props,object-shorthand */
+/* eslint-disable react/destructuring-assignment,react/require-default-props,object-shorthand,array-callback-return,no-empty */
 import React from 'react';
-import { Modal, Upload, Icon, Input, message } from 'antd';
+import { Icon, Input, message, Modal, Upload } from 'antd';
 import PropTypes from 'prop-types';
 import globalData from '@/utils/globalData';
 
@@ -21,10 +21,13 @@ class UpLoadPicExample extends React.Component {
         fileList: [
           {
             uid: '-1',
-            name: 'xxx.png',
+            name: '',
             status: 'done',
             url: globalData.photoBaseUrl + this.props.defaultImgUrl,
-            response: this.props.defaultImgUrl,
+            response: {
+              status: 200,
+              msg: this.props.defaultImgUrl,
+            },
           },
         ],
       });
@@ -42,18 +45,6 @@ class UpLoadPicExample extends React.Component {
 
   handleChange = ({ fileList }) => this.setState({ fileList });
 
-  beforeUpload = file => {
-    const isJPG = file.type === 'image/jpeg';
-    if (!isJPG) {
-      message.error('只允许上传JPG');
-    }
-    const isLt2M = file.size / 1024 / 1024 < globalData.upLoadImgSetting.maxSize;
-    if (!isLt2M) {
-      message.error('图片大小不能超过2MB');
-    }
-    return isJPG && isLt2M;
-  };
-
   render() {
     const { previewVisible, previewImage, fileList } = this.state;
     const {
@@ -65,22 +56,37 @@ class UpLoadPicExample extends React.Component {
         <div className="ant-upload-text">上传图片</div>
       </div>
     );
+    // 提示信息
+    if (fileList.length > 0 && fileList[0].status === 'done') {
+      if (fileList[0].response.status === '0' || fileList[0].response.status === 0) {
+        message.error(fileList[0].response.msg);
+        this.setState({ fileList: [] });
+      }
+    } else if (fileList.length > 0 && fileList[0].status === 'error') {
+      message.error('上传失败');
+      this.setState({ fileList: [] });
+    }
+
     return (
       <div className="clearfix">
         {getFieldDecorator(this.props.formFieldPropsKey, {
-          initialValue: this.state.fileList.length > 0 ? this.state.fileList[0].response : [],
+          initialValue:
+            this.state.fileList.length > 0 && this.state.fileList[0].status === 'done'
+              ? this.state.fileList[0].response.msg
+              : [],
         })(<Input type="hidden" />)}
 
         <Upload
           action={globalData.upLoadImgSetting.url + this.props.fileUpLoadDirectoryName}
           listType="picture-card"
           fileList={fileList}
+          accept={globalData.upLoadImgSetting.type}
           onPreview={this.handlePreview}
           onChange={this.handleChange}
-          beforeUpload={this.beforeUpload}
         >
           {fileList.length > 0 ? null : uploadButton}
         </Upload>
+
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>

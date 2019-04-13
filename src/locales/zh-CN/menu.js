@@ -38,6 +38,8 @@ export default {
   'menu.portalManagement': '门户网站管理',
   'menu.portalManagement.worksManagement': '作品管理',
   'menu.portalManagement.materialManagement': '资料管理',
+  'menu.portalManagement.materialManagement.materialContentManagement': '资料内容管理',
+  'menu.portalManagement.materialManagement.materialTypeManagement': '资料类别管理',
   'menu.portalManagement.paymentRecord': '缴费记录管理',
   'menu.portalManagement.privilegeManagement': ' 权限管理',
   'menu.educationalAdministration': '教务管理',

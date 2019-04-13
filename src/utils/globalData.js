@@ -15,11 +15,17 @@ export default {
   upLoadImgSetting: {
     url: 'http://localhost:8080/child-programming-background/upload/uploadFile?businessType=',
     maxSize: 2, // MB
+    type: 'image/*,.pdf',
+  },
+  upLoadFileSetting: {
+    maxSize: 1024, // MB
+    type: 'video/*,image/*,.pdf,.doc,.docx,.zip', // 文件格式
   },
   fileUpLoadDirectoryName: {
     student: 'student',
     teacher: 'teacher',
     course: 'course',
+    material: 'material',
   },
   photoBaseUrl: 'http://localhost:8080/child-programming-background/upload_files/', // 图片访问基础路径
   weekendData: ['一', '二', '三', '四', '五', '六', '日'], // 一周

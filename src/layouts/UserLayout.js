@@ -6,23 +6,24 @@ import GlobalFooter from '@/components/GlobalFooter';
 import styles from './UserLayout.less';
 import logo from '../assets/logo.png';
 
-const links = [
-  {
-    key: 'help',
-    title: formatMessage({ id: 'layout.user.link.help' }),
-    href: '',
-  },
-  {
-    key: 'privacy',
-    title: formatMessage({ id: 'layout.user.link.privacy' }),
-    href: '',
-  },
-  {
-    key: 'terms',
-    title: formatMessage({ id: 'layout.user.link.terms' }),
-    href: '',
-  },
-];
+const links = [];
+// const links = [
+//   {
+//     key: 'help',
+//     title: formatMessage({ id: 'layout.user.link.help' }),
+//     href: '',
+//   },
+//   {
+//     key: 'privacy',
+//     title: formatMessage({ id: 'layout.user.link.privacy' }),
+//     href: '',
+//   },
+//   {
+//     key: 'terms',
+//     title: formatMessage({ id: 'layout.user.link.terms' }),
+//     href: '',
+//   },
+// ];
 
 const copyright = (
   <Fragment>
@@ -53,10 +54,10 @@ class UserLayout extends React.PureComponent {
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>小童编程</span>
+                <span className={styles.title}>BestCoding贝壳编程</span>
               </Link>
             </div>
-            <div className={styles.desc}>小童编程后台管理系统,不是每一种编程叫小童编程！</div>
+            <div className={styles.desc}>贝壳编程后台管理系统,不是每一种编程叫贝壳编程！</div>
           </div>
           {children}
         </div>

@@ -14,16 +14,14 @@ export default [
   // app
   {
     path: '/',
-
     component: '../layouts/BasicLayout',
     Routes: ['src/pages/Authorized'],
     authority: ['admin', 'user'],
     routes: [
+      // 登陆
       { path: '/', redirect: '/user/login' },
       {
         path: '/dashboard',
-        Routes: ['src/pages/Authorized'],
-        authority: ['admin', 'user'],
         name: 'dashboard',
         icon: 'dashboard',
         routes: [
@@ -48,18 +46,7 @@ export default [
           {
             path: '/webAdmin/materialManagement',
             name: 'materialManagement',
-            routes: [
-              {
-                path: '/webAdmin/materialManagement/materialTypeManagement',
-                name: 'materialTypeManagement',
-                component: './PortalManagement/MaterialManagement/MaterialTypeManagement/TableList',
-              },
-              {
-                path: '/webAdmin/materialManagement/materialContentManagement',
-                name: 'materialContentManagement',
-                component: './PortalManagement/MaterialManagement/MaterialContentManagement/TableList',
-              },
-            ],
+            component: './PortalManagement/materialManagement/CardList',
           },
           {
             path: '/webAdmin/paymentRecord',

@@ -46,7 +46,18 @@ export default [
           {
             path: '/webAdmin/materialManagement',
             name: 'materialManagement',
-            component: './PortalManagement/materialManagement/CardList',
+            routes: [
+              {
+                path: '/webAdmin/materialManagement/materialTypeManagement',
+                name: 'materialTypeManagement',
+                component: './PortalManagement/MaterialManagement/MaterialTypeManagement/TableList',
+              },
+              {
+                path: '/webAdmin/materialManagement/materialContentManagement',
+                name: 'materialContentManagement',
+                component: './PortalManagement/MaterialManagement/MaterialContentManagement/TableList',
+              },
+            ],
           },
           {
             path: '/webAdmin/paymentRecord',

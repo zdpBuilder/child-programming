@@ -60,5 +60,19 @@ export default {
         ...action.payload,
       };
     },
+    changeGradeSelectDisabled(state, action) {
+      const { preGradeId, nextGradeId } = action.payload;
+      const { gradeSelectData = [] } = state;
+      gradeSelectData.forEach(element => {
+        if (element.value === preGradeId || element.value === nextGradeId) {
+          element.disabled = !element.disabled;
+          return;
+        }
+      });
+      return {
+        ...state,
+        ...gradeSelectData,
+      };
+    },
   },
 };

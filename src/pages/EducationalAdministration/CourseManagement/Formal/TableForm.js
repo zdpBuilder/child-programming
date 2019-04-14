@@ -122,8 +122,8 @@ class TableForm extends PureComponent {
       const target = this.getRowByKey(key) || {};
       console.log(target);
       if (
-        !target.gradeId ||
-        !target.dateRange.length === 0 ||
+        !target.gradeId.key ||
+        target.dateRange.length === 0 ||
         target.day.length === 0 ||
         !target.timeRange.startHour ||
         !target.timeRange.endHour

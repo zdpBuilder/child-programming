@@ -58,34 +58,24 @@ const CreateForm = Form.create()(props => {
     handleAddModalVisible,
     current = {},
     gradeSelectData,
-    handleGradeSelectDisabled,
   } = props;
   const {
     form: { getFieldDecorator },
   } = props;
 
   // 处理参数
-  // TODO 未校验不保存时间安排，直接新增的空字段
+  // 未校验课时数量
   const handleFormData = fieldsValue => {
     // 处理时间安排
     const { timeSchedule } = fieldsValue;
     const timeScheduleArray = [];
-    timeSchedule.forEach(item => {
+    timeSchedule.forEach(value => {
       const data = {
-        ...item,
-        gradeId: item.gradeId.key,
+        ...value,
+        gradeId: value.gradeId.key,
       };
-      const { key, editable, childrenData, ...otherValues } = data;
-      // 处理子元素属性
-      const childrenDataArray = [];
-      childrenData.forEach(element => {
-        const { key, editable, ...otherChildrenValues } = element;
-        childrenDataArray.push(otherChildrenValues);
-      });
-      timeScheduleArray.push({
-        ...otherValues,
-        childrenData: childrenDataArray,
-      });
+      const { key, editable, ...otherValues } = data;
+      timeScheduleArray.push(otherValues);
     });
 
     const formValues = {
@@ -102,7 +92,6 @@ const CreateForm = Form.create()(props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log(JSON.stringify(fieldsValue));
       // 处理参数
       const formData = handleFormData(fieldsValue);
       // form.resetFields();
@@ -178,12 +167,7 @@ const CreateForm = Form.create()(props => {
         {getFieldDecorator('timeSchedule', {
           rules: [{ required: true }],
           initialValue: current.tableData,
-        })(
-          <NestTableForm
-            gradeSelectData={gradeSelectData}
-            handleGradeSelectDisabled={handleGradeSelectDisabled}
-          />
-        )}
+        })(<NestTableForm gradeSelectData={gradeSelectData} />)}
       </Card>
     </Modal>
   );
@@ -430,18 +414,6 @@ class TableList extends PureComponent {
     }
   };
 
-  // 选择班级之后禁用处理
-  handleGradeSelectDisabled = (preGradeId, nextGradeId) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'course/changeGradeSelectDisabled',
-      payload: {
-        preGradeId,
-        nextGradeId,
-      },
-    });
-  };
-
   // 搜索
   renderSimpleForm() {
     const {
@@ -514,7 +486,6 @@ class TableList extends PureComponent {
           modalVisible={modalVisible}
           current={current}
           gradeSelectData={gradeSelectData}
-          handleGradeSelectDisabled={this.handleGradeSelectDisabled}
         />
         <ShowViewModal
           showModalVisible={showModalVisible}

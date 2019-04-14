@@ -1,14 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import {
-  Table,
-  Button,
-  message,
-  Popconfirm,
-  Divider,
-  Select,
-  TimePicker,
-  DatePicker,
-} from 'antd';
+import { Table, Button, message, Popconfirm, Divider, Select, TimePicker, DatePicker } from 'antd';
 import moment from 'moment';
 import isEqual from 'lodash/isEqual';
 import styles from './style.less';
@@ -73,10 +64,10 @@ class NestTableForm extends PureComponent {
     const keyArray = key.split('-');
     const parentData = data.filter(item => item.key === keyArray[0])[0];
     return parentData.childrenData.filter(item => item.key.split('-')[1] === keyArray[1])[0];
-  }
+  };
 
   // 是否含有分隔符 -
-  containBar = key => key ? (key.indexOf('-') !== -1) : false
+  containBar = key => (key ? key.indexOf('-') !== -1 : false);
 
   toggleEditable = (e, key) => {
     e.preventDefault();
@@ -95,7 +86,7 @@ class NestTableForm extends PureComponent {
 
   disabledDate = current =>
     // Can not select days before today and today
-    current && current < moment().endOf('day')
+    current && current < moment().endOf('day');
 
   // 父表格添加一行
   newMember = () => {
@@ -125,18 +116,17 @@ class NestTableForm extends PureComponent {
     const newchildren = childrenData.map(item => ({ ...item }));
     newchildren.push({
       day: [],
-      editable: true,
       isNew: true,
+      editable: true,
       key: `${parentRecordKey}-${childrenColumnIdPrefix}_${this.childrenIndex}`,
       timeRange: {},
-
     });
     this.childrenIndex += 1;
     const newData = data.map(item => ({ ...item }));
     newData.forEach(item => {
       if (item.key === parentRecordKey) {
-        item.childrenData = newchildren;
-
+        const element = item;
+        element.childrenData = newchildren;
       }
     });
     this.setState({ data: newData });
@@ -161,8 +151,9 @@ class NestTableForm extends PureComponent {
                 endDate: value[1].format(dateFormat),
               }
             : {};
- }
-      else { target[fieldName] = value; }
+      } else {
+        target[fieldName] = value;
+      }
       this.setState({ data: newData });
       if (fieldName === 'gradeId') {
         this.nextGradeId = target.gradeId.key;
@@ -203,13 +194,12 @@ class NestTableForm extends PureComponent {
         }
       } else if (!target.gradeId.key || !target.dateRange.startDate) {
         // 父表格校验
-          message.error('请填写完整信息！');
-          e.target.focus();
-          this.setState({
-            parentTableLoading: false,
-          });
-          return;
-
+        message.error('请填写完整信息！');
+        e.target.focus();
+        this.setState({
+          parentTableLoading: false,
+        });
+        return;
       }
       delete target.isNew;
       this.toggleEditable(e, key);
@@ -270,15 +260,14 @@ class NestTableForm extends PureComponent {
       newData = data.map(item => ({ ...item }));
       newData.forEach(item => {
         if (item.key === keyArray[0]) {
-          item.childrenData = newChildrenData;
-
+          const element = item;
+          element.childrenData = newChildrenData;
         }
       });
     }
     this.setState({ data: newData });
     onChange(newData);
   }
-  
 
   // 子表格
   expandedRowRender(parentRecord) {

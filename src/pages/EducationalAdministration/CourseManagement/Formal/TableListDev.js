@@ -11,7 +11,6 @@ import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
 import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
 import regExp from '@/utils/regExp';
-import TableForm from './TableForm';
 import NestTableForm from './NestTableForm';
 
 const FormItem = Form.Item;

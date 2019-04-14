@@ -11,7 +11,6 @@ import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
 import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
 import regExp from '@/utils/regExp';
-import TableForm from './TableForm';
 import NestTableForm from './NestTableForm';
 
 const FormItem = Form.Item;
@@ -79,7 +78,7 @@ const CreateForm = Form.create()(props => {
       // 处理子元素属性
       const childrenDataArray = [];
       childrenData.forEach(element => {
-        const { key, editable, ...otherChildrenValues } = element;
+        const { childrenKey, childrenEditable, ...otherChildrenValues } = element;
         childrenDataArray.push(otherChildrenValues);
       });
       timeScheduleArray.push({

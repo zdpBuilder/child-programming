@@ -57,7 +57,6 @@ const CreateForm = Form.create()(props => {
     handleAddModalVisible,
     current = {},
     gradeSelectData,
-    handleGradeSelectDisabled,
   } = props;
   const {
     form: { getFieldDecorator },
@@ -86,7 +85,6 @@ const CreateForm = Form.create()(props => {
         childrenData: childrenDataArray,
       });
     });
-
     const formValues = {
       ...fieldsValue,
       timeSchedule: timeScheduleArray,
@@ -94,14 +92,52 @@ const CreateForm = Form.create()(props => {
       periodCount: parseInt(fieldsValue.periodCount, 10),
       maxCapacity: parseInt(fieldsValue.maxCapacity, 10),
     };
-    console.log(JSON.stringify(formValues));
     return formValues;
+  };
+
+  // 校验时间安排数据合法性
+  const validateFormData = fieldsValue => {
+    // 属性为空检测
+
+    const { periodCount, timeSchedule = [] } = fieldsValue;
+
+    // 班级重复校验
+
+    // 课时校验
+    if (timeSchedule.length > 0) {
+      const periodDetectResult = timeSchedule.every(item => {
+        const { childrenData = [] } = item;
+        let count = 0;
+        if (childrenData.length > 0) {
+          childrenData.forEach(childrenItem => {
+            count += childrenItem.day.length;
+          });
+        }
+        const startDate = moment(item.dateRange.startDate);
+        const endDate = moment(item.dateRange.endDate);
+        // moment.diff 少一周
+        const weeks = endDate.diff(startDate, 'weeks') + 1;
+        count *= weeks;
+        if (count > periodCount) {
+          message.error(`${item.gradeId.label}课时比规定多${count - periodCount}`);
+          return false;
+        }
+        if (count < periodCount) {
+          message.error(`${item.gradeId.label}课时比规定少${periodCount - count}`);
+          return false;
+        }
+        return true;
+      });
+      return periodDetectResult;
+    }
+    return true;
   };
 
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log(JSON.stringify(fieldsValue));
+      const result = validateFormData(fieldsValue);
+      if (!result) return;
       // 处理参数
       const formData = handleFormData(fieldsValue);
       // form.resetFields();
@@ -176,13 +212,9 @@ const CreateForm = Form.create()(props => {
       <Card title="时间安排" bordered={false}>
         {getFieldDecorator('timeSchedule', {
           rules: [{ required: true }],
-          initialValue: current.tableData,
-        })(
-          <NestTableForm
-            gradeSelectData={gradeSelectData}
-            handleGradeSelectDisabled={handleGradeSelectDisabled}
-          />
-        )}
+          initialValue: current.timeSchedule,
+          message: '请填写时间安排！',
+        })(<NestTableForm gradeSelectData={gradeSelectData} />)}
       </Card>
     </Modal>
   );
@@ -316,7 +348,13 @@ class TableList extends PureComponent {
   // 添加弹出框
   handleAddModalVisible = flag => {
     if (flag) {
-      this.fetchGradeData();
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'course/fetchGradeInfoList',
+        payload: {
+          gradeIds: null,
+        },
+      });
     }
     this.setState({
       modalVisible: !!flag,
@@ -327,20 +365,26 @@ class TableList extends PureComponent {
   //  编辑弹出框
   handleEditModalVisible = (flag, item) => {
     if (flag) {
-      this.fetchGradeData();
+      const gradeIdArray = [];
+      item.timeSchedule.forEach(element => {
+        gradeIdArray.push(element.gradeId);
+      });
+      const { dispatch } = this.props;
+      // 班级信息
+      dispatch({
+        type: 'course/fetchGradeInfoList',
+        payload: {
+          gradeIds: gradeIdArray ? gradeIdArray.join(',') : null,
+        },
+        // 数据加载后，再渲染页面
+        callback: () => {
+          this.setState({
+            modalVisible: !!flag,
+            current: item,
+          });
+        },
+      });
     }
-    this.setState({
-      modalVisible: !!flag,
-      current: item,
-    });
-  };
-
-  // 班级信息
-  fetchGradeData = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'course/fetchGradeInfoList',
-    });
   };
 
   // 添加、编辑处理
@@ -429,18 +473,6 @@ class TableList extends PureComponent {
     }
   };
 
-  // 选择班级之后禁用处理
-  handleGradeSelectDisabled = (preGradeId, nextGradeId) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'course/changeGradeSelectDisabled',
-      payload: {
-        preGradeId,
-        nextGradeId,
-      },
-    });
-  };
-
   // 搜索
   renderSimpleForm() {
     const {
@@ -475,7 +507,6 @@ class TableList extends PureComponent {
       loading,
     } = this.props;
     const { selectedRows, modalVisible, current, showModalVisible } = this.state;
-
     const parentMethods = {
       handleAddAndEdit: this.handleAddAndEdit,
       handleAddModalVisible: this.handleAddModalVisible,
@@ -513,7 +544,6 @@ class TableList extends PureComponent {
           modalVisible={modalVisible}
           current={current}
           gradeSelectData={gradeSelectData}
-          handleGradeSelectDisabled={this.handleGradeSelectDisabled}
         />
         <ShowViewModal
           showModalVisible={showModalVisible}

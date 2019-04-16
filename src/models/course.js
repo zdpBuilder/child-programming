@@ -25,7 +25,7 @@ export default {
       });
     },
 
-    *fetchGradeInfoList({ payload }, { call, put }) {
+    *fetchGradeInfoList({ payload, callback }, { call, put }) {
       const response = yield call(getGradeInfoSelect, payload);
       yield put({
         type: 'save',
@@ -33,6 +33,7 @@ export default {
           gradeSelectData: response || [],
         },
       });
+      if (callback) callback();
     },
 
     *addAndUpdate({ payload, callback }, { call, put }) {
@@ -58,20 +59,6 @@ export default {
       return {
         ...state,
         ...action.payload,
-      };
-    },
-    changeGradeSelectDisabled(state, action) {
-      const { preGradeId, nextGradeId } = action.payload;
-      const { gradeSelectData = [] } = state;
-      gradeSelectData.forEach(element => {
-        if (element.value === preGradeId || element.value === nextGradeId) {
-          element.disabled = !element.disabled;
-          return;
-        }
-      });
-      return {
-        ...state,
-        ...gradeSelectData,
       };
     },
   },

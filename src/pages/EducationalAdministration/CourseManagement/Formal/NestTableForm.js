@@ -20,18 +20,40 @@ class NestTableForm extends PureComponent {
 
   childrenIndex = 0;
 
-  preGradeId = -1;
-
-  nextGradeId = -1;
-
   cacheOriginData = {};
 
   constructor(props) {
     super(props);
     this.expandedRowRender = this.expandedRowRender.bind(this);
-
+    // 深复制
+    const initialData = JSON.parse(JSON.stringify(props.value || null));
+    const { gradeSelectData } = props;
+    console.log(initialData);
+    // 为元素加key
+    if (initialData) {
+      initialData.forEach(item => {
+        const element = item;
+        element.key = `${parentColumnIdPrefix}_${this.index}`;
+        this.index += 1;
+        // 调整gradeId数据结构
+        if (gradeSelectData.length > 0) {
+          const gradeSelect = gradeSelectData.filter(
+            selectItem => selectItem.value === element.gradeId
+          )[0];
+          element.gradeId = {
+            key: gradeSelect.value,
+            label: gradeSelect.label,
+          };
+        }
+        item.childrenData.forEach(childrenItem => {
+          const childrenElement = childrenItem;
+          childrenElement.key = `${element.key}-${childrenColumnIdPrefix}_${this.childrenIndex}`;
+          this.childrenIndex += 1;
+        });
+      });
+    }
     this.state = {
-      data: props.value,
+      data: initialData || [],
       parentTableLoading: false,
       /* eslint-disable-next-line react/no-unused-state */
       value: props.value,
@@ -84,9 +106,8 @@ class NestTableForm extends PureComponent {
     }
   };
 
-  disabledDate = current =>
-    // Can not select days before today and today
-    current && current < moment().endOf('day');
+  // 当前天之前禁用
+  disabledDate = current => current < moment().endOf('day');
 
   // 父表格添加一行
   newMember = () => {
@@ -140,27 +161,29 @@ class NestTableForm extends PureComponent {
     if (target) {
       // 时间处理
       if (fieldName === 'startHour' || fieldName === 'endHour') {
-        target.timeRange[fieldName] = value.format(timeFormat);
+        if (value) target.timeRange[fieldName] = value.format(timeFormat);
       }
       // 日期
+      // TODO 此处日期限制后，无法清除DateRange控件的内容
       else if (fieldName === 'dateRange') {
-        target[fieldName] =
-          value.length === 2
-            ? {
-                startDate: value[0].format(dateFormat),
-                endDate: value[1].format(dateFormat),
-              }
-            : {};
+        if (!value || value.length !== 2) return;
+
+        if (value[0].isoWeekday() !== 1) {
+          message.warning('请选择周一日期开始');
+          return;
+        }
+        if (value[1].isoWeekday() !== 7) {
+          message.warning('请选择周日日期结束');
+          return;
+        }
+        target[fieldName] = {
+          startDate: value[0].format(dateFormat),
+          endDate: value[1].format(dateFormat),
+        };
       } else {
         target[fieldName] = value;
       }
       this.setState({ data: newData });
-      if (fieldName === 'gradeId') {
-        this.nextGradeId = target.gradeId.key;
-        const { handleGradeSelectDisabled } = this.props;
-        handleGradeSelectDisabled(this.preGradeId, this.nextGradeId);
-        this.preGradeId = this.nextGradeId;
-      }
     }
   }
 
@@ -177,6 +200,7 @@ class NestTableForm extends PureComponent {
       }
       const target = this.getRowByKey(key) || {};
       // 子表格校验
+      // TODO 未校验同一天的时间范围选择
       if (this.containBar(key)) {
         if (!target.timeRange.startHour || !target.timeRange.endHour || target.day.length === 0) {
           message.error('请填写完整信息！');
@@ -192,6 +216,15 @@ class NestTableForm extends PureComponent {
           });
           return;
         }
+        // 同一天时间范围冲突校验
+        const result = this.detectDayTimeRangeConfict(key, target);
+        if (!result) {
+          message.warning('当天时间安排有冲突,无法保存!');
+          this.setState({
+            parentTableLoading: false,
+          });
+          return;
+        }
       } else if (!target.gradeId.key || !target.dateRange.startDate) {
         // 父表格校验
         message.error('请填写完整信息！');
@@ -201,15 +234,38 @@ class NestTableForm extends PureComponent {
         });
         return;
       }
+      const { data } = this.state;
       delete target.isNew;
       this.toggleEditable(e, key);
-      const { data } = this.state;
+
       const { onChange } = this.props;
       onChange(data);
-      this.setState({
-        parentTableLoading: false,
-      });
     }, 500);
+  }
+
+  // 同一天时间范围冲突校验
+  detectDayTimeRangeConfict(key, target) {
+    const keyArray = key.split('-');
+    const { childrenData = [] } = this.getRowByKey(keyArray[0]);
+    if (childrenData.length === 1) return true;
+    const { day: targeDay } = target;
+    const result = childrenData.every(children => {
+      const { day } = children;
+      return day.every(dayStr =>
+        targeDay.every(targeDayStr => {
+          if (dayStr === targeDayStr) {
+            if (
+              target.timeRange.endHour < children.timeRange.startHour ||
+              target.timeRange.startHour > children.timeRange.endHour
+            )
+              return true;
+            return false;
+          }
+          return true;
+        })
+      );
+    });
+    return result;
   }
 
   cancel(e, key) {
@@ -218,10 +274,6 @@ class NestTableForm extends PureComponent {
     const { data } = this.state;
     const newData = data.map(item => ({ ...item }));
     const target = this.getRowByKey(key, newData);
-    if (!this.containBar(key)) {
-      const { handleGradeSelectDisabled } = this.props;
-      handleGradeSelectDisabled(target.gradeId.key);
-    }
     if (this.cacheOriginData[key]) {
       Object.assign(target, this.cacheOriginData[key]);
       delete this.cacheOriginData[key];
@@ -241,12 +293,9 @@ class NestTableForm extends PureComponent {
   remove(key) {
     const { data } = this.state;
     const { onChange } = this.props;
-    const { handleGradeSelectDisabled } = this.props;
     let newData;
     // 移除父表格一行
     if (!this.containBar(key)) {
-      const removeData = this.getRowByKey(key);
-      handleGradeSelectDisabled(removeData.gradeId.key);
       newData = data.filter(item => item.key !== key);
     }
 
@@ -491,6 +540,7 @@ class NestTableForm extends PureComponent {
     return (
       <Fragment>
         <Table
+          rowKey="id"
           loading={parentTableLoading}
           columns={columns}
           dataSource={data}

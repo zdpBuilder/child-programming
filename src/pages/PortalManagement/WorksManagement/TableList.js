@@ -24,16 +24,16 @@ const ShowViewModal = props => {
   return (
     <Modal
       destroyOnClose
-      title="资料类别信息查看"
+      title="学生作品信息查看"
       visible={showModalVisible}
       onCancel={() => handleShowModalVisible()}
       cancelText="关闭"
       footer={null}
     >
       <Card bordered={false}>
-        <DescriptionList title="资料类别基本信息" size="small" col={1} style={{ marginLeft: 0 }}>
-          <Description term="资料类别名称">{current.name}</Description>
-          <Description term="资料类别备注">{current.comment}</Description>
+        <DescriptionList title="学生作品基本信息" size="small" col={1} style={{ marginLeft: 0 }}>
+          <Description term="学生作品名称">{current.name}</Description>
+          <Description term="学生作品备注">{current.comment}</Description>
         </DescriptionList>
       </Card>
     </Modal>
@@ -58,7 +58,7 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={`资料类别${current.id ? '编辑' : '添加'}`}
+      title={`学生作品${current.id ? '编辑' : '添加'}`}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleAddModalVisible()}
@@ -68,27 +68,27 @@ const CreateForm = Form.create()(props => {
           initialValue: current.id,
         })(<Input type="hidden" />)}
       </FormItem>
-      <FormItem label="资料类别名称" {...formLayout}>
+      <FormItem label="学生作品名称" {...formLayout}>
         {getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入资料类别名称！', max: 50 }],
+          rules: [{ required: true, message: '请输入学生作品名称！', max: 50 }],
           initialValue: current.name,
-        })(<Input placeholder="请输入资料类别名称" />)}
+        })(<Input placeholder="请输入学生作品名称" />)}
       </FormItem>
 
-      <FormItem label="资料类别备注" {...formLayout}>
+      <FormItem label="学生作品备注" {...formLayout}>
         {getFieldDecorator('comment', {
-          rules: [{ required: true, message: '请输入资料类别备注！', max: 50 }],
+          rules: [{ required: true, message: '请输入学生作品备注！', max: 50 }],
           initialValue: current.comment,
-        })(<Input rows={4} placeholder="请输入资料类别备注" />)}
+        })(<Input rows={4} placeholder="请输入学生作品备注" />)}
       </FormItem>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ materialType, loading }) => ({
-  materialType,
-  loading: loading.models.materialType,
+@connect(({ studentWork, loading }) => ({
+  studentWork,
+  loading: loading.models.studentWork,
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -104,7 +104,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'materialType/save',
+      type: 'studentWork/save',
       payload: {
         pagination,
       },
@@ -117,7 +117,7 @@ class TableList extends PureComponent {
     form.resetFields();
     this.setState({});
     dispatch({
-      type: 'materialType/fetchList',
+      type: 'studentWork/fetchList',
       payload: {},
     });
   };
@@ -128,7 +128,7 @@ class TableList extends PureComponent {
     const { selectedRows } = this.state;
     if (!selectedRows) return;
     dispatch({
-      type: 'materialType/remove',
+      type: 'studentWork/remove',
       payload: {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
@@ -161,7 +161,7 @@ class TableList extends PureComponent {
       };
 
       dispatch({
-        type: 'materialType/fetchList',
+        type: 'studentWork/fetchList',
         payload: values,
       });
     });
@@ -187,7 +187,7 @@ class TableList extends PureComponent {
   handleAddAndEdit = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'materialType/addAndUpdate',
+      type: 'studentWork/addAndUpdate',
       payload: {
         ...fields,
       },
@@ -206,10 +206,10 @@ class TableList extends PureComponent {
   };
 
   // 删除单个提示
-  deletematerialType = id => {
+  deletestudentWork = id => {
     Modal.confirm({
-      title: '删除资料类别',
-      content: '确定删除该资料类别吗？',
+      title: '删除学生作品',
+      content: '确定删除该学生作品吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDeleteItem(id),
@@ -218,11 +218,11 @@ class TableList extends PureComponent {
 
   columns = [
     {
-      title: '资料类别名称',
+      title: '学生作品名称',
       dataIndex: 'name',
     },
     {
-      title: '资料类别备注',
+      title: '学生作品备注',
       dataIndex: 'comment',
     },
     {
@@ -238,7 +238,7 @@ class TableList extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => this.deletematerialType(record.id)}>删除</a>
+          <a onClick={() => this.deletestudentWork(record.id)}>删除</a>
         </Fragment>
       ),
     },
@@ -249,7 +249,7 @@ class TableList extends PureComponent {
     const idsStr = `${id}`;
     const { dispatch } = this.props;
     dispatch({
-      type: 'materialType/remove',
+      type: 'studentWork/remove',
       payload: {
         idsStr,
       },
@@ -265,7 +265,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
       dispatch({
-        type: 'materialType/fetchList',
+        type: 'studentWork/fetchList',
       });
       message.success(response.msg);
       this.handleAddModalVisible();
@@ -275,7 +275,7 @@ class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'materialType/fetchList',
+      type: 'studentWork/fetchList',
     });
   }
 
@@ -288,7 +288,7 @@ class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="资料类别名称">
+            <FormItem label="学生作品名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
@@ -309,7 +309,7 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      materialType: { list, pagination },
+      studentWork: { list, pagination },
       loading,
     } = this.props;
     console.log(loading);
@@ -321,7 +321,7 @@ class TableList extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="资料类别管理">
+      <PageHeaderWrapper title="学生作品管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>

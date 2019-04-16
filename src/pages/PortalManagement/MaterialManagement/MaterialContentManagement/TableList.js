@@ -122,6 +122,7 @@ class TableList extends PureComponent {
     current: {},
     showModalVisible: false,
   };
+
   // 处理表格分页
   handleStandardTableChange = pagination => {
     const { dispatch } = this.props;
@@ -133,6 +134,7 @@ class TableList extends PureComponent {
       },
     });
   };
+
   // 搜索条件重置
   handleFormReset = () => {
     const { form, dispatch } = this.props;
@@ -143,6 +145,7 @@ class TableList extends PureComponent {
       payload: {},
     });
   };
+
   // 删除多行
   handleDeleteRows = () => {
     const { dispatch } = this.props;
@@ -161,11 +164,13 @@ class TableList extends PureComponent {
       },
     });
   };
+
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
     });
   };
+
   // 按条件搜索
   handleSearch = e => {
     e.preventDefault();
@@ -185,6 +190,7 @@ class TableList extends PureComponent {
       });
     });
   };
+
   // 添加弹出框
   handleAddModalVisible = flag => {
     this.setState({
@@ -192,6 +198,7 @@ class TableList extends PureComponent {
       current: undefined,
     });
   };
+
   //  编辑弹出框
   handleEditModalVisible = (flag, item) => {
     this.setState({
@@ -199,6 +206,7 @@ class TableList extends PureComponent {
       current: item,
     });
   };
+
   // 添加、编辑处理
   handleAddAndEdit = fields => {
     const { dispatch } = this.props;
@@ -212,6 +220,7 @@ class TableList extends PureComponent {
       },
     });
   };
+
   //  查看弹出框
   handleShowModalVisible = (flag, item) => {
     this.setState({
@@ -219,6 +228,7 @@ class TableList extends PureComponent {
       current: item,
     });
   };
+
   // 删除单个提示
   deleteOne = id => {
     Modal.confirm({
@@ -229,6 +239,7 @@ class TableList extends PureComponent {
       onOk: () => this.handleDeleteItem(id),
     });
   };
+
   columns = [
     {
       title: '资料名称',
@@ -260,6 +271,7 @@ class TableList extends PureComponent {
       ),
     },
   ];
+
   // 删除单个处理
   handleDeleteItem = id => {
     const idsStr = `${id}`;
@@ -274,6 +286,7 @@ class TableList extends PureComponent {
       },
     });
   };
+
   // 添加、编辑、删除返回结果处理
   handleResultData = response => {
     const { dispatch } = this.props;

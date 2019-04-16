@@ -12,6 +12,7 @@ class UploadFileExample extends React.Component {
   state = {
     fileList: [],
   };
+
   onChange = info => {
     const status = info.file.status;
     if (status !== 'uploading') {
@@ -66,10 +67,15 @@ class UploadFileExample extends React.Component {
 
     return (
       <div>
-        {getFieldDecorator(this.props.formFieldPropsKey[0], {
-          initialValue: this.state.fileList.length > 0 ? this.state.fileList[0].name : [],
-        })(<Input type="hidden" />)}
-
+        {typeof this.props.formFieldPropsKey[0] !== 'undefined' ? (
+          <div>
+            {getFieldDecorator(this.props.formFieldPropsKey[0], {
+              initialValue: this.state.fileList.length > 0 ? this.state.fileList[0].name : [],
+            })(<Input type="hidden" />)}
+          </div>
+        ) : (
+          <div />
+        )}
         {getFieldDecorator(this.props.formFieldPropsKey[1], {
           initialValue: this.state.fileList.length > 0 ? this.state.fileList[0].response.msg : [],
         })(<Input type="hidden" />)}

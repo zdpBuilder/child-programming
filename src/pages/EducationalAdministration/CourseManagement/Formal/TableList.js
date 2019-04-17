@@ -50,7 +50,7 @@ const ShowViewModal = props => {
       footer={null}
     >
       <Card bordered={false}>
-        <DescriptionList size="small" col={1} style={{ marginLeft: 0 }}>
+        <DescriptionList size="small" col={2} style={{ marginLeft: 0 }}>
           <Description term="课程名称">{current.name}</Description>
           <Description term="价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格">
             {current.money}元
@@ -58,9 +58,20 @@ const ShowViewModal = props => {
           <Description term="最大容量">{current.maxCapacity}课时</Description>
           <Description term="联系电话">{current.telephone}</Description>
           <Description term="校区描述">{current.introduction}</Description>
-          <Description term="时间安排" />
+          <Divider />
+          <DescriptionList>
+            <Description term="时间安排" />
+            <NestTableForm value={current.timeSchedule} isShow />
+          </DescriptionList>
+          <Divider />
+          <Description term="图片介绍">
+            <img
+              alt="example"
+              style={{ width: '100%' }}
+              src={globalData.photoBaseUrl + current.photoUrl}
+            />
+          </Description>
         </DescriptionList>
-        <NestTableForm value={current.timeSchedule} isShow />
       </Card>
     </Modal>
   );
@@ -105,7 +116,6 @@ const CreateForm = Form.create()(props => {
     const formValues = {
       ...fieldsValue,
       timeSchedule: timeScheduleArray,
-      photoUrl: '',
       periodCount: parseInt(fieldsValue.periodCount, 10),
       maxCapacity: parseInt(fieldsValue.maxCapacity, 10),
     };
@@ -186,7 +196,6 @@ const CreateForm = Form.create()(props => {
       handleAddAndEdit(formData);
     });
   };
-
   return (
     <Modal
       destroyOnClose
@@ -242,7 +251,7 @@ const CreateForm = Form.create()(props => {
           props={props}
           formFieldPropsKey="photoUrl"
           defaultImgUrl={current.photoUrl}
-          fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.course}
+          fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.formalCourse}
         />
       </FormItem>
       <Card title="时间安排" bordered={false}>
@@ -372,9 +381,9 @@ class TableList extends PureComponent {
 
     // 结课
     if (key === 'end') {
-      const endDateDiff = maxEndDate.diff(dateNow, 'days');
+      const endDateDiff = dateNow.diff(maxEndDate, 'days');
       flag = 3;
-      if (endDateDiff < -2) {
+      if (endDateDiff < 2) {
         message.warning(`不能早于${maxEndDate.format('YYYY-MM-DD')}结课，此日期两天后可结课!`);
         return;
       }
@@ -382,7 +391,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
     const { id } = record;
     dispatch({
-      type: '',
+      type: 'course/changeCourseStatus',
       payload: {
         id,
         status: flag,

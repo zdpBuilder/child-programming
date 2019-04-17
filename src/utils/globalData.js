@@ -27,7 +27,7 @@ export default {
   fileUpLoadDirectoryName: {
     student: 'student',
     teacher: 'teacher',
-    course: 'course',
+    formalCourse: 'formalCourse',
     material: 'material',
     studentWork: 'studentWork',
   },

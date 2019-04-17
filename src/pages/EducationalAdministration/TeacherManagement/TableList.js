@@ -36,7 +36,11 @@ const ShowViewModal = props => {
           <Description term="登陆账号">{current.loginId}</Description>
           <Description term="姓名">{current.name}</Description>
           <Description term="手&nbsp;&nbsp;机&nbsp;&nbsp;号">{current.phone}</Description>
-          <Description term="证书">{current.phone}</Description>
+          <Divider />
+          <DescriptionList col={2} title="个人简介" size="small" style={{ marginTop: 5 }}>
+            <Description>{current.introduction}</Description>
+          </DescriptionList>
+          <Divider />
           <Description term="照&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;片">
             <img
               alt="example"
@@ -44,10 +48,6 @@ const ShowViewModal = props => {
               src={globalData.photoBaseUrl + current.photoUrl}
             />
           </Description>
-        </DescriptionList>
-        <Divider />
-        <DescriptionList col={2} title="个人简介" size="small" style={{ marginTop: 5 }}>
-          <Description>{current.introduction}</Description>
         </DescriptionList>
       </Card>
     </Modal>
@@ -107,8 +107,6 @@ const CreateForm = Form.create()(props => {
           fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.teacher}
         />
       </FormItem>
-      <FormItem label="证书" {...formLayout} />
-
       <FormItem label="备注" {...formLayout}>
         {getFieldDecorator('introduction', {
           rules: [{ message: '请输入至少五个字符的介绍！', min: 5, max: 500 }],

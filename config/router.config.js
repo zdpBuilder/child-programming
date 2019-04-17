@@ -101,6 +101,11 @@ export default [
                 name: 'formalCourseManagement',
                 component: './educationalAdministration/courseManagement/formal/TableList',
               },
+              {
+                path: '/educationalAdministration/courseManagement/experience',
+                name: 'experienceCourseManagement',
+                component: './EducationalAdministration/CourseManagement/Experience/TableList',
+              },
             ],
           },
           {

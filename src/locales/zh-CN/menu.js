@@ -49,6 +49,7 @@ export default {
   'menu.educationalAdministration.teacherManagement': '教师信息管理',
   'menu.educationalAdministration.courseManagement': '课程管理',
   'menu.educationalAdministration.courseManagement.formalCourseManagement': ' 正式课管理',
+  'menu.educationalAdministration.courseManagement.experienceCourseManagement': ' 体验课管理',
   // 'menu.educationalAdministration.courseManagement.classScheduleCard': ' 课程表管理',
   // 'menu.educationalAdministration.courseManagement.classAdjustment': ' 调课管理',
   'menu.educationalAdministration.gradeManagement': ' 班级管理',

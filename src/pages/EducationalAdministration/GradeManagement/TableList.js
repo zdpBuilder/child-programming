@@ -283,6 +283,10 @@ class TableList extends PureComponent {
 
   //  编辑弹出框
   handleEditModalVisible = (flag, item) => {
+    if (item.courseId) {
+      message.warning(`${item.courseName}正占用，无法编辑!请先将本班在课程中移除`);
+      return;
+    }
     this.handleInitData(flag);
     this.setState({
       modalVisible: !!flag,

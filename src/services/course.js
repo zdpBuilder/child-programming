@@ -26,3 +26,12 @@ export async function deleteBatch(params) {
     }
   );
 }
+
+export async function changeCourseStatus(params) {
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/course/changeCourseStatus?${stringify(params)}`,
+    {
+      method: globalData.GET,
+    }
+  );
+}

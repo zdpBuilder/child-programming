@@ -25,7 +25,7 @@ export default {
       });
     },
 
-    *fetchGradeInfoList({ payload, callback }, { call, put }) {
+    *fetchGradeInfoList({ payload }, { call, put }) {
       const response = yield call(getGradeInfoSelect, payload);
       yield put({
         type: 'save',
@@ -33,7 +33,6 @@ export default {
           gradeSelectData: response || [],
         },
       });
-      if (callback) callback();
     },
 
     *addAndUpdate({ payload, callback }, { call, put }) {
@@ -46,6 +45,15 @@ export default {
 
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(courseService.deleteBatch, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+
+    *changeCourseStatus({ payload, callback }, { call, put }) {
+      const response = yield call(courseService.changeCourseStatus, payload);
       yield put({
         type: 'save',
         payload: response,

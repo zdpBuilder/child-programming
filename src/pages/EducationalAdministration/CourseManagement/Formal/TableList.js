@@ -1,7 +1,22 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Modal, message, Divider, InputNumber } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Modal,
+  message,
+  Divider,
+  InputNumber,
+  Badge,
+  Dropdown,
+  Menu,
+  Icon,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
@@ -28,7 +43,7 @@ const ShowViewModal = props => {
   return (
     <Modal
       destroyOnClose
-      title="校区查看"
+      title="课程查看"
       visible={showModalVisible}
       onCancel={() => handleShowModalVisible()}
       cancelText="关闭"
@@ -36,14 +51,16 @@ const ShowViewModal = props => {
     >
       <Card bordered={false}>
         <DescriptionList size="small" col={1} style={{ marginLeft: 0 }}>
-          <Description term="校区名称">{current.name}</Description>
-          <Description term="地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址">
-            {current.address}
+          <Description term="课程名称">{current.name}</Description>
+          <Description term="价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格">
+            {current.money}元
           </Description>
-          <Description term="负&nbsp;&nbsp;责&nbsp;&nbsp;人">{current.chargeUserName}</Description>
-          <Description term="联系电话">{current.chargeUserPhone}</Description>
+          <Description term="最大容量">{current.maxCapacity}课时</Description>
+          <Description term="联系电话">{current.telephone}</Description>
           <Description term="校区描述">{current.introduction}</Description>
+          <Description term="时间安排" />
         </DescriptionList>
+        <NestTableForm value={current.timeSchedule} isShow />
       </Card>
     </Modal>
   );
@@ -71,9 +88,9 @@ const CreateForm = Form.create()(props => {
     timeSchedule.forEach(item => {
       const data = {
         ...item,
-        gradeId: item.gradeId.key,
+        gradeId: item.gradeSelect.key,
       };
-      const { key, editable, childrenData, ...otherValues } = data;
+      const { key, editable, gradeSelect, childrenData, ...otherValues } = data;
       // 处理子元素属性
       const childrenDataArray = [];
       childrenData.forEach(element => {
@@ -95,42 +112,67 @@ const CreateForm = Form.create()(props => {
     return formValues;
   };
 
+  // 班级重复校验, 班级数量不得超过6
+  const validateGrade = timeSchedule => {
+    if (timeSchedule.length && timeSchedule.length > 6) {
+      message.warning('班级数量不得超过6个!');
+      return false;
+    }
+    const gradeResult = timeSchedule.every(item => {
+      let count = 0;
+      timeSchedule.forEach(element => {
+        if (item.gradeSelect.key === element.gradeSelect.key) count += 1;
+      });
+      if (count !== 1) {
+        message.warning(`${item.gradeSelect.label}不能重复进行时间安排!`);
+        return false;
+      }
+      return true;
+    });
+    return gradeResult;
+  };
+
+  // 课时校验
+  const validatePeriod = (periodCount, timeSchedule) => {
+    const periodResult = timeSchedule.every(item => {
+      const { childrenData = [] } = item;
+      let count = 0;
+      if (childrenData.length > 0) {
+        childrenData.forEach(childrenItem => {
+          count += childrenItem.day.length;
+        });
+      }
+      const startDate = moment(item.dateRange.startDate);
+      const endDate = moment(item.dateRange.endDate);
+      // moment.diff 少一周
+      const weeks = endDate.diff(startDate, 'weeks') + 1;
+      count *= weeks;
+      if (count > periodCount) {
+        message.error(`${item.gradeSelect.label}课时比规定多${count - periodCount}`);
+        return false;
+      }
+      if (count < periodCount) {
+        message.error(`${item.gradeSelect.label}课时比规定少${periodCount - count}`);
+        return false;
+      }
+      return true;
+    });
+    return periodResult;
+  };
+
   // 校验时间安排数据合法性
   const validateFormData = fieldsValue => {
-    // 属性为空检测
+    // TODO 属性为空检测
 
     const { periodCount, timeSchedule = [] } = fieldsValue;
 
     // 班级重复校验
+    const gradeResult = validateGrade(timeSchedule);
 
     // 课时校验
-    if (timeSchedule.length > 0) {
-      const periodDetectResult = timeSchedule.every(item => {
-        const { childrenData = [] } = item;
-        let count = 0;
-        if (childrenData.length > 0) {
-          childrenData.forEach(childrenItem => {
-            count += childrenItem.day.length;
-          });
-        }
-        const startDate = moment(item.dateRange.startDate);
-        const endDate = moment(item.dateRange.endDate);
-        // moment.diff 少一周
-        const weeks = endDate.diff(startDate, 'weeks') + 1;
-        count *= weeks;
-        if (count > periodCount) {
-          message.error(`${item.gradeId.label}课时比规定多${count - periodCount}`);
-          return false;
-        }
-        if (count < periodCount) {
-          message.error(`${item.gradeId.label}课时比规定少${periodCount - count}`);
-          return false;
-        }
-        return true;
-      });
-      return periodDetectResult;
-    }
-    return true;
+    const periodResult = validatePeriod(periodCount, timeSchedule);
+
+    return periodResult && gradeResult;
   };
 
   const okHandle = () => {
@@ -164,12 +206,6 @@ const CreateForm = Form.create()(props => {
           rules: [{ required: true, message: '请输入课程名称！', max: 50 }],
           initialValue: current.name,
         })(<Input placeholder="请输入课程名称" />)}
-      </FormItem>
-      <FormItem label="课程编码" {...formLayout}>
-        {getFieldDecorator('code', {
-          rules: [{ required: true, message: '请输入课程编码！', max: 50 }],
-          initialValue: current.code,
-        })(<Input placeholder="请输入课程编码" />)}
       </FormItem>
       <FormItem label="价格" {...formLayout}>
         {getFieldDecorator('money', {
@@ -219,6 +255,27 @@ const CreateForm = Form.create()(props => {
     </Modal>
   );
 });
+// 更多按钮
+const MoreBtn = props => {
+  const { handleChangeCourseStatus, current } = props;
+  return (
+    <Dropdown
+      overlay={
+        <Menu onClick={({ key }) => handleChangeCourseStatus(key, current)}>
+          <Menu.Item key="start">开课</Menu.Item>
+          <Menu.Item key="end">结课</Menu.Item>
+        </Menu>
+      }
+    >
+      <a>
+        更多 <Icon type="down" />
+      </a>
+    </Dropdown>
+  );
+};
+// TODO 先忽略停课
+const statusMap = ['error', 'processing', 'success', 'default'];
+const status = ['停课', '报名', '开课', '结课'];
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ course, loading }) => ({
@@ -240,16 +297,19 @@ class TableList extends PureComponent {
       dataIndex: 'name',
     },
     {
-      title: '编码',
-      dataIndex: 'code',
-    },
-    {
       title: '价格',
       dataIndex: 'money',
     },
     {
       title: '最大容量',
       dataIndex: 'maxCapacity',
+    },
+    {
+      title: '课程状态',
+      dataIndex: 'status',
+      render(val) {
+        return <Badge status={statusMap[val]} text={status[val]} />;
+      },
     },
     {
       title: '创建时间',
@@ -265,6 +325,8 @@ class TableList extends PureComponent {
           <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
           <a onClick={() => this.deletecourse(record.id)}>删除</a>
+          <Divider type="vertical" />
+          <MoreBtn handleChangeCourseStatus={this.handleChangeCourseStatus} current={record} />
         </Fragment>
       ),
     },
@@ -276,6 +338,57 @@ class TableList extends PureComponent {
       type: 'course/fetchList',
     });
   }
+
+  // 更多按钮，处理课程状态改变
+  handleChangeCourseStatus = (key, record) => {
+    const { timeSchedule = [] } = record;
+    const startDateArray = [];
+    const endDateArray = [];
+    let flag = -1;
+    // 将课程日期放入数组中
+    timeSchedule.forEach(item => {
+      const { dateRange } = item;
+      startDateArray.push(dateRange.startDate);
+      endDateArray.push(dateRange.endDate);
+    });
+    // 从大到小排序
+    startDateArray.sort();
+    endDateArray.sort();
+    // 格式化日期
+    const minStartDate = moment(startDateArray[0]);
+    const maxEndDate = moment(endDateArray[endDateArray.length - 1]);
+    const dateNow = moment();
+
+    // 开课
+    if (key === 'start') {
+      const startDateDiff = minStartDate.diff(dateNow, 'days');
+      console.log(startDateDiff);
+      flag = 2;
+      if (startDateDiff > 2) {
+        message.warning(`不能早于${minStartDate.format('YYYY-MM-DD')}两天开课!`);
+        return;
+      }
+    }
+
+    // 结课
+    if (key === 'end') {
+      const endDateDiff = maxEndDate.diff(dateNow, 'days');
+      flag = 3;
+      if (endDateDiff < -2) {
+        message.warning(`不能早于${maxEndDate.format('YYYY-MM-DD')}结课，此日期两天后可结课!`);
+        return;
+      }
+    }
+    const { dispatch } = this.props;
+    const { id } = record;
+    dispatch({
+      type: '',
+      payload: {
+        id,
+        status: flag,
+      },
+    });
+  };
 
   // 处理表格分页
   handleStandardTableChange = pagination => {
@@ -348,17 +461,22 @@ class TableList extends PureComponent {
   // 添加弹出框
   handleAddModalVisible = flag => {
     if (flag) {
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'course/fetchGradeInfoList',
-        payload: {
-          gradeIds: null,
-        },
-      });
+      this.fetchGradeSelect();
     }
     this.setState({
       modalVisible: !!flag,
       current: undefined,
+    });
+  };
+
+  // 请求班级select信息
+  fetchGradeSelect = gradeIdArray => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'course/fetchGradeInfoList',
+      payload: {
+        gradeIds: gradeIdArray ? gradeIdArray.join(',') : null,
+      },
     });
   };
 
@@ -369,22 +487,12 @@ class TableList extends PureComponent {
       item.timeSchedule.forEach(element => {
         gradeIdArray.push(element.gradeId);
       });
-      const { dispatch } = this.props;
-      // 班级信息
-      dispatch({
-        type: 'course/fetchGradeInfoList',
-        payload: {
-          gradeIds: gradeIdArray ? gradeIdArray.join(',') : null,
-        },
-        // 数据加载后，再渲染页面
-        callback: () => {
-          this.setState({
-            modalVisible: !!flag,
-            current: item,
-          });
-        },
-      });
+      this.fetchGradeSelect(gradeIdArray);
     }
+    this.setState({
+      modalVisible: !!flag,
+      current: item,
+    });
   };
 
   // 添加、编辑处理
@@ -482,7 +590,7 @@ class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="校区名称">
+            <FormItem label="课程名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>

@@ -25,26 +25,15 @@ class NestTableForm extends PureComponent {
   constructor(props) {
     super(props);
     this.expandedRowRender = this.expandedRowRender.bind(this);
+    const { isShow = false } = props;
     // 深复制
     const initialData = JSON.parse(JSON.stringify(props.value || null));
-    const { gradeSelectData } = props;
-    console.log(initialData);
     // 为元素加key
-    if (initialData) {
+    if (initialData && !isShow) {
       initialData.forEach(item => {
         const element = item;
         element.key = `${parentColumnIdPrefix}_${this.index}`;
         this.index += 1;
-        // 调整gradeId数据结构
-        if (gradeSelectData.length > 0) {
-          const gradeSelect = gradeSelectData.filter(
-            selectItem => selectItem.value === element.gradeId
-          )[0];
-          element.gradeId = {
-            key: gradeSelect.value,
-            label: gradeSelect.label,
-          };
-        }
         item.childrenData.forEach(childrenItem => {
           const childrenElement = childrenItem;
           childrenElement.key = `${element.key}-${childrenColumnIdPrefix}_${this.childrenIndex}`;
@@ -55,7 +44,6 @@ class NestTableForm extends PureComponent {
     this.state = {
       data: initialData || [],
       parentTableLoading: false,
-      /* eslint-disable-next-line react/no-unused-state */
       value: props.value,
     };
   }
@@ -122,7 +110,7 @@ class NestTableForm extends PureComponent {
       childrenData: [],
       dateRange: {},
       editable: true,
-      gradeId: {},
+      gradeSelect: {},
       isNew: true,
       key: `${parentColumnIdPrefix}_${this.index}`,
     });
@@ -225,7 +213,7 @@ class NestTableForm extends PureComponent {
           });
           return;
         }
-      } else if (!target.gradeId.key || !target.dateRange.startDate) {
+      } else if (!target.gradeSelect.key || !target.dateRange.startDate) {
         // 父表格校验
         message.error('请填写完整信息！');
         e.target.focus();
@@ -234,16 +222,18 @@ class NestTableForm extends PureComponent {
         });
         return;
       }
-      const { data } = this.state;
       delete target.isNew;
       this.toggleEditable(e, key);
-
       const { onChange } = this.props;
+      const { data } = this.state;
       onChange(data);
+      this.setState({
+        parentTableLoading: false,
+      });
     }, 500);
   }
 
-  // 同一天时间范围冲突校验
+  // 同一天时间范围冲突校验，不能有交叉
   detectDayTimeRangeConfict(key, target) {
     const keyArray = key.split('-');
     const { childrenData = [] } = this.getRowByKey(keyArray[0]);
@@ -268,6 +258,7 @@ class NestTableForm extends PureComponent {
     return result;
   }
 
+  // 取消
   cancel(e, key) {
     this.clickedCancel = true;
     e.preventDefault();
@@ -283,6 +274,7 @@ class NestTableForm extends PureComponent {
     this.clickedCancel = false;
   }
 
+  // 回车键
   handleKeyPress(e, key) {
     if (e.key === 'Enter') {
       this.saveRow(e, key);
@@ -319,7 +311,7 @@ class NestTableForm extends PureComponent {
   }
 
   // 子表格
-  expandedRowRender(parentRecord) {
+  expandedRowRender(parentRecord, isShow) {
     const { childrenData = [] } = parentRecord;
     const columns = [
       {
@@ -399,8 +391,9 @@ class NestTableForm extends PureComponent {
         title: '星期',
         width: '45%',
       },
-
-      {
+    ];
+    if (!isShow) {
+      const action = {
         key: 'action',
         render: (text, record) => {
           const { parentTableLoading } = this.state;
@@ -410,19 +403,28 @@ class NestTableForm extends PureComponent {
           return this.operateActionRender(record);
         },
         title: '操作',
-      },
-    ];
+      };
+      columns.push(action);
+    }
+    const ChildrenAddButton = () => {
+      if (!isShow) {
+        return (
+          <Button
+            style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
+            type="dashed"
+            icon="plus"
+            onClick={() => this.newChildrenMember(parentRecord.key)}
+          >
+            新增
+          </Button>
+        );
+      }
+      return <div />;
+    };
     return (
       <Fragment>
         <Table dataSource={childrenData} columns={columns} pagination={false} />
-        <Button
-          style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          icon="plus"
-          onClick={() => this.newChildrenMember(parentRecord.key)}
-        >
-          新增
-        </Button>
+        <ChildrenAddButton />
       </Fragment>
     );
   }
@@ -461,18 +463,18 @@ class NestTableForm extends PureComponent {
   }
 
   render() {
-    const { gradeSelectData = [] } = this.props;
+    const { gradeSelectData = [], isShow = false } = this.props;
     const { parentTableLoading, data = [] } = this.state;
     const columns = [
       {
-        dataIndex: 'gradeId',
-        key: 'gradeId',
+        dataIndex: 'gradeSelect',
+        key: 'gradeSelect',
         render: (text, record) => {
           if (record.editable) {
             return (
               <Select
                 defaultValue={text}
-                onChange={value => this.handleFieldChange(value, 'gradeId', record.key)}
+                onChange={value => this.handleFieldChange(value, 'gradeSelect', record.key)}
                 labelInValue
                 style={{ width: 100 }}
                 placeholder="班级"
@@ -525,7 +527,11 @@ class NestTableForm extends PureComponent {
         title: '起止日期',
         width: '45%',
       },
-      {
+    ];
+
+    // 操作按钮
+    if (!isShow) {
+      const action = {
         key: 'action',
         render: (text, record) => {
           if (!!record.editable && parentTableLoading) {
@@ -534,8 +540,25 @@ class NestTableForm extends PureComponent {
           return this.operateActionRender(record);
         },
         title: '操作',
-      },
-    ];
+      };
+      columns.push(action);
+    }
+
+    // 新增按钮
+    const ParentAddButton = () => {
+      if (!isShow)
+        return (
+          <Button
+            style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
+            type="dashed"
+            onClick={this.newMember}
+            icon="plus"
+          >
+            新增
+          </Button>
+        );
+      return <div />;
+    };
 
     return (
       <Fragment>
@@ -545,17 +568,10 @@ class NestTableForm extends PureComponent {
           columns={columns}
           dataSource={data}
           pagination={false}
-          expandedRowRender={this.expandedRowRender}
+          expandedRowRender={record => this.expandedRowRender(record, isShow)}
           rowClassName={record => (record.editable ? styles.editable : '')}
         />
-        <Button
-          style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          onClick={this.newMember}
-          icon="plus"
-        >
-          新增
-        </Button>
+        <ParentAddButton />
       </Fragment>
     );
   }

@@ -12,39 +12,14 @@ const { TreeNode } = Tree;
 
 class TreeExample extends React.Component {
   state = {
-    // eslint-disable-next-line react/no-unused-state
-    expandedKeys: [],
-    // eslint-disable-next-line react/no-unused-state
-    autoExpandParent: true,
     checkedKeys: [],
+    submitKeys: [],
     selectedKeys: [],
   };
 
   componentDidMount() {
     if (this.props.defaultAuthority) {
-      const checkedKeys = [];
-      this.props.treeData.map(item => {
-        if (item.authority) {
-          item.authority.map(item2 => {
-            if (item2 === this.props.defaultAuthority) {
-              checkedKeys.push(item.id);
-            }
-          });
-        }
-      });
-
-      /*  for(let i=0;i<checkedKeys.length;i++){
-      this.props.treeData.map(item3=> {
-        if (item3.id === checkedKeys[i]) {
-          if (item3.exact) {
-            checkedKeys.splice(i, 1);
-          }
-        }
-      });
-    }
-*/
-      console.info(checkedKeys);
-      this.setState({ checkedKeys });
+      this.setState({ checkedKeys: this.props.defaultAuthority.split(',') });
     }
   }
 
@@ -52,18 +27,14 @@ class TreeExample extends React.Component {
     console.log('onExpand', expandedKeys);
     // if not set autoExpandParent to false, if children expanded, parent can not collapse.
     // or, you can remove all expanded children keys.
-    this.setState({
-      // eslint-disable-next-line react/no-unused-state
-      expandedKeys,
-      // eslint-disable-next-line react/no-unused-state
-      autoExpandParent: true,
-    });
   };
 
-  onCheck = checkedKeys => {
+  onCheck = (checkedKeys, e) => {
     console.log('onCheck', checkedKeys);
 
-    this.setState({ checkedKeys });
+    const submitKeys = e.halfCheckedKeys.concat(checkedKeys);
+
+    this.setState({ checkedKeys, submitKeys });
   };
 
   onSelect = (selectedKeys, info) => {
@@ -90,7 +61,7 @@ class TreeExample extends React.Component {
     return (
       <div>
         {getFieldDecorator(this.props.formFieldPropsKey, {
-          initialValue: this.state.checkedKeys.join(','),
+          initialValue: this.state.submitKeys.join(','),
         })(<Input type="hidden" />)}
         {/* <p>已经授权节点：<div style={{fontWeight:"800"}}>{this.state.checkedVlaues}</div></p> */}
         <Tree

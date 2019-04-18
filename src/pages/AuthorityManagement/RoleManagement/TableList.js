@@ -50,6 +50,7 @@ const AssignAuthorityForm = Form.create()(props => {
     AssignAuthority,
     current = {},
     menuData = [],
+    treeCheckDefaultIds,
   } = props;
 
   const {
@@ -96,7 +97,7 @@ const AssignAuthorityForm = Form.create()(props => {
             props={props}
             formFieldPropsKey={'menuIds'}
             treeData={menuData}
-            defaultAuthority={current.roleToken}
+            defaultAuthority={treeCheckDefaultIds || null}
           />
         </FormItem>
       </Card>
@@ -167,6 +168,7 @@ class TableList extends PureComponent {
     current: {},
     showModalVisible: false,
     AssignAuthorityViewVisible: false,
+    treeCheckDefaultIds: [],
   };
 
   columns = [
@@ -344,10 +346,26 @@ class TableList extends PureComponent {
     dispatch({
       type: 'role/getMenuData',
     });
-    this.setState({
-      AssignAuthorityViewVisible: !!flag,
-      current: item,
-    });
+    if (flag) {
+      dispatch({
+        type: 'role/treeCheckDefaultIds',
+        payload: {
+          roleToken: item.roleToken,
+        },
+        callback: response => {
+          this.setState({
+            AssignAuthorityViewVisible: !!flag,
+            current: item,
+            treeCheckDefaultIds: response.data.menuIds,
+          });
+        },
+      });
+    } else {
+      this.setState({
+        AssignAuthorityViewVisible: !!flag,
+        current: item,
+      });
+    }
   };
 
   // 删除单个提示
@@ -429,6 +447,7 @@ class TableList extends PureComponent {
       current,
       showModalVisible,
       AssignAuthorityViewVisible,
+      treeCheckDefaultIds,
     } = this.state;
 
     const parentMethods = {
@@ -473,6 +492,7 @@ class TableList extends PureComponent {
           AssignAuthority={this.AssignAuthority}
           AssignAuthorityViewVisible={AssignAuthorityViewVisible}
           current={current}
+          treeCheckDefaultIds={treeCheckDefaultIds}
           menuData={menuData}
           handleAssignAuthorityViewVisibleVisible={this.handleAssignAuthorityViewVisibleVisible}
         />

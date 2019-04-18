@@ -11,6 +11,14 @@ export async function getList(params) {
   );
 }
 
+export async function getRoleByRoleToken(params) {
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/role/getRoleByRoleToken?${stringify(params)}`,
+    {
+      method: globalData.GET,
+    }
+  );
+}
 export async function save(params) {
   return request(`${globalData.baseUrl + globalData.projectName}/role/save`, {
     method: globalData.POST,

@@ -33,6 +33,11 @@ export default {
         },
       });
     },
+    *treeCheckDefaultIds({ payload, callback }, { call }) {
+      const response = yield call(roleService.getRoleByRoleToken, payload);
+
+      if (callback) callback(response);
+    },
 
     *assignAuthority({ payload, callback }, { call }) {
       const response = yield call(menuService.assignAuthority, payload);

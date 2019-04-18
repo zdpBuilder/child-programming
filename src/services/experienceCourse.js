@@ -17,3 +17,12 @@ export async function save(params) {
     body: params,
   });
 }
+
+export async function deleteBatch(params) {
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/experienceCourse/delete?${stringify(params)}`,
+    {
+      method: globalData.GET,
+    }
+  );
+}

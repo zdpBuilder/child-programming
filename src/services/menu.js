@@ -3,12 +3,9 @@ import request from '@/utils/request';
 import globalData from '@/utils/globalData';
 
 export async function getList() {
-  return request(
-    `${globalData.baseUrl + globalData.projectName}/menu/getList`,
-    {
-      method: globalData.GET,
-    }
-  );
+  return request(`${globalData.baseUrl + globalData.projectName}/menu/getList`, {
+    method: globalData.GET,
+  });
 }
 
 export async function save(params) {
@@ -28,8 +25,12 @@ export async function deleteBatch(params) {
 }
 
 export async function assignAuthority(params) {
-  return request(`${globalData.baseUrl + globalData.projectName}/menu/assignAuthority?menuIds=${params.menuIds}&roleToken=${params.roleToken}`,
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/menu/assignAuthority?menuIds=${
+      params.menuIds
+    }&roleToken=${params.roleToken}`,
     {
       method: globalData.GET,
-    });
+    }
+  );
 }

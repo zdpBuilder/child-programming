@@ -13,6 +13,7 @@ import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Description } = DescriptionList;
+const { Option } = Select;
 
 const formLayout = {
   labelCol: { span: 7 },
@@ -60,7 +61,7 @@ const CreateForm = Form.create()(props => {
   const { modalVisible, handleAddAndEdit, form, handleAddModalVisible, current = {} } = props;
   const {
     form: { getFieldDecorator },
-    roleListData
+    roleListData,
   } = props;
 
   const okHandle = () => {
@@ -92,16 +93,17 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="角色名称" {...formLayout}>
         {getFieldDecorator('roleId', {
-          rules: [{ required: true, message: '请选择角色！'}],
+          rules: [{ required: true, message: '请选择角色！' }],
           initialValue: current.roleId,
-        })( <Select placeholder="请选择角色" style={{ width: 255 }}>
-          {roleListData.map(item => (
-            <Option key={item.value} value={item.id}>
-              {item.name}
-            </Option>
-          ))}
-        </Select>)}
-
+        })(
+          <Select placeholder="请选择角色" style={{ width: 255 }}>
+            {roleListData.map(item => (
+              <Option key={item.value} value={item.id}>
+                {item.name}
+              </Option>
+            ))}
+          </Select>
+        )}
       </FormItem>
 
       <FormItem label="姓名" {...formLayout}>
@@ -192,7 +194,7 @@ class TableList extends PureComponent {
       type: 'teacher/fetchList',
     });
     dispatch({
-      type:'teacher/fetchRoleList',
+      type: 'teacher/fetchRoleList',
     });
   }
 
@@ -382,7 +384,7 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      teacher: { list, pagination ,roleListData},
+      teacher: { list, pagination, roleListData },
       loading,
     } = this.props;
     const { selectedRows, modalVisible, current, showModalVisible } = this.state;
@@ -419,7 +421,12 @@ class TableList extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} current={current} roleListData={roleListData} />
+        <CreateForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          current={current}
+          roleListData={roleListData}
+        />
         <ShowViewModal
           showModalVisible={showModalVisible}
           current={current}

@@ -18,8 +18,6 @@ export async function save(params) {
   });
 }
 
-
-
 export async function deleteBatch(params) {
   return request(
     `${globalData.baseUrl + globalData.projectName}/role/delete?${stringify(params)}`,

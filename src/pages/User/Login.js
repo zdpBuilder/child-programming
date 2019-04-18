@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import Link from 'umi/link';
 import { Alert, Checkbox } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
 import globalData from '@/utils/globalData';
 
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
+const { Tab, UserName, Password, Submit } = Login;
 
 @connect(({ login, loading }) => ({
   login,
@@ -143,7 +142,11 @@ class LoginPage extends Component {
             />
           </Tab> */}
           <div>
-            <Checkbox style={{ float: 'right' }} checked={autoLogin} onChange={this.changeAutoLogin}>
+            <Checkbox
+              style={{ float: 'right' }}
+              checked={autoLogin}
+              onChange={this.changeAutoLogin}
+            >
               <FormattedMessage id="app.login.remember-me" />
             </Checkbox>
             {/* <a style={{ float: 'right' }} href=""> */}

@@ -8,7 +8,7 @@ export default {
   state: {
     list: [],
     pagination: globalData.initPagination,
-    roleListData:[]
+    roleListData: [],
   },
 
   effects: {

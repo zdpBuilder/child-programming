@@ -13,6 +13,7 @@ import {
   Divider,
   InputNumber,
   DatePicker,
+  Badge,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -47,7 +48,9 @@ const ShowViewModal = props => {
         <DescriptionList size="small" title="基本信息" col={2}>
           <Description term="课程名称">{current.title}</Description>
           <Description term="课程价格">{current.money}</Description>
-          <Description term="截至时间">{current.signUpEndDate}</Description>
+          <Description term="截至时间">
+            {moment(current.signUpEndDate).format('YYYY-MM-DD')}
+          </Description>
           <Description term="联系电话">{current.telephone}</Description>
           <Divider />
           <DescriptionList col={2} title="课程介绍" size="small" style={{ marginTop: 5 }}>
@@ -85,6 +88,8 @@ const CreateForm = Form.create()(props => {
     });
   };
 
+  // 当前天之前禁用
+  const disabledDate = currentDate => currentDate < moment().endOf('day');
   return (
     <Modal
       destroyOnClose
@@ -113,8 +118,8 @@ const CreateForm = Form.create()(props => {
       <FormItem label="截至报名时间" {...formLayout}>
         {getFieldDecorator('signUpEndDate', {
           rules: [{ required: true, message: '请选择截至报名时间！' }],
-          initialValue: current.signUpEndDate,
-        })(<DatePicker placeholder="请选择时间" />)}
+          initialValue: moment(current.signUpEndDate),
+        })(<DatePicker disabledDate={disabledDate} placeholder="请选择时间" />)}
       </FormItem>
       <FormItem label="联系电话" {...formLayout}>
         {getFieldDecorator('telephone', {
@@ -140,6 +145,10 @@ const CreateForm = Form.create()(props => {
   );
 });
 
+// 忽略停课,开课
+const statusMap = ['error', 'processing', 'success', 'default'];
+const status = ['停课', '报名', '开课', '结课'];
+
 /* eslint react/no-multi-comp:0 */
 @connect(({ experienceCourse, loading }) => ({
   experienceCourse,
@@ -164,8 +173,11 @@ class TableList extends PureComponent {
       dataIndex: 'money',
     },
     {
-      title: '联系电话',
-      dataIndex: 'telephone',
+      title: '课程状态',
+      dataIndex: 'status',
+      render(val) {
+        return <Badge status={statusMap[val]} text={status[val]} />;
+      },
     },
     {
       title: '截止报名时间',
@@ -184,6 +196,10 @@ class TableList extends PureComponent {
           <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
           <Divider type="vertical" />
           <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.deleteOne(record.id)}>删除</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleEndCourse(record)}>结课</a>
         </Fragment>
       ),
     },
@@ -324,6 +340,35 @@ class TableList extends PureComponent {
       },
       callback: response => {
         this.handleResultData(response);
+      },
+    });
+  };
+
+  // 结课处理
+  handleEndCourse = record => {
+    // 报名截止前，不能结课
+    const { id, signUpEndDate } = record;
+    const dateNow = moment();
+    const dateDiff = dateNow.diff(moment(signUpEndDate), 'days');
+    if (dateDiff <= 1) {
+      message.warning(`不能早于截止报名时间${moment(signUpEndDate).format('YYYY-MM-DD')}一天结课!`);
+      return;
+    }
+
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'experienceCourse/addAndUpdate',
+      payload: {
+        id,
+        status: 3, // 结课状态
+      },
+      callback: response => {
+        if (globalData.successCode === response.status) {
+          dispatch({
+            type: 'experienceCourse/fetchList',
+          });
+          message.success(response.msg);
+        } else message.error(response.msg);
       },
     });
   };

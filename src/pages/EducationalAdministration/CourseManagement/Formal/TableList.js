@@ -117,7 +117,7 @@ const CreateForm = Form.create()(props => {
       ...fieldsValue,
       timeSchedule: timeScheduleArray,
       periodCount: parseInt(fieldsValue.periodCount, 10),
-      maxCapacity: parseInt(fieldsValue.maxCapacity, 10),
+      photoUrl: fieldsValue.photoUrl.length === 1 ? fieldsValue.photoUrl : '',
     };
     return formValues;
   };
@@ -193,6 +193,7 @@ const CreateForm = Form.create()(props => {
       // 处理参数
       const formData = handleFormData(fieldsValue);
       // form.resetFields();
+      console.log(formData);
       handleAddAndEdit(formData);
     });
   };
@@ -333,7 +334,7 @@ class TableList extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => this.deletecourse(record.id)}>删除</a>
+          <a onClick={() => this.delete(record.id, record.status)}>删除</a>
           <Divider type="vertical" />
           <MoreBtn handleChangeCourseStatus={this.handleChangeCourseStatus} current={record} />
         </Fragment>
@@ -371,7 +372,6 @@ class TableList extends PureComponent {
     // 开课
     if (key === 'start') {
       const startDateDiff = minStartDate.diff(dateNow, 'days');
-      console.log(startDateDiff);
       flag = 2;
       if (startDateDiff > 2) {
         message.warning(`不能早于${minStartDate.format('YYYY-MM-DD')}两天开课!`);
@@ -423,6 +423,7 @@ class TableList extends PureComponent {
   };
 
   // 删除多行
+  // 目前不起作用，禁用
   handleDeleteRows = () => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
@@ -433,7 +434,7 @@ class TableList extends PureComponent {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
       callback: response => {
-        this.handleDeleteResultData(response);
+        this.handleResultData(response);
         this.setState({
           selectedRows: [],
         });
@@ -441,12 +442,13 @@ class TableList extends PureComponent {
     });
   };
 
+  /* 目前关掉
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
     });
   };
-
+  */
   // 按条件搜索
   handleSearch = e => {
     e.preventDefault();
@@ -491,6 +493,11 @@ class TableList extends PureComponent {
 
   //  编辑弹出框
   handleEditModalVisible = (flag, item) => {
+    // 仅开课前允许编辑
+    if (item.status !== 1) {
+      message.warning('仅开课前允许编辑!');
+      return;
+    }
     if (flag) {
       const gradeIdArray = [];
       item.timeSchedule.forEach(element => {
@@ -527,10 +534,15 @@ class TableList extends PureComponent {
   };
 
   // 删除单个提示
-  deletecourse = id => {
+  delete = (id, flag) => {
+    // 开课前才能删除
+    if (flag !== 1) {
+      message.warning('仅开课前允许删除!');
+      return;
+    }
     Modal.confirm({
-      title: '删除校区',
-      content: '确定删除该校区吗？',
+      title: '删除课程',
+      content: '确定删除该课程吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDeleteItem(id),
@@ -547,7 +559,7 @@ class TableList extends PureComponent {
         idsStr,
       },
       callback: response => {
-        this.handleDeleteResultData(response);
+        this.handleResultData(response);
       },
     });
   };
@@ -562,32 +574,6 @@ class TableList extends PureComponent {
       message.success(response.msg);
       this.handleAddModalVisible();
     } else message.error(response.msg);
-  };
-
-  // 删除返回结果处理
-  handleDeleteResultData = response => {
-    if (globalData.successCode === response.status) {
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'course/fetchList',
-      });
-      message.success(response.msg);
-    } else if (globalData.failCode === response.status && response.data) {
-      const { data } = response;
-      Modal.warning({
-        title: '删除失败',
-        okText: '关闭',
-        content: (
-          <div>
-            {data.map(item => (
-              <div key={item.classroomCode}>
-                {`编号${item.classroomCode}教室占用校区${item.courseName}`}
-              </div>
-            ))}
-          </div>
-        ),
-      });
-    }
   };
 
   // 搜索
@@ -650,7 +636,6 @@ class TableList extends PureComponent {
               loading={loading}
               data={list}
               columns={this.columns}
-              onSelectRow={this.handleSelectRows}
               paginationData={pagination}
               onChange={this.handleStandardTableChange}
             />

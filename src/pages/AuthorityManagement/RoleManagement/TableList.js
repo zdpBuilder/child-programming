@@ -2,7 +2,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Button, Card, Col, Divider, Form, Input, message, Modal, Row,Tree} from 'antd';
+import { Button, Card, Col, Divider, Form, Input, message, Modal, Row } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
@@ -42,8 +42,15 @@ const ShowViewModal = props => {
   );
 };
 
-const  AssignAuthorityForm= Form.create()(props=>{
-  const { AssignAuthorityViewVisible, form,handleAssignAuthorityViewVisibleVisible, AssignAuthority,current = {},menuData=[] } = props;
+const AssignAuthorityForm = Form.create()(props => {
+  const {
+    AssignAuthorityViewVisible,
+    form,
+    handleAssignAuthorityViewVisibleVisible,
+    AssignAuthority,
+    current = {},
+    menuData = [],
+  } = props;
 
   const {
     form: { getFieldDecorator },
@@ -58,7 +65,6 @@ const  AssignAuthorityForm= Form.create()(props=>{
     });
   };
 
-
   return (
     <Modal
       destroyOnClose
@@ -66,25 +72,37 @@ const  AssignAuthorityForm= Form.create()(props=>{
       visible={AssignAuthorityViewVisible}
       onCancel={() => handleAssignAuthorityViewVisibleVisible()}
       cancelText="取消"
-      okText={"授权"}
+      okText={'授权'}
       onOk={okHandle}
     >
-      <Card bordered={false} title={<div style={{textAlign:"center"}}> 当前角色<Divider type="vertical" />{current.name}</div>}>
+      <Card
+        bordered={false}
+        title={
+          <div style={{ textAlign: 'center' }}>
+            {' '}
+            当前角色
+            <Divider type="vertical" />
+            {current.name}
+          </div>
+        }
+      >
         <FormItem>
           {getFieldDecorator('roleToken', {
-          initialValue: current.roleToken,
-        })(<Input type="hidden" />)}
+            initialValue: current.roleToken,
+          })(<Input type="hidden" />)}
         </FormItem>
         <FormItem label="角色授权" {...formLayout}>
-
-          <TreeExample props={props} formFieldPropsKey={"menuIds"} treeData={menuData} defaultAuthority={current.roleToken} />
+          <TreeExample
+            props={props}
+            formFieldPropsKey={'menuIds'}
+            treeData={menuData}
+            defaultAuthority={current.roleToken}
+          />
         </FormItem>
       </Card>
     </Modal>
   );
-
 });
-
 
 const CreateForm = Form.create()(props => {
   const { modalVisible, handleAddAndEdit, form, handleAddModalVisible, current = {} } = props;
@@ -148,8 +166,52 @@ class TableList extends PureComponent {
     selectedRows: [],
     current: {},
     showModalVisible: false,
-    AssignAuthorityViewVisible:false,
+    AssignAuthorityViewVisible: false,
   };
+
+  columns = [
+    {
+      title: '角色名称',
+      dataIndex: 'name',
+    },
+    {
+      title: '角色Token',
+      dataIndex: 'roleToken',
+    },
+    {
+      title: '角色备注',
+      dataIndex: 'comment',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.deleterole(record.id)}>删除</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleAssignAuthorityViewVisibleVisible(true, record)}>权限分配</a>
+        </Fragment>
+      ),
+    },
+  ];
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'role/fetchList',
+    });
+    dispatch({
+      type: 'role/getMenuData',
+    });
+  }
 
   // 处理表格分页
   handleStandardTableChange = pagination => {
@@ -235,8 +297,8 @@ class TableList extends PureComponent {
     });
   };
 
-   // 授权处理
-  AssignAuthority=fields=>{
+  // 授权处理
+  AssignAuthority = fields => {
     const { dispatch } = this.props;
     dispatch({
       type: 'role/assignAuthority',
@@ -253,7 +315,7 @@ class TableList extends PureComponent {
         } else message.error(response.msg);
       },
     });
-  }
+  };
 
   // 添加、编辑处理
   handleAddAndEdit = fields => {
@@ -299,40 +361,6 @@ class TableList extends PureComponent {
     });
   };
 
-  columns = [
-    {
-      title: '角色名称',
-      dataIndex: 'name',
-    },
-    {
-      title: '角色Token',
-      dataIndex: 'roleToken',
-    },
-    {
-      title: '角色备注',
-      dataIndex: 'comment',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
-    {
-      title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.deleterole(record.id)}>删除</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleAssignAuthorityViewVisibleVisible(true, record)}>权限分配</a>
-        </Fragment>
-      ),
-    },
-  ];
-
   // 删除单个处理
   handleDeleteItem = id => {
     const idsStr = `${id}`;
@@ -360,16 +388,6 @@ class TableList extends PureComponent {
       this.handleAddModalVisible();
     } else message.error(response.msg);
   };
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'role/fetchList',
-    });
-    dispatch({
-      type: 'role/getMenuData',
-    });
-  }
 
   // 搜索
   renderSimpleForm() {
@@ -401,11 +419,17 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      role: { list, pagination ,menuData},
+      role: { list, pagination, menuData },
       loading,
     } = this.props;
     console.log(loading);
-    const { selectedRows, modalVisible, current, showModalVisible ,AssignAuthorityViewVisible} = this.state;
+    const {
+      selectedRows,
+      modalVisible,
+      current,
+      showModalVisible,
+      AssignAuthorityViewVisible,
+    } = this.state;
 
     const parentMethods = {
       handleAddAndEdit: this.handleAddAndEdit,

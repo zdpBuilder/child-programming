@@ -30,6 +30,15 @@ export default {
       });
       if (callback) callback(response);
     },
+
+    *remove({ payload, callback }, { call, put }) {
+      const response = yield call(experienceCourseService.deleteBatch, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
   },
 
   reducers: {

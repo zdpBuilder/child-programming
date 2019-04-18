@@ -1,12 +1,13 @@
 import memoizeOne from 'memoize-one';
 import isEqual from 'lodash/isEqual';
-import { formatMessage } from 'umi/locale';
+// import { formatMessage } from 'umi/locale';
 import Authorized from '@/utils/Authorized';
 import * as menuService from '@/services/menu';
 
 const { check } = Authorized;
 
 // Conversion router to menu.
+/*
 function formatter(data, parentAuthority, parentName) {
   return data
     .map(item => {
@@ -37,8 +38,8 @@ function formatter(data, parentAuthority, parentName) {
     })
     .filter(item => item);
 }
-
-const memoizeOneFormatter = memoizeOne(formatter, isEqual);
+*/
+// const memoizeOneFormatter = memoizeOne(formatter, isEqual);
 
 /**
  * get SubMenu or Item
@@ -97,14 +98,14 @@ export default {
   },
 
   effects: {
-    *getMenuData({ payload }, {call, put }) {
+    *getMenuData({ payload }, { call, put }) {
       // const { routes, authority } = payload;
-    // const menuData = filterMenuData(memoizeOneFormatter(routes, authority));
-    // console.info(JSON.stringify(menuData)) //let menuData = [{"path":"/dashboard","name":"Dashboard","icon":"dashboard","locale":"menu.dashboard","authority":["user"],"children":[{"path":"/dashboard/workplace","name":"工作台","exact":true,"locale":"menu.dashboard.workplace"}]},{"path":"/webAdmin","icon":"table","name":"门户网站管理","locale":"menu.portalManagement","authority":["admin","user"],"children":[{"path":"/webAdmin/worksManagement","name":"作品管理","exact":true,"locale":"menu.portalManagement.worksManagement"},{"path":"/webAdmin/materialManagement","name":"资料管理","locale":"menu.portalManagement.materialManagement","children":[{"path":"/webAdmin/materialManagement/materialTypeManagement","name":"资料类别管理","exact":true,"locale":"menu.portalManagement.materialManagement.materialTypeManagement"},{"path":"/webAdmin/materialManagement/materialContentManagement","name":"资料内容管理","exact":true,"locale":"menu.portalManagement.materialManagement.materialContentManagement"}]},{"path":"/webAdmin/paymentRecord","name":"缴费记录管理","exact":true,"locale":"menu.portalManagement.paymentRecord"}]},{"path":"/educationalAdministration","icon":"table","name":"教务管理","locale":"menu.educationalAdministration","authority":["admin","user"],"children":[{"path":"/educationalAdministration/schoolManagement","name":"校区管理","exact":true,"locale":"menu.educationalAdministration.schoolManagement"},{"path":"/educationalAdministration/classroomManagement","name":"教室管理","exact":true,"locale":"menu.educationalAdministration.classroomManagement"},{"path":"/educationalAdministration/studentsManagement","name":"学生信息管理","exact":true,"locale":"menu.educationalAdministration.studentsManagement"},{"path":"/educationalAdministration/teacherManagement","name":"教师信息管理","exact":true,"locale":"menu.educationalAdministration.teacherManagement"},{"path":"/educationalAdministration/courseManagement","name":"课程管理","locale":"menu.educationalAdministration.courseManagement","children":[{"path":"/educationalAdministration/courseManagement/formal","name":" 正式课管理","exact":true,"locale":"menu.educationalAdministration.courseManagement.formalCourseManagement"}]},{"path":"/educationalAdministration/gradeManagement","name":" 班级管理","exact":true,"locale":"menu.educationalAdministration.gradeManagement"},{"path":"/educationalAdministration/signManagement","name":" 签到管理","exact":true,"locale":"menu.educationalAdministration.signManagement"}]},{"name":"个人页","icon":"user","path":"/account","locale":"menu.account","authority":["admin","user"],"children":[{"path":"/account/center","name":"个人中心","locale":"menu.account.center","children":[]},{"path":"/account/settings","name":"个人设置","locale":"menu.account.settings","children":[]}]}];
+      // const menuData = filterMenuData(memoizeOneFormatter(routes, authority));
+      // console.info(JSON.stringify(menuData)) //let menuData = [{"path":"/dashboard","name":"Dashboard","icon":"dashboard","locale":"menu.dashboard","authority":["user"],"children":[{"path":"/dashboard/workplace","name":"工作台","exact":true,"locale":"menu.dashboard.workplace"}]},{"path":"/webAdmin","icon":"table","name":"门户网站管理","locale":"menu.portalManagement","authority":["admin","user"],"children":[{"path":"/webAdmin/worksManagement","name":"作品管理","exact":true,"locale":"menu.portalManagement.worksManagement"},{"path":"/webAdmin/materialManagement","name":"资料管理","locale":"menu.portalManagement.materialManagement","children":[{"path":"/webAdmin/materialManagement/materialTypeManagement","name":"资料类别管理","exact":true,"locale":"menu.portalManagement.materialManagement.materialTypeManagement"},{"path":"/webAdmin/materialManagement/materialContentManagement","name":"资料内容管理","exact":true,"locale":"menu.portalManagement.materialManagement.materialContentManagement"}]},{"path":"/webAdmin/paymentRecord","name":"缴费记录管理","exact":true,"locale":"menu.portalManagement.paymentRecord"}]},{"path":"/educationalAdministration","icon":"table","name":"教务管理","locale":"menu.educationalAdministration","authority":["admin","user"],"children":[{"path":"/educationalAdministration/schoolManagement","name":"校区管理","exact":true,"locale":"menu.educationalAdministration.schoolManagement"},{"path":"/educationalAdministration/classroomManagement","name":"教室管理","exact":true,"locale":"menu.educationalAdministration.classroomManagement"},{"path":"/educationalAdministration/studentsManagement","name":"学生信息管理","exact":true,"locale":"menu.educationalAdministration.studentsManagement"},{"path":"/educationalAdministration/teacherManagement","name":"教师信息管理","exact":true,"locale":"menu.educationalAdministration.teacherManagement"},{"path":"/educationalAdministration/courseManagement","name":"课程管理","locale":"menu.educationalAdministration.courseManagement","children":[{"path":"/educationalAdministration/courseManagement/formal","name":" 正式课管理","exact":true,"locale":"menu.educationalAdministration.courseManagement.formalCourseManagement"}]},{"path":"/educationalAdministration/gradeManagement","name":" 班级管理","exact":true,"locale":"menu.educationalAdministration.gradeManagement"},{"path":"/educationalAdministration/signManagement","name":" 签到管理","exact":true,"locale":"menu.educationalAdministration.signManagement"}]},{"name":"个人页","icon":"user","path":"/account","locale":"menu.account","authority":["admin","user"],"children":[{"path":"/account/center","name":"个人中心","locale":"menu.account.center","children":[]},{"path":"/account/settings","name":"个人设置","locale":"menu.account.settings","children":[]}]}];
 
       let menuData = yield call(menuService.getList, payload);
       console.info(menuData);
-      menuData= filterMenuData(menuData);
+      menuData = filterMenuData(menuData);
       const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(menuData);
       yield put({
         type: 'save',

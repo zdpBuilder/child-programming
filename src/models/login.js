@@ -4,9 +4,9 @@ import { getFakeCaptcha } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
-import { accountLogin ,accountLogout} from '@/services/login';
+import { accountLogin, accountLogout } from '@/services/login';
 import globalData from '@/utils/globalData';
-import {message} from 'antd';
+import { message } from 'antd';
 
 export default {
   namespace: 'login',
@@ -44,25 +44,24 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || '/dashboard/workplace'));
-      }else
-        message.error("账号或密码错误");
+      } else message.error('账号或密码错误');
     },
 
     *getCaptcha({ payload }, { call }) {
       yield call(getFakeCaptcha, payload);
     },
 
-    *logout(_, { call,put}) {
-
+    *logout(_, { call, put }) {
       const response = yield call(accountLogout);
 
-      if(response.status === globalData.successCode){
+      if (response.status === globalData.successCode) {
         yield put({
           type: 'changeLoginStatus',
           payload: {
-            data:{
-            status: false, currentAuthority: undefined,
-            }
+            data: {
+              status: false,
+              currentAuthority: undefined,
+            },
           },
         });
         reloadAuthorized();
@@ -74,16 +73,14 @@ export default {
             }),
           })
         );
-      }else{
-        message.error("退出失败")
+      } else {
+        message.error('退出失败');
       }
-
     },
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-
       setAuthority(payload.data.currentAuthority);
       return {
         ...state,

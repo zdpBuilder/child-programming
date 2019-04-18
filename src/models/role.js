@@ -8,7 +8,7 @@ export default {
   state: {
     list: [],
     pagination: globalData.initPagination,
-    menuData:[]
+    menuData: [],
   },
 
   effects: {

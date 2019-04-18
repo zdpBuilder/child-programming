@@ -1,17 +1,17 @@
-import React, { PureComponent, Fragment } from 'react';
+/* eslint-disable react/jsx-curly-brace-presence */
+import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Modal, message, Divider, Select } from 'antd';
+import { Button, Card, Col, Divider, Form, Input, message, Modal, Row,Tree} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
 
 import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
-import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
+import TreeExample from './TreeExample';
 
 const FormItem = Form.Item;
-const { TextArea } = Input;
 const { Description } = DescriptionList;
 
 const formLayout = {
@@ -25,47 +25,77 @@ const ShowViewModal = props => {
   return (
     <Modal
       destroyOnClose
-      title="老师查看"
+      title="角色信息查看"
       visible={showModalVisible}
       onCancel={() => handleShowModalVisible()}
       cancelText="关闭"
       footer={null}
     >
       <Card bordered={false}>
-        <DescriptionList size="small" title="基本信息" col={2}>
-          <Description term="登陆账号">{current.loginId}</Description>
-          <Description term="姓名">{current.name}</Description>
-          <Description term="手&nbsp;&nbsp;机&nbsp;&nbsp;号">{current.phone}</Description>
-          <Description term="权限名称">{current.roleName}</Description>
-
-          <Divider />
-          <Description term="照&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;片">
-            <img
-              alt="example"
-              style={{ width: '100%' }}
-              src={globalData.photoBaseUrl + current.photoUrl}
-            />
-          </Description>
-          <Divider />
-          <DescriptionList col={2} title="个人简介" size="small" style={{ marginTop: 5 }}>
-            <Description>{current.introduction}</Description>
-          </DescriptionList>
+        <DescriptionList title="角色基本信息" size="small" col={1} style={{ marginLeft: 0 }}>
+          <Description term="角色名称">{current.name}</Description>
+          <Description term="角色Token">{current.roleToken}</Description>
+          <Description term="角色备注">{current.comment}</Description>
         </DescriptionList>
       </Card>
     </Modal>
   );
 };
 
-const CreateForm = Form.create()(props => {
-  const { modalVisible, handleAddAndEdit, form, handleAddModalVisible, current = {} } = props;
+const  AssignAuthorityForm= Form.create()(props=>{
+  const { AssignAuthorityViewVisible, form,handleAssignAuthorityViewVisibleVisible, AssignAuthority,current = {},menuData=[] } = props;
+
   const {
     form: { getFieldDecorator },
-    roleListData
   } = props;
 
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      form.resetFields();
+      console.info(fieldsValue);
+      AssignAuthority(fieldsValue);
+    });
+  };
+
+
+  return (
+    <Modal
+      destroyOnClose
+      title="角色分配权限"
+      visible={AssignAuthorityViewVisible}
+      onCancel={() => handleAssignAuthorityViewVisibleVisible()}
+      cancelText="取消"
+      okText={"授权"}
+      onOk={okHandle}
+    >
+      <Card bordered={false} title={<div style={{textAlign:"center"}}> 当前角色<Divider type="vertical" />{current.name}</div>}>
+        <FormItem>
+          {getFieldDecorator('roleToken', {
+          initialValue: current.roleToken,
+        })(<Input type="hidden" />)}
+        </FormItem>
+        <FormItem label="角色授权" {...formLayout}>
+
+          <TreeExample props={props} formFieldPropsKey={"menuIds"} treeData={menuData} defaultAuthority={current.roleToken} />
+        </FormItem>
+      </Card>
+    </Modal>
+  );
+
+});
+
+
+const CreateForm = Form.create()(props => {
+  const { modalVisible, handleAddAndEdit, form, handleAddModalVisible, current = {} } = props;
+  const {
+    form: { getFieldDecorator },
+  } = props;
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
       form.resetFields();
       handleAddAndEdit(fieldsValue);
     });
@@ -74,7 +104,7 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={`老师${current.id ? '编辑' : '添加'}`}
+      title={`角色${current.id ? '编辑' : '添加'}`}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleAddModalVisible()}
@@ -84,60 +114,32 @@ const CreateForm = Form.create()(props => {
           initialValue: current.id,
         })(<Input type="hidden" />)}
       </FormItem>
-      <FormItem label="登陆账号" {...formLayout}>
-        {getFieldDecorator('loginId', {
-          rules: [{ required: true, message: '请输入不超过十五位登陆账号！', max: 15 }],
-          initialValue: current.loginId,
-        })(<Input placeholder="请输入登陆账号" />)}
-      </FormItem>
       <FormItem label="角色名称" {...formLayout}>
-        {getFieldDecorator('roleId', {
-          rules: [{ required: true, message: '请选择角色！'}],
-          initialValue: current.roleId,
-        })( <Select placeholder="请选择角色" style={{ width: 255 }}>
-          {roleListData.map(item => (
-            <Option key={item.value} value={item.id}>
-              {item.name}
-            </Option>
-          ))}
-        </Select>)}
-
-      </FormItem>
-
-      <FormItem label="姓名" {...formLayout}>
         {getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入不超过十五位姓名！', max: 15 }],
+          rules: [{ required: true, message: '请输入角色名称！', max: 50 }],
           initialValue: current.name,
-        })(<Input placeholder="请输入姓名" />)}
+        })(<Input placeholder="请输入角色名称" />)}
       </FormItem>
-      <FormItem label="手机号" {...formLayout}>
-        {getFieldDecorator('phone', {
-          rules: [{ required: true, message: '请输入手机号！' }],
-          initialValue: current.phone,
-        })(<Input placeholder="请输入手机号" />)}
+      <FormItem label="角色Token" {...formLayout}>
+        {getFieldDecorator('roleToken', {
+          rules: [{ required: true, message: '请输入角色Token！', max: 50 }],
+          initialValue: current.roleToken,
+        })(<Input placeholder="请输入角色Token" />)}
       </FormItem>
-      <FormItem label="照片" {...formLayout}>
-        <UpLoadPicExample
-          props={props}
-          formFieldPropsKey="photoUrl"
-          defaultImgUrl={current.photoUrl}
-          fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.teacher}
-        />
-      </FormItem>
-      <FormItem label="备注" {...formLayout}>
-        {getFieldDecorator('introduction', {
-          rules: [{ message: '请输入至少五个字符的介绍！', min: 5, max: 500 }],
-          initialValue: current.introduction,
-        })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
+      <FormItem label="角色备注" {...formLayout}>
+        {getFieldDecorator('comment', {
+          rules: [{ required: true, message: '请输入角色备注！', max: 50 }],
+          initialValue: current.comment,
+        })(<Input rows={4} placeholder="请输入角色备注" />)}
       </FormItem>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ teacher, loading }) => ({
-  teacher,
-  loading: loading.models.teacher,
+@connect(({ role, loading }) => ({
+  role,
+  loading: loading.models.role,
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -146,64 +148,17 @@ class TableList extends PureComponent {
     selectedRows: [],
     current: {},
     showModalVisible: false,
+    AssignAuthorityViewVisible:false,
   };
-
-  columns = [
-    {
-      title: '登陆账号',
-      dataIndex: 'loginId',
-    },
-    {
-      title: '角色名称',
-      dataIndex: 'roleName',
-    },
-    {
-      title: '姓名',
-      dataIndex: 'name',
-    },
-    {
-      title: '电话',
-      dataIndex: 'phone',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
-    {
-      title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.deleteOne(record.id)}>删除</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.resetPassword(record.id)}>重置密码</a>
-        </Fragment>
-      ),
-    },
-  ];
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'teacher/fetchList',
-    });
-    dispatch({
-      type:'teacher/fetchRoleList',
-    });
-  }
 
   // 处理表格分页
   handleStandardTableChange = pagination => {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'teacher/changeTable',
+      type: 'role/save',
       payload: {
-        ...pagination,
+        pagination,
       },
     });
   };
@@ -214,7 +169,7 @@ class TableList extends PureComponent {
     form.resetFields();
     this.setState({});
     dispatch({
-      type: 'teacher/fetchList',
+      type: 'role/fetchList',
       payload: {},
     });
   };
@@ -225,7 +180,7 @@ class TableList extends PureComponent {
     const { selectedRows } = this.state;
     if (!selectedRows) return;
     dispatch({
-      type: 'teacher/remove',
+      type: 'role/remove',
       payload: {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
@@ -258,7 +213,7 @@ class TableList extends PureComponent {
       };
 
       dispatch({
-        type: 'teacher/fetchList',
+        type: 'role/fetchList',
         payload: values,
       });
     });
@@ -280,11 +235,31 @@ class TableList extends PureComponent {
     });
   };
 
+   // 授权处理
+  AssignAuthority=fields=>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'role/assignAuthority',
+      payload: {
+        ...fields,
+      },
+      callback: response => {
+        if (globalData.successCode === response.status) {
+          dispatch({
+            type: 'role/fetchList',
+          });
+          message.success(response.msg);
+          this.handleAssignAuthorityViewVisibleVisible();
+        } else message.error(response.msg);
+      },
+    });
+  }
+
   // 添加、编辑处理
   handleAddAndEdit = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'teacher/addAndUpdate',
+      type: 'role/addAndUpdate',
       payload: {
         ...fields,
       },
@@ -302,23 +277,64 @@ class TableList extends PureComponent {
     });
   };
 
+  handleAssignAuthorityViewVisibleVisible = (flag, item) => {
+    this.setState({
+      AssignAuthorityViewVisible: !!flag,
+      current: item,
+    });
+  };
+
   // 删除单个提示
-  deleteOne = id => {
+  deleterole = id => {
     Modal.confirm({
-      title: '删除校区',
-      content: '确定删除该校区吗？',
+      title: '删除角色',
+      content: '确定删除该角色吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDeleteItem(id),
     });
   };
 
+  columns = [
+    {
+      title: '角色名称',
+      dataIndex: 'name',
+    },
+    {
+      title: '角色Token',
+      dataIndex: 'roleToken',
+    },
+    {
+      title: '角色备注',
+      dataIndex: 'comment',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.deleterole(record.id)}>删除</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleAssignAuthorityViewVisibleVisible(true, record)}>权限分配</a>
+        </Fragment>
+      ),
+    },
+  ];
+
   // 删除单个处理
   handleDeleteItem = id => {
     const idsStr = `${id}`;
     const { dispatch } = this.props;
     dispatch({
-      type: 'teacher/remove',
+      type: 'role/remove',
       payload: {
         idsStr,
       },
@@ -328,31 +344,28 @@ class TableList extends PureComponent {
     });
   };
 
-  // 重置密码
-  resetPassword = teacherId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'teacher/resetPassword',
-      payload: {
-        teacherId,
-      },
-      callback: response => {
-        this.handleResultData(response);
-      },
-    });
-  };
-
   // 添加、编辑、删除返回结果处理
   handleResultData = response => {
+    console.log(response);
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
       dispatch({
-        type: 'teacher/fetchList',
+        type: 'role/fetchList',
       });
       message.success(response.msg);
       this.handleAddModalVisible();
     } else message.error(response.msg);
   };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'role/fetchList',
+    });
+    dispatch({
+      type: 'role/getMenuData',
+    });
+  }
 
   // 搜索
   renderSimpleForm() {
@@ -363,7 +376,9 @@ class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="老师姓名">{getFieldDecorator('name')(<Input />)}</FormItem>
+            <FormItem label="角色名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
@@ -382,10 +397,11 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      teacher: { list, pagination ,roleListData},
+      role: { list, pagination ,menuData},
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, current, showModalVisible } = this.state;
+    console.log(loading);
+    const { selectedRows, modalVisible, current, showModalVisible ,AssignAuthorityViewVisible} = this.state;
 
     const parentMethods = {
       handleAddAndEdit: this.handleAddAndEdit,
@@ -393,7 +409,7 @@ class TableList extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="教师信息管理">
+      <PageHeaderWrapper title="角色管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
@@ -419,11 +435,18 @@ class TableList extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} current={current} roleListData={roleListData} />
+        <CreateForm {...parentMethods} modalVisible={modalVisible} current={current} />
         <ShowViewModal
           showModalVisible={showModalVisible}
           current={current}
           handleShowModalVisible={this.handleShowModalVisible}
+        />
+        <AssignAuthorityForm
+          AssignAuthority={this.AssignAuthority}
+          AssignAuthorityViewVisible={AssignAuthorityViewVisible}
+          current={current}
+          menuData={menuData}
+          handleAssignAuthorityViewVisibleVisible={this.handleAssignAuthorityViewVisibleVisible}
         />
       </PageHeaderWrapper>
     );

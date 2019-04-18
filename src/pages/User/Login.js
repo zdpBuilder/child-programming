@@ -106,7 +106,7 @@ class LoginPage extends Component {
               onPressEnter={() => this.loginForm.validateFields(this.handleSubmit)}
             />
           </Tab>
-          <Tab key="mobile" tab={formatMessage({ id: 'app.login.tab-login-mobile' })}>
+          {/*  <Tab key="mobile" tab={formatMessage({ id: 'app.login.tab-login-mobile' })}>
             {login.status === 'error' &&
               login.type === 'mobile' &&
               !submitting &&
@@ -141,14 +141,14 @@ class LoginPage extends Component {
                 },
               ]}
             />
-          </Tab>
+          </Tab> */}
           <div>
-            <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
+            <Checkbox style={{ float: 'right' }} checked={autoLogin} onChange={this.changeAutoLogin}>
               <FormattedMessage id="app.login.remember-me" />
             </Checkbox>
-            <a style={{ float: 'right' }} href="">
-              <FormattedMessage id="app.login.forgot-password" />
-            </a>
+            {/* <a style={{ float: 'right' }} href=""> */}
+            {/* <FormattedMessage id="app.login.forgot-password" /> */}
+            {/* </a> */}
           </div>
           <Submit loading={submitting}>
             <FormattedMessage id="app.login.login" />
@@ -157,10 +157,10 @@ class LoginPage extends Component {
             {/* <FormattedMessage id="app.login.sign-in-with" />
             <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
             <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
-            <Icon type="weibo-circle" className={styles.icon} theme="outlined" />*/}
-            <Link className={styles.register} to="/user/register">
-              <FormattedMessage id="app.login.signup" />
-            </Link>
+            <Icon type="weibo-circle" className={styles.icon} theme="outlined" /> */}
+            {/* <Link className={styles.register} to="/user/register"> */}
+            {/* <FormattedMessage id="app.login.signup" /> */}
+            {/* </Link> */}
           </div>
         </Login>
       </div>

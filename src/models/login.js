@@ -4,8 +4,9 @@ import { getFakeCaptcha } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
-import { accountLogin } from '@/services/login';
+import { accountLogin ,accountLogout} from '@/services/login';
 import globalData from '@/utils/globalData';
+import {message} from 'antd';
 
 export default {
   namespace: 'login',
@@ -18,7 +19,7 @@ export default {
     *login({ payload }, { call, put }) {
       const response = yield call(accountLogin, payload);
       // TODO 此处用户类型先为默认的account登陆
-      response.type = payload.type;
+      // response.type = payload.type;
 
       yield put({
         type: 'changeLoginStatus',
@@ -45,35 +46,46 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || '/dashboard/workplace'));
-      }
+      }else
+        message.error("账号或密码错误");
     },
 
     *getCaptcha({ payload }, { call }) {
       yield call(getFakeCaptcha, payload);
     },
 
-    *logout(_, { put }) {
-      yield put({
-        type: 'changeLoginStatus',
-        payload: {
-          status: false,
-          currentAuthority: 'guest',
-        },
-      });
-      reloadAuthorized();
-      yield put(
-        routerRedux.push({
-          pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        })
-      );
+    *logout(_, { call,put}) {
+
+      const response = yield call(accountLogout);
+
+      if(response.status === globalData.successCode){
+        yield put({
+          type: 'changeLoginStatus',
+          payload: {
+            data:{
+            status: false, currentAuthority: undefined,
+            }
+          },
+        });
+        reloadAuthorized();
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }else{
+        message.error("退出失败")
+      }
+
     },
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
+
       setAuthority(payload.data.currentAuthority);
       return {
         ...state,

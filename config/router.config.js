@@ -32,6 +32,19 @@ export default [
           },
         ],
       },
+      //权限管理
+      {
+        path: '/authorityManagement',
+        icon: 'table',
+        name: 'authorityManagement',
+        routes: [
+          {
+            path: '/authorityManagement/roleManagement',
+            name: 'roleManagement',
+            component: './AuthorityManagement/RoleManagement/TableList',
+          }
+        ]
+      },
       // webAdmin 门户网站管理
       {
         path: '/webAdmin',

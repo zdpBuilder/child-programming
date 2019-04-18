@@ -1,19 +1,19 @@
-import * as teacherService from '@/services/teacher';
 import * as roleService from '@/services/role';
+import * as menuService from '@/services/menu';
 import globalData from '@/utils/globalData';
 
 export default {
-  namespace: 'teacher',
+  namespace: 'role',
 
   state: {
     list: [],
     pagination: globalData.initPagination,
-    roleListData:[]
+    menuData:[]
   },
 
   effects: {
     *fetchList({ payload }, { call, put }) {
-      const response = yield call(teacherService.getList, payload);
+      const response = yield call(roleService.getList, payload);
       yield put({
         type: 'save',
         payload: {
@@ -24,18 +24,24 @@ export default {
         },
       });
     },
-
-    *fetchRoleList({ payload }, { call, put }) {
-      const response = yield call(roleService.getList, payload);
+    *getMenuData({ payload }, { call, put }) {
+      const response = yield call(menuService.getList, payload);
       yield put({
         type: 'save',
         payload: {
-          roleListData: response || [],
+          menuData: response || [],
         },
       });
     },
+
+    *assignAuthority({ payload, callback }, { call }) {
+      const response = yield call(menuService.assignAuthority, payload);
+
+      if (callback) callback(response);
+    },
+
     *addAndUpdate({ payload, callback }, { call, put }) {
-      const response = yield call(teacherService.save, payload);
+      const response = yield call(roleService.save, payload);
       yield put({
         type: 'save',
       });
@@ -43,16 +49,7 @@ export default {
     },
 
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(teacherService.deleteBatch, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback(response);
-    },
-
-    *resetPassword({ payload, callback }, { call, put }) {
-      const response = yield call(teacherService.resetPassword, payload);
+      const response = yield call(roleService.deleteBatch, payload);
       yield put({
         type: 'save',
         payload: response,

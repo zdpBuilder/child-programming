@@ -10,9 +10,8 @@ export async function accountLogin(params) {
 }
 
 // 退出
-export async function accountLogout(params) {
-  return request(`${globalData.baseUrl + globalData.projectName}/web/logout/account`, {
-    method: globalData.POST,
-    body: params,
+export async function accountLogout() {
+  return request(`${globalData.baseUrl + globalData.projectName}/web/logout`, {
+    method: globalData.GET,
   });
 }

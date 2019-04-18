@@ -278,6 +278,10 @@ class TableList extends PureComponent {
   };
 
   handleAssignAuthorityViewVisibleVisible = (flag, item) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'role/getMenuData',
+    });
     this.setState({
       AssignAuthorityViewVisible: !!flag,
       current: item,

@@ -18,8 +18,6 @@ export default {
   effects: {
     *login({ payload }, { call, put }) {
       const response = yield call(accountLogin, payload);
-      // TODO 此处用户类型先为默认的account登陆
-      // response.type = payload.type;
 
       yield put({
         type: 'changeLoginStatus',

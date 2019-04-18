@@ -29,7 +29,6 @@ class TreeExample extends React.Component {
     this.props.treeData.map(item=>{
       if(item.authority){
         item.authority.map(item2=>{
-          console.info(this.props.defaultAuthority);
           if(item2===this.props.defaultAuthority){
             checkedKeys.push(item.id);
           }
@@ -37,6 +36,17 @@ class TreeExample extends React.Component {
       }
     })
 
+  /*  for(let i=0;i<checkedKeys.length;i++){
+      this.props.treeData.map(item3=> {
+        if (item3.id === checkedKeys[i]) {
+          if (item3.exact) {
+            checkedKeys.splice(i, 1);
+          }
+        }
+      });
+    }
+*/
+console.info(checkedKeys);
     this.setState({checkedKeys});
 
   }
@@ -88,9 +98,9 @@ class TreeExample extends React.Component {
         <Tree
           checkable
 
-          onExpand={this.onExpand}
-          expandedKeys={this.state.expandedKeys}
-          autoExpandParent={this.state.autoExpandParent}
+          // onExpand={this.onExpand}
+         // expandedKeys={this.state.expandedKeys}
+        //  autoExpandParent={this.state.autoExpandParent}
           onCheck={this.onCheck}
           checkedKeys={this.state.checkedKeys}
           onSelect={this.onSelect}

@@ -86,7 +86,7 @@ class LoginPage extends Component {
               this.renderMessage(login.msg)}
             <UserName
               name="loginId"
-              placeholder={`${formatMessage({ id: 'app.login.userName' })}: admin or user`}
+              placeholder={`${formatMessage({ id: 'app.login.userName' })}: 用户名`}
               rules={[
                 {
                   required: true,
@@ -96,7 +96,7 @@ class LoginPage extends Component {
             />
             <Password
               name="password"
-              placeholder={`${formatMessage({ id: 'app.login.password' })}: ant.design`}
+              placeholder={`${formatMessage({ id: 'app.login.password' })}: 密码`}
               rules={[
                 {
                   required: true,

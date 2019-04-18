@@ -16,7 +16,6 @@ export default [
     path: '/',
     component: '../layouts/BasicLayout',
     Routes: ['src/pages/Authorized'],
-    authority: ['admin', 'user'],
     routes: [
       // 登陆
       { path: '/', redirect: '/user/login' },

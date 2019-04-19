@@ -217,7 +217,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'experienceCourse/changeTable',
+      type: 'experienceCourse/save',
       payload: {
         ...pagination,
       },

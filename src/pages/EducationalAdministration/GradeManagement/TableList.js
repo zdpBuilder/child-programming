@@ -209,9 +209,9 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'grade/changeTable',
+      type: 'grade/save',
       payload: {
-        ...pagination,
+        pagination,
       },
     });
   };

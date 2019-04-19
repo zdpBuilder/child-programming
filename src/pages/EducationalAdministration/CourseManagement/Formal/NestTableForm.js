@@ -237,16 +237,19 @@ class NestTableForm extends PureComponent {
   detectDayTimeRangeConfict(key, target) {
     const keyArray = key.split('-');
     const { childrenData = [] } = this.getRowByKey(keyArray[0]);
-    console.log(childrenData);
     // 只有一个不用校验
     if (childrenData.length === 1) return true;
     // 取出当前要保存的班级星期安排
     const { day: targeDay } = target;
-    const result = childrenData.every(children => {
+    // 过滤掉相同的key
+    const filterChildrenData = childrenData.filter(item => item.key !== target.key);
+
+    const result = filterChildrenData.every(children => {
       const { day } = children;
       return day.every(dayStr =>
         targeDay.every(targeDayStr => {
           if (dayStr === targeDayStr) {
+            // 此条件满足，说明无冲突
             if (
               target.timeRange.endHour < children.timeRange.startHour ||
               target.timeRange.startHour > children.timeRange.endHour
@@ -254,6 +257,7 @@ class NestTableForm extends PureComponent {
               return true;
             return false;
           }
+          // 执行到此处，说明星期不一样，校验通过
           return true;
         })
       );

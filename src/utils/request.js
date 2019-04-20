@@ -128,12 +128,16 @@ export default function request(url, option) {
       if (newOptions.method === 'DELETE' || response.status === 204) {
         return response.text();
       }
+
       return response.json();
     })
     .catch(e => {
-      console.log(e);
       const status = e.name;
+      if (status === 'SyntaxError') {
+        router.push('/user/login');
+      }
 
+      if (status === 'TypeError') router.push('/user/login');
       if (status === 401) {
         // @HACK
         /* eslint-disable no-underscore-dangle */

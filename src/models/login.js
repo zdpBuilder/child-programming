@@ -44,7 +44,7 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || '/dashboard/workplace'));
-      } else message.error('账号或密码错误');
+      } else message.error(response.msg);
     },
 
     *getCaptcha({ payload }, { call }) {

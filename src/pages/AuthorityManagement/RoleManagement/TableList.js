@@ -168,7 +168,7 @@ class TableList extends PureComponent {
     current: {},
     showModalVisible: false,
     AssignAuthorityViewVisible: false,
-    treeCheckDefaultIds: [],
+    treeCheckDefaultIds: '',
   };
 
   columns = [

@@ -121,6 +121,22 @@ export default [
             ],
           },
           {
+            path: '/educationalAdministration/signUpManagement',
+            name: 'signUpManagement',
+            routes: [
+              {
+                path: '/educationalAdministration/signUpManagement/experience',
+                name: 'signUpExperienceManagement',
+                component: './educationalAdministration/signUpManagement/experience/TableList',
+              },
+              {
+                path: '/educationalAdministration/signUpManagement/formal',
+                name: 'signUpFormalManagement',
+                component: './EducationalAdministration/signUpManagement/formal/TableList',
+              },
+            ],
+          },
+          {
             path: '/educationalAdministration/gradeManagement',
             name: 'gradeManagement',
             component: './educationalAdministration/gradeManagement/TableList',

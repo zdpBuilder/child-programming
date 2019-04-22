@@ -133,9 +133,7 @@ export default function request(url, option) {
     })
     .catch(e => {
       const status = e.name;
-      if (status === 'SyntaxError') {
-        router.push('/user/login');
-      }
+      if (status === 'SyntaxError') router.push('/user/login');
 
       if (status === 'TypeError') router.push('/user/login');
       if (status === 401) {

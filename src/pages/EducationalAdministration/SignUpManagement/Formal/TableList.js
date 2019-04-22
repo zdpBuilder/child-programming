@@ -1,20 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Modal,
-  message,
-  Divider,
-  InputNumber,
-  DatePicker,
-  Badge,
-} from 'antd';
+import { Row, Col, Card, Form, Input, Button, Modal, message, Divider, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
@@ -26,6 +13,7 @@ import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Description } = DescriptionList;
+const { Option } = Select;
 
 const formLayout = {
   labelCol: { span: 7 },
@@ -38,7 +26,7 @@ const ShowViewModal = props => {
   return (
     <Modal
       destroyOnClose
-      title="体验课查看"
+      title="老师查看"
       visible={showModalVisible}
       onCancel={() => handleShowModalVisible()}
       cancelText="关闭"
@@ -46,24 +34,23 @@ const ShowViewModal = props => {
     >
       <Card bordered={false}>
         <DescriptionList size="small" title="基本信息" col={2}>
-          <Description term="课程名称">{current.title}</Description>
-          <Description term="课程价格">{current.money}</Description>
-          <Description term="截至时间">
-            {moment(current.signUpEndDate).format('YYYY-MM-DD')}
-          </Description>
-          <Description term="联系电话">{current.telephone}</Description>
+          <Description term="登陆账号">{current.loginId}</Description>
+          <Description term="姓名">{current.name}</Description>
+          <Description term="手&nbsp;&nbsp;机&nbsp;&nbsp;号">{current.phone}</Description>
+          <Description term="权限名称">{current.roleName}</Description>
+
           <Divider />
-          <DescriptionList col={2} title="课程介绍" size="small" style={{ marginTop: 5 }}>
-            <Description>{current.introduction}</Description>
-          </DescriptionList>
-          <Divider />
-          <Description term="宣传照片">
+          <Description term="照&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;片">
             <img
               alt="example"
               style={{ width: '100%' }}
               src={globalData.photoBaseUrl + current.photoUrl}
             />
           </Description>
+          <Divider />
+          <DescriptionList col={2} title="个人简介" size="small" style={{ marginTop: 5 }}>
+            <Description>{current.introduction}</Description>
+          </DescriptionList>
         </DescriptionList>
       </Card>
     </Modal>
@@ -74,27 +61,21 @@ const CreateForm = Form.create()(props => {
   const { modalVisible, handleAddAndEdit, form, handleAddModalVisible, current = {} } = props;
   const {
     form: { getFieldDecorator },
+    roleListData,
   } = props;
 
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
-      const formData = {
-        ...fieldsValue,
-        signUpEndDate: moment(fieldsValue.signUpEndDate).format('YYYY-MM-DD'),
-        photoUrl: fieldsValue.photoUrl.length === 1 ? fieldsValue.photoUrl : '',
-      };
-      handleAddAndEdit(formData);
+      handleAddAndEdit(fieldsValue);
     });
   };
 
-  // 当前天之前禁用
-  const disabledDate = currentDate => currentDate < moment().endOf('day');
   return (
     <Modal
       destroyOnClose
-      title={`体验课${current.id ? '编辑' : '添加'}`}
+      title={`老师${current.id ? '编辑' : '添加'}`}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleAddModalVisible()}
@@ -104,39 +85,48 @@ const CreateForm = Form.create()(props => {
           initialValue: current.id,
         })(<Input type="hidden" />)}
       </FormItem>
-      <FormItem label="课程名称" {...formLayout}>
-        {getFieldDecorator('title', {
-          rules: [{ required: true, message: '请输入不超过十五位课程名称！', max: 15 }],
-          initialValue: current.title,
-        })(<Input placeholder="请输入课程名称" />)}
+      <FormItem label="登陆账号" {...formLayout}>
+        {getFieldDecorator('loginId', {
+          rules: [{ required: true, message: '请输入不超过十五位登陆账号！', max: 15 }],
+          initialValue: current.loginId,
+        })(<Input placeholder="请输入登陆账号" />)}
       </FormItem>
-      <FormItem label="价格" {...formLayout}>
-        {getFieldDecorator('money', {
-          rules: [{ required: true, message: '请输入价格！' }],
-          initialValue: current.money,
-        })(<InputNumber style={{ width: 255 }} min={0} placeholder="请输入价格" />)}
+      <FormItem label="角色名称" {...formLayout}>
+        {getFieldDecorator('roleId', {
+          rules: [{ required: true, message: '请选择角色！' }],
+          initialValue: current.roleId,
+        })(
+          <Select placeholder="请选择角色" style={{ width: 255 }}>
+            {roleListData.map(item => (
+              <Option key={item.value} value={item.id}>
+                {item.name}
+              </Option>
+            ))}
+          </Select>
+        )}
       </FormItem>
-      <FormItem label="截至报名时间" {...formLayout}>
-        {getFieldDecorator('signUpEndDate', {
-          rules: [{ required: true, message: '请选择截至报名时间！' }],
-          initialValue: moment(current.signUpEndDate),
-        })(<DatePicker disabledDate={disabledDate} placeholder="请选择时间" />)}
+
+      <FormItem label="姓名" {...formLayout}>
+        {getFieldDecorator('name', {
+          rules: [{ required: true, message: '请输入不超过十五位姓名！', max: 15 }],
+          initialValue: current.name,
+        })(<Input placeholder="请输入姓名" />)}
       </FormItem>
-      <FormItem label="联系电话" {...formLayout}>
-        {getFieldDecorator('telephone', {
-          rules: [{ required: true, message: '请输入联系电话！' }],
-          initialValue: current.telephone,
-        })(<Input placeholder="请输入联系电话" />)}
+      <FormItem label="手机号" {...formLayout}>
+        {getFieldDecorator('phone', {
+          rules: [{ required: true, message: '请输入手机号！' }],
+          initialValue: current.phone,
+        })(<Input placeholder="请输入手机号" />)}
       </FormItem>
-      <FormItem label="宣传照片" {...formLayout}>
+      <FormItem label="照片" {...formLayout}>
         <UpLoadPicExample
           props={props}
           formFieldPropsKey="photoUrl"
           defaultImgUrl={current.photoUrl}
-          fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.experienceCourse}
+          fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.signUpExperienceCourse}
         />
       </FormItem>
-      <FormItem label="课程介绍" {...formLayout}>
+      <FormItem label="备注" {...formLayout}>
         {getFieldDecorator('introduction', {
           rules: [{ message: '请输入至少五个字符的介绍！', min: 5, max: 500 }],
           initialValue: current.introduction,
@@ -146,14 +136,10 @@ const CreateForm = Form.create()(props => {
   );
 });
 
-// 忽略停课,开课
-const statusMap = ['error', 'processing', 'success', 'default'];
-const status = ['停课', '报名', '开课', '结课'];
-
 /* eslint react/no-multi-comp:0 */
-@connect(({ experienceCourse, loading }) => ({
-  experienceCourse,
-  loading: loading.models.experienceCourse,
+@connect(({ signUpExperienceCourse, loading }) => ({
+  signUpExperienceCourse,
+  loading: loading.models.signUpExperienceCourse,
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -166,24 +152,20 @@ class TableList extends PureComponent {
 
   columns = [
     {
-      title: '课程名称',
-      dataIndex: 'title',
+      title: '登陆账号',
+      dataIndex: 'loginId',
     },
     {
-      title: '价格',
-      dataIndex: 'money',
+      title: '角色名称',
+      dataIndex: 'roleName',
     },
     {
-      title: '课程状态',
-      dataIndex: 'status',
-      render(val) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
-      },
+      title: '姓名',
+      dataIndex: 'name',
     },
     {
-      title: '截止报名时间',
-      dataIndex: 'signUpEndDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      title: '电话',
+      dataIndex: 'phone',
     },
     {
       title: '创建时间',
@@ -200,7 +182,7 @@ class TableList extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => this.deleteOne(record.id)}>删除</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleEndCourse(record)}>结课</a>
+          <a onClick={() => this.resetPassword(record.id)}>重置密码</a>
         </Fragment>
       ),
     },
@@ -209,7 +191,10 @@ class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'experienceCourse/fetchList',
+      type: 'signUpExperienceCourse/fetchList',
+    });
+    dispatch({
+      type: 'signUpExperienceCourse/fetchRoleList',
     });
   }
 
@@ -218,9 +203,9 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'experienceCourse/save',
+      type: 'signUpExperienceCourse/save',
       payload: {
-        ...pagination,
+        pagination,
       },
     });
   };
@@ -231,7 +216,7 @@ class TableList extends PureComponent {
     form.resetFields();
     this.setState({});
     dispatch({
-      type: 'experienceCourse/fetchList',
+      type: 'signUpExperienceCourse/fetchList',
       payload: {},
     });
   };
@@ -242,7 +227,7 @@ class TableList extends PureComponent {
     const { selectedRows } = this.state;
     if (!selectedRows) return;
     dispatch({
-      type: 'experienceCourse/remove',
+      type: 'signUpExperienceCourse/remove',
       payload: {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
@@ -275,7 +260,7 @@ class TableList extends PureComponent {
       };
 
       dispatch({
-        type: 'experienceCourse/fetchList',
+        type: 'signUpExperienceCourse/fetchList',
         payload: values,
       });
     });
@@ -301,7 +286,7 @@ class TableList extends PureComponent {
   handleAddAndEdit = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'experienceCourse/addAndUpdate',
+      type: 'signUpExperienceCourse/addAndUpdate',
       payload: {
         ...fields,
       },
@@ -322,8 +307,8 @@ class TableList extends PureComponent {
   // 删除单个提示
   deleteOne = id => {
     Modal.confirm({
-      title: '删除体验课',
-      content: '确定删除该体验课吗？',
+      title: '删除校区',
+      content: '确定删除该校区吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDeleteItem(id),
@@ -335,7 +320,7 @@ class TableList extends PureComponent {
     const idsStr = `${id}`;
     const { dispatch } = this.props;
     dispatch({
-      type: 'experienceCourse/remove',
+      type: 'signUpExperienceCourse/remove',
       payload: {
         idsStr,
       },
@@ -345,31 +330,16 @@ class TableList extends PureComponent {
     });
   };
 
-  // 结课处理
-  handleEndCourse = record => {
-    // 报名截止前，不能结课
-    const { id, signUpEndDate } = record;
-    const dateNow = moment();
-    const dateDiff = dateNow.diff(moment(signUpEndDate), 'days');
-    if (dateDiff <= 1) {
-      message.warning(`请在截止报名时间${moment(signUpEndDate).format('YYYY-MM-DD')}一天后结课!`);
-      return;
-    }
-
+  // 重置密码
+  resetPassword = signUpExperienceCourseId => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'experienceCourse/addAndUpdate',
+      type: 'signUpExperienceCourse/resetPassword',
       payload: {
-        id,
-        status: 3, // 结课状态
+        signUpExperienceCourseId,
       },
       callback: response => {
-        if (globalData.successCode === response.status) {
-          dispatch({
-            type: 'experienceCourse/fetchList',
-          });
-          message.success(response.msg);
-        } else message.error(response.msg);
+        this.handleResultData(response);
       },
     });
   };
@@ -379,7 +349,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
       dispatch({
-        type: 'experienceCourse/fetchList',
+        type: 'signUpExperienceCourse/fetchList',
       });
       message.success(response.msg);
       this.handleAddModalVisible();
@@ -395,7 +365,7 @@ class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="体验课名称">{getFieldDecorator('title')(<Input />)}</FormItem>
+            <FormItem label="老师姓名">{getFieldDecorator('name')(<Input />)}</FormItem>
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
@@ -414,7 +384,7 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      experienceCourse: { list, pagination },
+      signUpExperienceCourse: { list, pagination, roleListData },
       loading,
     } = this.props;
     const { selectedRows, modalVisible, current, showModalVisible } = this.state;
@@ -425,7 +395,7 @@ class TableList extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="体验课管理">
+      <PageHeaderWrapper title="教师信息管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
@@ -451,7 +421,12 @@ class TableList extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} current={current} />
+        <CreateForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          current={current}
+          roleListData={roleListData}
+        />
         <ShowViewModal
           showModalVisible={showModalVisible}
           current={current}

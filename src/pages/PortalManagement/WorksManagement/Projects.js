@@ -1,20 +1,7 @@
 /* eslint-disable react/no-unused-state,no-param-reassign */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Row,
-  Col,
-  Form,
-  Card,
-  Select,
-  List,
-  Button,
-  Icon,
-  Input,
-  Modal,
-  message,
-  Divider,
-} from 'antd';
+import { Row, Col, Form, Card, List, Button, Icon, Input, Modal, message, Divider } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import StandardFormRow from '@/components/StandardFormRow';
 import DescriptionList from '@/components/DescriptionList';
@@ -69,7 +56,7 @@ const ShowViewModal = props => {
         <DescriptionList title="作品其他信息" size="small" col={2}>
           <Description term="作品描述">{current.description}</Description>
           <Description term="作品演示">
-            <a target="_blank" href={globalData.scratchPlayerUrl}>
+            <a rel="noopener noreferrer" target="_blank" href={globalData.scratchPlayerUrl}>
               {current.workName}
             </a>
           </Description>
@@ -299,7 +286,7 @@ class CoverCardList extends PureComponent {
         rowKey="id"
         loading={loading}
         grid={{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }}
-        dataSource={['', ...list]}
+        dataSource={[...list]}
         renderItem={item =>
           list ? (
             <List.Item>

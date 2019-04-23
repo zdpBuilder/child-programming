@@ -13,25 +13,6 @@ class UploadFileExample extends React.Component {
     fileList: [],
   };
 
-  onChange = info => {
-    const status = info.file.status;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (status === 'done') {
-      if (info.fileList[0].response.status === '200' || info.fileList[0].response.status === 200) {
-        message.success('上传成功');
-        this.setState({ fileList: info.fileList });
-      } else {
-        this.setState({ fileList: [] });
-        message.error(info.fileList[0].response.msg);
-      }
-    } else if (status === 'error') {
-      this.setState({ fileList: [] });
-      message.error(`${info.file.name} 上传失败.`);
-    }
-  };
-
   componentWillMount() {
     if (this.props.defaultFile) {
       this.setState({
@@ -50,6 +31,25 @@ class UploadFileExample extends React.Component {
       });
     }
   }
+
+  onChange = info => {
+    const status = info.file.status;
+    if (status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (status === 'done') {
+      if (info.fileList[0].response.status === '200' || info.fileList[0].response.status === 200) {
+        message.success('上传成功');
+        this.setState({ fileList: info.fileList });
+      } else {
+        this.setState({ fileList: [] });
+        message.error(info.fileList[0].response.msg);
+      }
+    } else if (status === 'error') {
+      this.setState({ fileList: [] });
+      message.error(`${info.file.name} 上传失败.`);
+    }
+  };
 
   render() {
     const Dragger = Upload.Dragger;

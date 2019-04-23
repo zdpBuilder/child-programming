@@ -23,13 +23,3 @@ export async function deleteBatch(params) {
     }
   );
 }
-
-export async function resetPassword(params) {
-  return request(
-    `${globalData.baseUrl +
-      globalData.projectName}/signUpExperienceCourse/resetPassword?${stringify(params)}`,
-    {
-      method: globalData.GET,
-    }
-  );
-}

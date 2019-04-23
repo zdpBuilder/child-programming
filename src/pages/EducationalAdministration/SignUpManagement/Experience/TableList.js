@@ -99,9 +99,6 @@ class TableList extends PureComponent {
     dispatch({
       type: 'signUpExperienceCourse/fetchList',
     });
-    dispatch({
-      type: 'signUpExperienceCourse/fetchRoleList',
-    });
   }
 
   // 处理表格分页
@@ -206,21 +203,7 @@ class TableList extends PureComponent {
     });
   };
 
-  // 重置密码
-  resetPassword = signUpExperienceCourseId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'signUpExperienceCourse/resetPassword',
-      payload: {
-        signUpExperienceCourseId,
-      },
-      callback: response => {
-        this.handleResultData(response);
-      },
-    });
-  };
-
-  // 添加、编辑、删除返回结果处理
+  // 删除返回结果处理
   handleResultData = response => {
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
@@ -228,7 +211,6 @@ class TableList extends PureComponent {
         type: 'signUpExperienceCourse/fetchList',
       });
       message.success(response.msg);
-      this.handleAddModalVisible();
     } else message.error(response.msg);
   };
 
@@ -285,9 +267,6 @@ class TableList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleAddModalVisible(true)}>
-                新建
-              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   <Button onClick={this.handleDeleteRows}>批量删除</Button>

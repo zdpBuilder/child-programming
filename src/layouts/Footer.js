@@ -14,14 +14,14 @@ const FooterView = () => (
           blankTarget: true,
         },
         {
-          key: '小童编程屋',
-          title: '小童编程屋',
+          key: '贝壳编程屋',
+          title: '贝壳编程屋',
           href: ' http://192.168.11.184:8601/',
           blankTarget: true,
         },
         {
-          key: '小童官网',
-          title: '小童官网',
+          key: '贝壳官网',
+          title: '贝壳官网',
           href: 'http://localhost:8083',
           blankTarget: true,
         },

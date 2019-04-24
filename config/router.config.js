@@ -142,9 +142,20 @@ export default [
             component: './educationalAdministration/gradeManagement/TableList',
           },
           {
-            path: '/educationalAdministration/signManagement',
-            name: 'signManagement',
-            component: './educationalAdministration/signManagement/Applications',
+            path: '/educationalAdministration/courseScheduleManagement',
+            name: 'courseScheduleManagement',
+            routes: [
+              {
+                path: '/educationalAdministration/courseScheduleManagement/student',
+                name: 'studentSchedule',
+                component: './EducationalAdministration/CourseScheduleManagement/Student/ScheduleCalendar',
+              },
+              {
+                path: '/educationalAdministration/courseScheduleManagement/teacher',
+                name: 'teacherSchedule',
+                component: './EducationalAdministration/CourseScheduleManagement/Teacher/ScheduleCalendar',
+              },
+            ],
           },
         ],
       },

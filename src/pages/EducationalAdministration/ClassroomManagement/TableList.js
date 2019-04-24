@@ -291,8 +291,8 @@ class TableList extends PureComponent {
   // 删除单个提示
   deleteOne = id => {
     Modal.confirm({
-      title: '删除校区',
-      content: '确定删除该校区吗？',
+      title: '删除教室',
+      content: '确定删除该教室吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDeleteItem(id),

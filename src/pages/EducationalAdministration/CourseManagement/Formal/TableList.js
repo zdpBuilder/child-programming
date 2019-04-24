@@ -193,7 +193,6 @@ const CreateForm = Form.create()(props => {
       // 处理参数
       const formData = handleFormData(fieldsValue);
       // form.resetFields();
-      console.log(formData);
       handleAddAndEdit(formData);
     });
   };
@@ -396,6 +395,19 @@ class TableList extends PureComponent {
         id,
         status: flag,
       },
+      callback: response => {
+        if (globalData.successCode === response.status) {
+          dispatch({
+            type: 'course/fetchList',
+          });
+          message.success(response.msg);
+        } else message.error(response.msg);
+      },
+    });
+    // TODO 刷新页面
+    dispatch({
+      type: 'course/fetchList',
+      payload: {},
     });
   };
 

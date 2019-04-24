@@ -56,7 +56,7 @@ export default {
   // 'menu.educationalAdministration.courseManagement.classScheduleCard': ' 课程表管理',
   // 'menu.educationalAdministration.courseManagement.classAdjustment': ' 调课管理',
   'menu.educationalAdministration.gradeManagement': ' 班级管理',
-  'menu.educationalAdministration.signManagement': ' 签到管理',
+  'menu.educationalAdministration.signManagement': ' 课程表管理',
   'menu.authorityManagement': '权限管理',
   'menu.authorityManagement.roleManagement': '角色管理',
 };

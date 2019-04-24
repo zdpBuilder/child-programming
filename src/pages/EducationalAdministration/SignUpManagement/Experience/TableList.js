@@ -60,7 +60,7 @@ class TableList extends PureComponent {
       dataIndex: 'studentName',
     },
     {
-      title: '体验课名称',
+      title: '课程名称',
       dataIndex: 'experienceCourseName',
     },
     {
@@ -180,8 +180,8 @@ class TableList extends PureComponent {
   // 删除单个提示
   deleteOne = id => {
     Modal.confirm({
-      title: '删除校区',
-      content: '确定删除该校区吗？',
+      title: '删除记录',
+      content: '确定删除该记录吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDeleteItem(id),

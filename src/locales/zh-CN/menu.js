@@ -53,10 +53,10 @@ export default {
   'menu.educationalAdministration.signUpManagement': ' 报名管理',
   'menu.educationalAdministration.signUpManagement.signUpExperienceManagement': ' 体验课报名管理',
   'menu.educationalAdministration.signUpManagement.signUpFormalManagement': ' 正式课报名管理',
-  // 'menu.educationalAdministration.courseManagement.classScheduleCard': ' 课程表管理',
-  // 'menu.educationalAdministration.courseManagement.classAdjustment': ' 调课管理',
   'menu.educationalAdministration.gradeManagement': ' 班级管理',
-  'menu.educationalAdministration.signManagement': ' 课程表管理',
+  'menu.educationalAdministration.courseScheduleManagement': ' 课程表管理',
+  'menu.educationalAdministration.courseScheduleManagement.teacherSchedule': ' 老师课程表',
+  'menu.educationalAdministration.courseScheduleManagement.studentSchedule': ' 学生课程表',
   'menu.authorityManagement': '权限管理',
   'menu.authorityManagement.roleManagement': '角色管理',
 };

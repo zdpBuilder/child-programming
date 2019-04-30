@@ -50,6 +50,15 @@ export default {
       });
       if (callback) callback(response);
     },
+
+    *push({ payload, callback }, { call, put }) {
+      const response = yield call(materialSerivce.pushBatch, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
   },
 
   reducers: {

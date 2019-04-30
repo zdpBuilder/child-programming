@@ -26,3 +26,12 @@ export async function deleteBatch(params) {
     }
   );
 }
+
+export async function pushBatch(params) {
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/material/push?${stringify(params)}`,
+    {
+      method: globalData.GET,
+    }
+  );
+}

@@ -9,31 +9,20 @@ import EditableLinkGroup from '@/components/EditableLinkGroup';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import styles from './Workplace.less';
+import globalData from '../../utils/globalData';
 
 const links = [
   {
-    title: '操作一',
-    href: '',
+    title: '贝壳官网',
+    href: globalData.bastCodingUrl,
   },
   {
-    title: '操作二',
-    href: '',
+    title: '贝壳编辑器',
+    href: globalData.codeSquare,
   },
   {
-    title: '操作三',
-    href: '',
-  },
-  {
-    title: '操作四',
-    href: '',
-  },
-  {
-    title: '操作五',
-    href: '',
-  },
-  {
-    title: '操作六',
-    href: '',
+    title: '贝壳海报网',
+    href: globalData.baseCodingPostersUrl,
   },
 ];
 
@@ -121,16 +110,13 @@ class Workplace extends PureComponent {
       currentUser && Object.keys(currentUser).length ? (
         <div className={styles.pageHeaderContent}>
           <div className={styles.avatar}>
-            <Avatar size="large" src={currentUser.avatar} />
+            <Avatar size="large" src={globalData.photoBaseUrl + currentUser.photoUrl} />
           </div>
           <div className={styles.content}>
             <div className={styles.contentTitle}>
-              早安，
+              欢迎，
               {currentUser.name}
               ，祝你开心每一天！
-            </div>
-            <div>
-              {currentUser.title} |{currentUser.group}
             </div>
           </div>
         </div>
@@ -159,14 +145,14 @@ class Workplace extends PureComponent {
       <PageHeaderWrapper
         loading={currentUserLoading}
         content={pageHeaderContent}
-        extraContent={extraContent}
+        // extraContent={extraContent}
       >
         <Row gutter={24}>
           <Col xl={16} lg={24} md={24} sm={24} xs={24}>
             <Card
               className={styles.projectList}
               style={{ marginBottom: 24 }}
-              title="进行中的项目"
+              title="最新推送作品"
               bordered={false}
               extra={<Link to="/">全部项目</Link>}
               loading={projectLoading}
@@ -200,7 +186,7 @@ class Workplace extends PureComponent {
               bodyStyle={{ padding: 0 }}
               bordered={false}
               className={styles.activeCard}
-              title="动态"
+              title="最新上传资料"
               loading={activitiesLoading}
             >
               <List loading={activitiesLoading} size="large">

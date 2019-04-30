@@ -1,4 +1,4 @@
-import { query as queryUsers, queryCurrent } from '@/services/user';
+import * as teacherService from '@/services/teacher';
 
 export default {
   namespace: 'user',
@@ -9,15 +9,17 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(queryUsers);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+    *fetch({ payload, callback }, { call }) {
+      const response = yield call(teacherService.save, payload);
+
+      if (callback) callback(response);
     },
+
     *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+      const response = yield call(teacherService.getTeacherByLoginId, {
+        loginId: JSON.parse(window.sessionStorage.getItem('currentUserInfo')).loginId,
+      });
+
       yield put({
         type: 'saveCurrentUser',
         payload: response,

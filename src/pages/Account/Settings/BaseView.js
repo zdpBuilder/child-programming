@@ -1,16 +1,15 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import { Form, Input, Upload, Select, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { connect } from 'dva';
 import styles from './BaseView.less';
-import GeographicView from './GeographicView';
-import PhoneView from './PhoneView';
-// import { getTimeDistance } from '@/utils/utils';
+import UpLoadPicExample from '../../../components/UpLoad/UpLoadPicExample';
+import globalData from '../../../utils/globalData';
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 // 头像组件 方便以后独立，增加裁剪之类的功能
+/*
 const AvatarView = ({ avatar }) => (
   <Fragment>
     <div className={styles.avatar_title}>
@@ -28,17 +27,7 @@ const AvatarView = ({ avatar }) => (
     </Upload>
   </Fragment>
 );
-
-const validatorGeographic = (rule, value, callback) => {
-  const { province, city } = value;
-  if (!province.key) {
-    callback('Please input your province!');
-  }
-  if (!city.key) {
-    callback('Please input your city!');
-  }
-  callback();
-};
+*/
 
 const validatorPhone = (rule, value, callback) => {
   const values = value.split('-');
@@ -57,22 +46,22 @@ const validatorPhone = (rule, value, callback) => {
 @Form.create()
 class BaseView extends Component {
   componentDidMount() {
-    this.setBaseInfo();
+    // this.setBaseInfo();
   }
 
-  setBaseInfo = () => {
-    const { currentUser, form } = this.props;
-    Object.keys(form.getFieldsValue()).forEach(key => {
-      const obj = {};
-      obj[key] = currentUser[key] || null;
-      form.setFieldsValue(obj);
-    });
-  };
+  // setBaseInfo = () => {
+  //   const { currentUser, form } = this.props;
+  //   Object.keys(form.getFieldsValue()).forEach(key => {
+  //     const obj = {};
+  //     obj[key] = currentUser[key] || null;
+  //     form.setFieldsValue(obj);
+  //   });
+  // };
 
   getAvatarURL() {
     const { currentUser } = this.props;
-    if (currentUser.avatar) {
-      return currentUser.avatar;
+    if (currentUser.photoUrl) {
+      return currentUser.photoUrl;
     }
     const url = 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
     return url;
@@ -82,98 +71,84 @@ class BaseView extends Component {
     this.view = ref;
   };
 
+  handleSubmit = e => {
+    e.preventDefault();
+    const { form, dispatch } = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      dispatch({
+        type: 'user/fetch',
+        payload: fieldsValue,
+        callback: response => {
+          message.success(response.msg);
+          dispatch({
+            type: 'user/fetchCurrent',
+          });
+        },
+      });
+    });
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
+      currentUser,
     } = this.props;
     return (
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>
           <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.email' })}>
-              {getFieldDecorator('email', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.email-message' }, {}),
-                  },
-                ],
-              })(<Input />)}
+            <FormItem style={{ display: 'none' }}>
+              {getFieldDecorator('id', {
+                initialValue: currentUser.id,
+              })(<Input type="hidden" />)}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.nickname' })}>
+            <FormItem label="登录账号">
+              {getFieldDecorator('loginId', {
+                initialValue: currentUser.loginId,
+              })(<Input disabled />)}
+            </FormItem>
+            <FormItem label="当前角色">
+              {getFieldDecorator('roleName', {
+                initialValue: currentUser.roleName,
+              })(<Input disabled />)}
+            </FormItem>
+            <FormItem label="姓名">
               {getFieldDecorator('name', {
+                initialValue: currentUser.name,
                 rules: [
                   {
                     required: true,
-                    message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
+                    message: '请输入姓名！',
                   },
                 ],
               })(<Input />)}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.profile' })}>
-              {getFieldDecorator('profile', {
+            <FormItem label="个人简介">
+              {getFieldDecorator('introduction', {
+                initialValue: currentUser.introduction,
                 rules: [
                   {
                     required: true,
-                    message: formatMessage({ id: 'app.settings.basic.profile-message' }, {}),
+                    message: '请输入个人介绍！',
                   },
                 ],
-              })(
-                <Input.TextArea
-                  placeholder={formatMessage({ id: 'app.settings.basic.profile-placeholder' })}
-                  rows={4}
-                />
-              )}
-            </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.country' })}>
-              {getFieldDecorator('country', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.country-message' }, {}),
-                  },
-                ],
-              })(
-                <Select style={{ maxWidth: 220 }}>
-                  <Option value="China">中国</Option>
-                </Select>
-              )}
-            </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.geographic' })}>
-              {getFieldDecorator('geographic', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.geographic-message' }, {}),
-                  },
-                  {
-                    validator: validatorGeographic,
-                  },
-                ],
-              })(<GeographicView />)}
-            </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.address' })}>
-              {getFieldDecorator('address', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.address-message' }, {}),
-                  },
-                ],
-              })(<Input />)}
+              })(<Input.TextArea placeholder="个人介绍" rows={4} />)}
             </FormItem>
             <FormItem label={formatMessage({ id: 'app.settings.basic.phone' })}>
               {getFieldDecorator('phone', {
+                initialValue: currentUser.phone,
                 rules: [
                   {
                     required: true,
-                    message: formatMessage({ id: 'app.settings.basic.phone-message' }, {}),
+                    message: '请输入电话！',
                   },
-                  { validator: validatorPhone },
                 ],
-              })(<PhoneView />)}
+              })(<Input />)}
             </FormItem>
-            <Button type="primary">
+            <Button htmlType="submit">
               <FormattedMessage
                 id="app.settings.basic.update"
                 defaultMessage="Update Information"
@@ -182,7 +157,14 @@ class BaseView extends Component {
           </Form>
         </div>
         <div className={styles.right}>
-          <AvatarView avatar={this.getAvatarURL()} />
+          <FormItem label="照片">
+            <UpLoadPicExample
+              props={this.props}
+              formFieldPropsKey="photoUrl"
+              defaultImgUrl={currentUser.photoUrl}
+              fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.teacher}
+            />
+          </FormItem>
         </div>
       </div>
     );

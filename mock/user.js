@@ -2,9 +2,13 @@
 export default {
   // 支持值为 Object 和 Array
   'GET /api/currentUser': {
+    loginId:"admin",
     name: 'zdpBuilder',
+    photoUrl:'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
+    roleName:"超级管理员",
+    introduction:"不错",
     avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-    userid: '00000001',
+    id:"00",
     email: 'antdesign@alipay.com',
     signature: '海纳百川，有容乃大',
     title: '交互专家',

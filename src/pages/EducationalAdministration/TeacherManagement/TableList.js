@@ -126,7 +126,7 @@ const CreateForm = Form.create()(props => {
           fileUpLoadDirectoryName={globalData.fileUpLoadDirectoryName.teacher}
         />
       </FormItem>
-      <FormItem label="备注" {...formLayout}>
+      <FormItem label="个人介绍" {...formLayout}>
         {getFieldDecorator('introduction', {
           rules: [{ message: '请输入至少五个字符的介绍！', min: 5, max: 500 }],
           initialValue: current.introduction,

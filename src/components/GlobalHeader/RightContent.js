@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
-import { FormattedMessage, formatMessage } from 'umi/locale';
+import { FormattedMessage } from 'umi/locale';
 import { Spin, Tag, Menu, Icon, Avatar } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
-import NoticeIcon from '../NoticeIcon';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
+import globalData from '../../utils/globalData';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -62,14 +62,7 @@ export default class GlobalHeaderRight extends PureComponent {
   };
 
   render() {
-    const {
-      currentUser,
-      fetchingNotices,
-      onNoticeVisibleChange,
-      onMenuClick,
-      onNoticeClear,
-      theme,
-    } = this.props;
+    const { currentUser, onMenuClick, theme } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         {/* <Menu.Item key="userCenter"> */}
@@ -91,8 +84,6 @@ export default class GlobalHeaderRight extends PureComponent {
         </Menu.Item>
       </Menu>
     );
-    const noticeData = this.getNoticeData();
-    const unreadMsg = this.getUnreadData(noticeData);
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
@@ -124,7 +115,7 @@ export default class GlobalHeaderRight extends PureComponent {
             <Icon type="question-circle-o" />
           </a>
         </Tooltip> */}
-        <NoticeIcon
+        {/* <NoticeIcon
           className={styles.action}
           count={currentUser.unreadCount}
           onItemClick={(item, tabProps) => {
@@ -164,14 +155,14 @@ export default class GlobalHeaderRight extends PureComponent {
             emptyText={formatMessage({ id: 'component.globalHeader.event.empty' })}
             emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
           />
-        </NoticeIcon>
+        </NoticeIcon> */}
         {currentUser.name ? (
           <HeaderDropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
               <Avatar
                 size="small"
                 className={styles.avatar}
-                src={currentUser.avatar}
+                src={globalData.photoBaseUrl + currentUser.photoUrl}
                 alt="avatar"
               />
               <span className={styles.name}>{currentUser.name}</span>

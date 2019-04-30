@@ -165,6 +165,26 @@ class TableList extends PureComponent {
     });
   };
 
+  // 推动多行
+  handlePushRows = status => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+    if (!selectedRows) return;
+    dispatch({
+      type: 'material/push',
+      payload: {
+        idsStr: selectedRows.map(row => row.id).join(','),
+        status,
+      },
+      callback: response => {
+        this.handleResultData(response);
+        this.setState({
+          selectedRows: [],
+        });
+      },
+    });
+  };
+
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
@@ -240,6 +260,17 @@ class TableList extends PureComponent {
     });
   };
 
+  // 推送单个提示
+  pushOne = (id, status) => {
+    Modal.confirm({
+      title: '删除资料',
+      content: '确定删除该资料吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.handlePushItem(id, status),
+    });
+  };
+
   columns = [
     {
       title: '资料名称',
@@ -266,6 +297,12 @@ class TableList extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
+          {record.status === 2 || record.status === '2' ? (
+            <a onClick={() => this.pushOne(record.id, 1)}>取消推送</a>
+          ) : (
+            <a onClick={() => this.pushOne(record.id, 2)}>推送</a>
+          )}
+          <Divider type="vertical" />
           <a onClick={() => this.deleteOne(record.id)}>删除</a>
         </Fragment>
       ),
@@ -287,7 +324,22 @@ class TableList extends PureComponent {
     });
   };
 
-  // 添加、编辑、删除返回结果处理
+  // 推送单个资料处理
+  handlePushItem = (idsStr, status) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'material/push',
+      payload: {
+        idsStr,
+        status,
+      },
+      callback: response => {
+        this.handleResultData(response);
+      },
+    });
+  };
+
+  // 添加、编辑、删除、推送返回结果处理
   handleResultData = response => {
     const { dispatch } = this.props;
     if (globalData.successCode === response.status) {
@@ -371,6 +423,7 @@ class TableList extends PureComponent {
               {selectedRows.length > 0 && (
                 <span>
                   <Button onClick={this.handleDeleteRows}>批量删除</Button>
+                  {/* <Button onClick={this.handlePushRows}>批量推送</Button> */}
                 </span>
               )}
             </div>

@@ -17,7 +17,7 @@ class Info extends Component {
     const { match, location } = props;
     const menuMap = {
       base: <FormattedMessage id="app.settings.menuMap.basic" defaultMessage="Basic Settings" />,
-      security: (
+      /*  security: (
         <FormattedMessage id="app.settings.menuMap.security" defaultMessage="Security Settings" />
       ),
       binding: (
@@ -28,7 +28,7 @@ class Info extends Component {
           id="app.settings.menuMap.notification"
           defaultMessage="New Message Notification"
         />
-      ),
+      ), */
     };
     const key = location.pathname.replace(`${match.path}/`, '');
     this.state = {
@@ -95,7 +95,7 @@ class Info extends Component {
 
   render() {
     const { children, currentUser } = this.props;
-    if (!currentUser.userid) {
+    if (!currentUser.id) {
       return '';
     }
     const { mode, selectKey } = this.state;

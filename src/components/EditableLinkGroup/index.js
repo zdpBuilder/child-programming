@@ -1,6 +1,6 @@
 import React, { PureComponent, createElement } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'antd';
+
 import styles from './index.less';
 
 // TODO: 添加逻辑
@@ -8,18 +8,18 @@ import styles from './index.less';
 class EditableLinkGroup extends PureComponent {
   static propTypes = {
     links: PropTypes.array,
-    onAdd: PropTypes.func,
+    // onAdd: PropTypes.func,
     linkElement: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
   };
 
   static defaultProps = {
     links: [],
-    onAdd: () => {},
+    // onAdd: () => {},
     linkElement: 'a',
   };
 
   render() {
-    const { links, linkElement, onAdd } = this.props;
+    const { links, linkElement } = this.props;
     return (
       <div className={styles.linkGroup}>
         {links.map(link =>
@@ -33,11 +33,11 @@ class EditableLinkGroup extends PureComponent {
             link.title
           )
         )}
-        {
+        {/* {
           <Button size="small" type="primary" ghost onClick={onAdd} icon="plus">
             添加
           </Button>
-        }
+        } */}
       </div>
     );
   }

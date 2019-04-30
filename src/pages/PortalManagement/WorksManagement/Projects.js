@@ -29,7 +29,6 @@ const ShowViewModal = props => {
 
   return (
     <Modal
-      maskStyle={{ backgroundColor: 'rgba(0,0,0,.25)' }}
       destroyOnClose
       title="作品信息查看"
       visible={showModalVisible}
@@ -197,7 +196,7 @@ class CoverCardList extends PureComponent {
     item.status = 2;
     Modal.confirm({
       title: '推送作品',
-      content: '确定推送该作品吗？',
+      content: '确定推送该作品为优秀作品吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handlePushItem(item),
@@ -271,7 +270,7 @@ class CoverCardList extends PureComponent {
       form,
     } = this.props;
     const { getFieldDecorator } = form;
-    const { modalVisible, showModalVisible } = this.state;
+    const { modalVisible, showModalVisible, current } = this.state;
 
     const parentMethods = {
       handleAddAndEdit: this.handleAddAndEdit,
@@ -316,13 +315,6 @@ class CoverCardList extends PureComponent {
                   <div className={styles.avatarList} />
                 </div>
               </Card>
-              <CreateForm {...parentMethods} modalVisible={modalVisible} current={item} />
-              <ShowViewModal
-                {...showParentMethods}
-                showModalVisible={showModalVisible}
-                current={item}
-                handleShowModalVisible={this.handleShowModalVisible}
-              />
             </List.Item>
           ) : (
             <List.Item>
@@ -335,7 +327,15 @@ class CoverCardList extends PureComponent {
             </List.Item>
           )
         }
-      />
+      >
+        <CreateForm {...parentMethods} modalVisible={modalVisible} current={current} />
+        <ShowViewModal
+          {...showParentMethods}
+          showModalVisible={showModalVisible}
+          current={current}
+          handleShowModalVisible={this.handleShowModalVisible}
+        />
+      </List>
     );
 
     const formItemLayout = {

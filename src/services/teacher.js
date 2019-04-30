@@ -35,3 +35,14 @@ export async function resetPassword(params) {
     }
   );
 }
+
+export async function getTeacherByLoginId(params) {
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/teacher/getTeacherByLoginId?${stringify(
+      params
+    )}`,
+    {
+      method: globalData.GET,
+    }
+  );
+}

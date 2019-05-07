@@ -83,7 +83,7 @@ const CreateForm = Form.create()(props => {
       const formData = {
         ...fieldsValue,
         signUpEndDate: moment(fieldsValue.signUpEndDate).format('YYYY-MM-DD'),
-        photoUrl: fieldsValue.photoUrl.length === 1 ? fieldsValue.photoUrl : '',
+        // photoUrl: fieldsValue.photoUrl.length === 1 ? fieldsValue.photoUrl : '',
       };
       handleAddAndEdit(formData);
     });

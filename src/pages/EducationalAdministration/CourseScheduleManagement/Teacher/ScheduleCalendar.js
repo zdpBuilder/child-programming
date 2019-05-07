@@ -1,20 +1,26 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button, Calendar } from 'antd';
+import { Row, Col, Card, Form, Button, Calendar, Select, Badge, Modal } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import styles from '@/layouts/TableList.less';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ teacher, loading }) => ({
-  teacher,
-  loading: loading.models.teacher,
+@connect(({ studentSchedule, loading }) => ({
+  studentSchedule,
+  loading: loading.models.studentSchedule,
 }))
 @Form.create()
 class ScheduleCalendar extends PureComponent {
-  componentDidMount() {}
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'studentSchedule/fetchGradeInfoList',
+    });
+  }
 
   // 搜索条件重置
   handleFormReset = () => {
@@ -22,7 +28,7 @@ class ScheduleCalendar extends PureComponent {
     form.resetFields();
     this.setState({});
     dispatch({
-      type: 'teacher/fetchList',
+      type: 'studentSchedule/fetchList',
       payload: {},
     });
   };
@@ -41,9 +47,54 @@ class ScheduleCalendar extends PureComponent {
       };
 
       dispatch({
-        type: 'teacher/fetchList',
+        type: 'studentSchedule/fetchList',
         payload: values,
       });
+    });
+  };
+
+  getListData = value => {
+    let listData;
+    switch (value.date()) {
+      case 8:
+        listData = [{ type: 'success', content: '已签' }];
+        break;
+      case 10:
+        listData = [{ type: 'warning', content: '未签' }];
+        break;
+      case 15:
+        listData = [{ type: 'warning', content: '未签' }];
+        break;
+      default:
+    }
+    return listData || [];
+  };
+
+  // 日期渲染
+  dateCellRender = value => {
+    const listData = this.getListData(value);
+    return (
+      <ul>
+        {listData.map(item => (
+          <li key={item.content}>
+            <Badge status={item.type} text={item.content} />
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  // 处理日期选择
+  handleDateSelect = value => {
+    console.log(value);
+    Modal.info({
+      title: '课程安排',
+      okText: '关闭',
+      content: (
+        <div>
+          <div key={1}>8:00-10:00 Java</div>
+        </div>
+      ),
     });
   };
 
@@ -52,13 +103,26 @@ class ScheduleCalendar extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
+
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="老师姓名">{getFieldDecorator('name')(<Input />)}</FormItem>
+        <Row gutter={{ md: 6, lg: 24, xl: 48 }}>
+          <Col md={6} sm={24}>
+            <FormItem label="老师">
+              {getFieldDecorator('teacherId')(
+                <Select placeholder="请选择老师">
+                  <Option key={1} value={1}>
+                    张一
+                  </Option>
+                  <Option key={2} value={2}>
+                    李二
+                  </Option>
+                </Select>
+              )}
+            </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+
+          <Col md={6} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
@@ -75,11 +139,11 @@ class ScheduleCalendar extends PureComponent {
 
   render() {
     return (
-      <PageHeaderWrapper title="学生课程表">
+      <PageHeaderWrapper title="老师课程表">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
-            <Calendar />
+            <Calendar dateCellRender={this.dateCellRender} onSelect={this.handleDateSelect} />
           </div>
         </Card>
       </PageHeaderWrapper>

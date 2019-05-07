@@ -117,7 +117,7 @@ const CreateForm = Form.create()(props => {
       ...fieldsValue,
       timeSchedule: timeScheduleArray,
       periodCount: parseInt(fieldsValue.periodCount, 10),
-      photoUrl: fieldsValue.photoUrl.length === 1 ? fieldsValue.photoUrl : '',
+      // photoUrl: fieldsValue.photoUrl.length === 1 ? fieldsValue.photoUrl : '',
     };
     return formValues;
   };

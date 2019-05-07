@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Button, Calendar, Select, Badge } from 'antd';
+import { Row, Col, Card, Form, Button, Calendar, Select, Badge, Modal } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import styles from '@/layouts/TableList.less';
@@ -57,27 +57,13 @@ class ScheduleCalendar extends PureComponent {
     let listData;
     switch (value.date()) {
       case 8:
-        listData = [
-          { type: 'warning', content: 'This is warning event.' },
-          { type: 'success', content: 'This is usual event.' },
-        ];
+        listData = [{ type: 'success', content: '已签' }];
         break;
       case 10:
-        listData = [
-          { type: 'warning', content: 'This is warning event.' },
-          { type: 'success', content: 'This is usual event.' },
-          { type: 'error', content: 'This is error event.' },
-        ];
+        listData = [{ type: 'warning', content: '未签' }];
         break;
       case 15:
-        listData = [
-          { type: 'warning', content: 'This is warning event' },
-          { type: 'success', content: 'This is very long usual event。。....' },
-          { type: 'error', content: 'This is error event 1.' },
-          { type: 'error', content: 'This is error event 2.' },
-          { type: 'error', content: 'This is error event 3.' },
-          { type: 'error', content: 'This is error event 4.' },
-        ];
+        listData = [{ type: 'warning', content: '未签' }];
         break;
       default:
     }
@@ -101,6 +87,15 @@ class ScheduleCalendar extends PureComponent {
   // 处理日期选择
   handleDateSelect = value => {
     console.log(value);
+    Modal.info({
+      title: '课程安排',
+      okText: '关闭',
+      content: (
+        <div>
+          <div key={1}>8:00-10:00 Java</div>
+        </div>
+      ),
+    });
   };
 
   // 搜索
@@ -126,6 +121,21 @@ class ScheduleCalendar extends PureComponent {
               )}
             </FormItem>
           </Col>
+          <Col md={6} sm={24}>
+            <FormItem label="学生">
+              {getFieldDecorator('studentId')(
+                <Select placeholder="请选择学生">
+                  <Option key={1} value={1}>
+                    张三
+                  </Option>
+                  <Option key={2} value={2}>
+                    李四
+                  </Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+
           <Col md={6} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">

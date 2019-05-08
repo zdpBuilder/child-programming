@@ -92,7 +92,7 @@ class ScheduleCalendar extends PureComponent {
       okText: '关闭',
       content: (
         <div>
-          <div key={1}>8:00-10:00 Java</div>
+          <div key={1}>Java A班 8:00-10:00 Java</div>
         </div>
       ),
     });

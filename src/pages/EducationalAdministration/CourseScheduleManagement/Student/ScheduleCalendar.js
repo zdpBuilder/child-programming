@@ -86,13 +86,13 @@ class ScheduleCalendar extends PureComponent {
 
   // 处理日期选择
   handleDateSelect = value => {
-    console.log(value);
+    console.log(value.format('YYYY-MM-DD'));
     Modal.info({
       title: '课程安排',
       okText: '关闭',
       content: (
         <div>
-          <div key={1}>8:00-10:00 Java</div>
+          <div key={1}>Java A班 8:00-10:00 Java</div>
         </div>
       ),
     });

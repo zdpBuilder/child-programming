@@ -324,7 +324,7 @@ class TableList extends PureComponent {
           <div>
             {data.map(item => (
               <div key={item.classroomCode}>
-                {`编号${item.classroomCode}教室占用校区${item.schoolName}`}
+                {`编号${item.classroomCode}教室占用校区: ${item.schoolName}`}
               </div>
             ))}
           </div>

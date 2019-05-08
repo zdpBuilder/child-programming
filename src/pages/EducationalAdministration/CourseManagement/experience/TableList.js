@@ -347,6 +347,10 @@ class TableList extends PureComponent {
 
   // 结课处理
   handleEndCourse = record => {
+    if (record.status === 3) {
+      message.warning('此课程已处于结课状态!');
+      return;
+    }
     // 报名截止前，不能结课
     const { id, signUpEndDate } = record;
     const dateNow = moment();

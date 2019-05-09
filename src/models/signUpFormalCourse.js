@@ -32,6 +32,15 @@ export default {
       });
       if (callback) callback(response);
     },
+
+    *payMoney({ payload, callback }, { call, put }) {
+      const response = yield call(signUpFormalCourseService.payMoney, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
   },
 
   reducers: {

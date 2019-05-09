@@ -13,6 +13,11 @@ const FormItem = Form.Item;
 const { Description } = DescriptionList;
 const { Option } = Select;
 
+const formLayout = {
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
+};
+
 const ShowViewModal = props => {
   const { showModalVisible, handleShowModalVisible, current = {} } = props;
 
@@ -43,6 +48,53 @@ const ShowViewModal = props => {
   );
 };
 
+// 缴费页面
+const CreateForm = Form.create()(props => {
+  const {
+    handlePayMoneyModalVisible,
+    payMoneyModalVisible,
+    payCurrent = {},
+    handlePayMoney,
+    form,
+  } = props;
+  const {
+    form: { getFieldDecorator },
+  } = props;
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      const values = fieldsValue;
+
+      values.signUpId = payCurrent.id;
+      values.courseId = payCurrent.courseId;
+      values.studentId = payCurrent.studentId;
+
+      handlePayMoney(values);
+    });
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title={`${payCurrent.studentName}付费`}
+      visible={payMoneyModalVisible}
+      onOk={okHandle}
+      onCancel={() => handlePayMoneyModalVisible(false)}
+    >
+      <FormItem label="课程名称" {...formLayout}>
+        <Input defaultValue={payCurrent.courseName} readOnly />
+      </FormItem>
+      <FormItem label="缴费金额" {...formLayout}>
+        {getFieldDecorator('courseMoney', {
+          rules: [{ required: true, message: '请输入缴费金额！', max: 50 }],
+        })(<Input placeholder={payCurrent.courseMoney} />)}
+      </FormItem>
+    </Modal>
+  );
+});
+
 /* eslint react/no-multi-comp:0 */
 @connect(({ signUpFormalCourse, loading }) => ({
   signUpFormalCourse,
@@ -54,6 +106,8 @@ class TableList extends PureComponent {
     selectedRows: [],
     current: {},
     showModalVisible: false,
+    payMoneyModalVisible: false,
+    payCurrent: {},
   };
 
   columns = [
@@ -83,14 +137,16 @@ class TableList extends PureComponent {
       render: val => <span>{val === 1 ? '是' : '否'}</span>,
     },
     {
-      title: '是否中途报名',
-      dataIndex: 'isHalfway',
-      render: val => <span>{val === 1 ? '是' : '否'}</span>,
+      title: '报名时间',
+      dataIndex: 'signUpTime',
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
     {
       title: '操作',
       render: (text, record) => (
         <Fragment>
+          <a onClick={() => this.handlePayMoneyModalVisible(true, record)}>缴费</a>
+          <Divider type="vertical" />
           <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
           <Divider type="vertical" />
           <a onClick={() => this.deleteOne(record.id)}>删除</a>
@@ -105,6 +161,36 @@ class TableList extends PureComponent {
       type: 'signUpFormalCourse/fetchList',
     });
   }
+
+  // 处理付费modal
+  handlePayMoneyModalVisible = (flag, record) => {
+    if (record.isPayment === 1) {
+      message.warning('该学生已经缴费!');
+      return;
+    }
+    this.setState({
+      payMoneyModalVisible: !!flag,
+      payCurrent: record,
+    });
+  };
+
+  // 处理付费
+  handlePayMoney = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'signUpFormalCourse/payMoney',
+      payload: {
+        ...fields,
+      },
+      callback: response => {
+        this.handleResultData(response);
+        this.setState({
+          payMoneyModalVisible: false,
+          payCurrent: {},
+        });
+      },
+    });
+  };
 
   // 处理表格分页
   handleStandardTableChange = pagination => {
@@ -264,7 +350,18 @@ class TableList extends PureComponent {
       signUpFormalCourse: { list, pagination },
       loading,
     } = this.props;
-    const { selectedRows, current, showModalVisible } = this.state;
+    const {
+      selectedRows,
+      current,
+      showModalVisible,
+      payMoneyModalVisible,
+      payCurrent,
+    } = this.state;
+
+    const parentMethods = {
+      handlePayMoneyModalVisible: this.handlePayMoneyModalVisible,
+      handlePayMoney: this.handlePayMoney,
+    };
 
     return (
       <PageHeaderWrapper title="正式课报名管理">
@@ -290,6 +387,11 @@ class TableList extends PureComponent {
             />
           </div>
         </Card>
+        <CreateForm
+          {...parentMethods}
+          payMoneyModalVisible={payMoneyModalVisible}
+          payCurrent={payCurrent}
+        />
         <ShowViewModal
           showModalVisible={showModalVisible}
           current={current}

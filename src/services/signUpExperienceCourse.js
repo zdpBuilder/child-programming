@@ -23,3 +23,14 @@ export async function deleteBatch(params) {
     }
   );
 }
+
+export async function payMoney(params) {
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/signUpExperienceCourse/payMoney?${stringify(
+      params
+    )}`,
+    {
+      method: globalData.GET,
+    }
+  );
+}

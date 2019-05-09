@@ -1,21 +1,24 @@
-import * as studentScheduleService from '@/services/studentSchedule';
+import * as studentCourseScheduleService from '@/services/studentCourseSchedule';
 import { getGradeInfoSelect } from '@/services/grade';
+import globalData from '@/utils/globalData';
 
 export default {
-  namespace: 'studentSchedule',
+  namespace: 'studentCourseSchedule',
 
   state: {
-    list: [],
+    studentInfoList: [],
     gradeSelectData: [],
+    pagination: globalData.initPagination,
+    courseSchduleList: [],
   },
 
   effects: {
     *fetchList({ payload }, { call, put }) {
-      const response = yield call(studentScheduleService.getList, payload);
+      const response = yield call(studentCourseScheduleService.getStudentInfoList, payload);
       yield put({
         type: 'save',
         payload: {
-          list: response || [],
+          studentInfoList: response || [],
           pagination: {
             total: response ? response.length : 0,
           },
@@ -29,6 +32,19 @@ export default {
         type: 'save',
         payload: {
           gradeSelectData: response || [],
+        },
+      });
+    },
+
+    *fetchCourseScheduleList({ payload }, { call, put }) {
+      const response = yield call(
+        studentCourseScheduleService.getStudentCourseScheduleList,
+        payload
+      );
+      yield put({
+        type: 'save',
+        payload: {
+          courseSchduleList: response || [],
         },
       });
     },

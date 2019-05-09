@@ -366,7 +366,6 @@ class TableList extends PureComponent {
       school: { list, pagination },
       loading,
     } = this.props;
-    console.log(loading);
     const { selectedRows, modalVisible, current, showModalVisible } = this.state;
 
     const parentMethods = {

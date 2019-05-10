@@ -57,6 +57,7 @@ export default {
   'menu.educationalAdministration.courseScheduleManagement': ' 课程表管理',
   'menu.educationalAdministration.courseScheduleManagement.teacherSchedule': ' 老师课程表',
   'menu.educationalAdministration.courseScheduleManagement.studentSchedule': ' 学生课程表',
+  'menu.educationalAdministration.paymentRecordManagement': '缴费记录管理',
   'menu.authorityManagement': '权限管理',
   'menu.authorityManagement.roleManagement': '角色管理',
 };

@@ -157,6 +157,11 @@ export default [
               },
             ],
           },
+          {
+            path: '/educationalAdministration/paymentRecordManagement',
+            name: 'paymentRecordManagement',
+            component: './educationalAdministration/paymentRecordManagement/TableList',
+          },
         ],
       },
 

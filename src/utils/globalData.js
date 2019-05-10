@@ -16,8 +16,9 @@ export default {
   initPagination: {
     // 分页信息初始化
     total: 0, // 数据量
-    current: 1, // 当前页数
+    current: 1, // 当前页
     pageSize: 10, // 每页显示的数据量
+    // pageSizeOptions: ['2','10','20', '40'] 可选数据数量
   },
   upLoadImgSetting: {
     url: 'http://localhost:8080/child-programming-background/upload/uploadFile?businessType=',

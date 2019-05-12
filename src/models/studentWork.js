@@ -30,6 +30,13 @@ export default {
       });
       if (callback) callback(response);
     },
+    *addStudentWorkToSession({ payload }, { call, put }) {
+      yield call(studentWorkService.addStudentWorkToSession, payload);
+      yield put({
+        type: 'save',
+      });
+    },
+
     *pushWork({ payload, callback }, { call, put }) {
       const response = yield call(studentWorkService.pushWork, payload);
       yield put({

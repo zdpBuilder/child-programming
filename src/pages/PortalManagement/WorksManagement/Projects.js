@@ -151,6 +151,15 @@ class CoverCardList extends PureComponent {
 
   //  查看弹出框
   handleShowModalVisible = (flag, item) => {
+    const { dispatch } = this.props;
+    console.info(item);
+    dispatch({
+      type: 'studentWork/addStudentWorkToSession',
+      payload: {
+        ...item,
+      },
+    });
+
     this.setState({
       showModalVisible: !!flag,
       current: item,
@@ -292,7 +301,13 @@ class CoverCardList extends PureComponent {
               <Card
                 className={styles.card}
                 hoverable
-                cover={<img alt={item.workName} src={globalData.workDefaultBgUrl} />}
+                cover={
+                  <img
+                    alt={item.workName}
+                    src={globalData.photoBaseUrl + item.coverUrl}
+                    height="200"
+                  />
+                }
                 actions={[
                   item.status === 2 ? (
                     <a onClick={() => this.cancelPushstudentWork(item)}>取消推送</a>

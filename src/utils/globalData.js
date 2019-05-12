@@ -5,8 +5,7 @@ export default {
   codeSquare:
     'http://localhost:8080/child-programming-background/assets/plugins/CodeSquare/index.html',
   baseUrl: 'http://localhost:8080/', // 访问基础路径
-  scratchPlayerUrl:
-    'http://localhost:8080/child-programming-background/assets/plugins/scratch-player/index.html',
+  scratchPlayerUrl: 'http://localhost:8080/child-programming-background/scratcth-payer.html',
   workDefaultBgUrl: 'http://localhost:8080/child-programming-background/assets/images/workBg.jpg',
   projectName: 'child-programming-background', // 项目名称
   successCode: 200, // 成功状态码

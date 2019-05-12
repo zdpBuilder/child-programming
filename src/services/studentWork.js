@@ -18,6 +18,16 @@ export async function save(params) {
   });
 }
 
+export async function addStudentWorkToSession(params) {
+  return request(
+    `${globalData.baseUrl + globalData.projectName}/studentWork/saveStudentWorkToSession`,
+    {
+      method: globalData.POST,
+      body: params,
+    }
+  );
+}
+
 export async function pushWork(params) {
   return request(`${globalData.baseUrl + globalData.projectName}/studentWork/pushStudentWork`, {
     method: globalData.POST,

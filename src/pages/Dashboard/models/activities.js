@@ -1,10 +1,12 @@
 import { queryActivities } from '@/services/api';
+import * as materialSerivce from '@/services/material';
 
 export default {
   namespace: 'activities',
 
   state: {
     list: [],
+    materialList: [],
   },
 
   effects: {
@@ -15,6 +17,13 @@ export default {
         payload: Array.isArray(response) ? response : [],
       });
     },
+    *fetchMaterialList({ payload }, { call, put }) {
+      const response = yield call(materialSerivce.getList, payload);
+      yield put({
+        type: 'saveMaterialList',
+        payload: response || [],
+      });
+    },
   },
 
   reducers: {
@@ -22,6 +31,12 @@ export default {
       return {
         ...state,
         list: action.payload,
+      };
+    },
+    saveMaterialList(state, action) {
+      return {
+        ...state,
+        materialList: action.payload,
       };
     },
   },

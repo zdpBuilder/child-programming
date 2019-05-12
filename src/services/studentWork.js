@@ -11,6 +11,11 @@ export async function getList(params) {
   );
 }
 
+export async function getPortalList() {
+  return request(`${globalData.baseUrl + globalData.projectName}/portal/studentWorkGetList`, {
+    method: globalData.GET,
+  });
+}
 export async function save(params) {
   return request(`${globalData.baseUrl + globalData.projectName}/studentWork/save`, {
     method: globalData.POST,

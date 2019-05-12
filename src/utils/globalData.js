@@ -3,7 +3,7 @@ export default {
   bastCodingUrl: 'http://localhost:8080/child-programming-background/index.html',
   baseCodingPostersUrl: 'http://localhost:8080/child-programming-background/index-posters.html',
   codeSquare:
-    'http://localhost:8080/child-programming-background/assets/plugins/CodeSquare/index.html',
+    'http://localhost:8080/child-programming-background/assets/plugins/CodeSquare/code-square.html',
   baseUrl: 'http://localhost:8080/', // 访问基础路径
   scratchPlayerUrl: 'http://localhost:8080/child-programming-background/scratcth-payer.html',
   workDefaultBgUrl: 'http://localhost:8080/child-programming-background/assets/images/workBg.jpg',

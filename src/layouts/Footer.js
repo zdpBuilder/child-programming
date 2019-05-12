@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Layout, Icon } from 'antd';
 import GlobalFooter from '@/components/GlobalFooter';
+import globalData from '../utils/globalData';
 
 const { Footer } = Layout;
 const FooterView = () => (
@@ -16,13 +17,13 @@ const FooterView = () => (
         {
           key: '贝壳编程屋',
           title: '贝壳编程屋',
-          href: ' http://192.168.11.184:8601/',
+          href: globalData.codeSquare,
           blankTarget: true,
         },
         {
           key: '贝壳官网',
           title: '贝壳官网',
-          href: 'http://localhost:8083',
+          href: globalData.bastCodingUrl,
           blankTarget: true,
         },
       ]}

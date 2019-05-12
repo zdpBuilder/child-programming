@@ -232,7 +232,7 @@ class TableList extends PureComponent {
         idsStr: selectedRows.map(row => row.id).join(','),
       },
       callback: response => {
-        this.handleResultData(response);
+        this.handleDeleteResultData(response);
         this.setState({
           selectedRows: [],
         });
@@ -325,9 +325,33 @@ class TableList extends PureComponent {
         idsStr,
       },
       callback: response => {
-        this.handleResultData(response);
+        this.handleDeleteResultData(response);
       },
     });
+  };
+
+  // 删除返回结果处理
+  handleDeleteResultData = response => {
+    if (globalData.successCode === response.status) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'teacher/fetchList',
+      });
+      message.success(response.msg);
+    } else if (globalData.failCode === response.status && response.data) {
+      const { data } = response;
+      Modal.warning({
+        title: '删除失败',
+        okText: '关闭',
+        content: (
+          <div>
+            {data.map(item => (
+              <div key={item.id}>{`${item.name}占用该老师`}</div>
+            ))}
+          </div>
+        ),
+      });
+    }
   };
 
   // 重置密码

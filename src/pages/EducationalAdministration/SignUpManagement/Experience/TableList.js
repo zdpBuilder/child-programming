@@ -162,7 +162,7 @@ class TableList extends PureComponent {
 
   // 处理付费modal
   handlePayMoneyModalVisible = (flag, record = {}) => {
-    if (!record && record.isPayment === 1) {
+    if (record.isPayment === 1) {
       message.warning('该学生已经缴费!');
       return;
     }

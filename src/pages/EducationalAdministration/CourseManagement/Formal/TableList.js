@@ -351,11 +351,15 @@ class TableList extends PureComponent {
   // 更多按钮，处理课程状态改变
   handleChangeCourseStatus = (key, record) => {
     // 开课、结课不允许重复
-    if (record.status === 2) {
+    if (key === 'start' && record.status === 2) {
       message.warning('此课程已处于开课状态!');
       return;
     }
-    if (record.status === 3) {
+    if (key === 'start' && record.status === 3) {
+      message.warning('此课程已处于结课状态,无法再次开课!');
+      return;
+    }
+    if (key === 'end' && record.status === 3) {
       message.warning('此课程已处于结课状态!');
       return;
     }

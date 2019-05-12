@@ -164,8 +164,14 @@ class TableList extends PureComponent {
 
   // 处理付费modal
   handlePayMoneyModalVisible = (flag, record = {}) => {
-    if (!record && record.isPayment === 1) {
+    // 不能重复缴费
+    if (record.isPayment === 1) {
       message.warning('该学生已经缴费!');
+      return;
+    }
+    // 仅开课前可缴费
+    if (record.courseStatus !== 1) {
+      message.warning('仅开课前可以缴费!');
       return;
     }
     this.setState({

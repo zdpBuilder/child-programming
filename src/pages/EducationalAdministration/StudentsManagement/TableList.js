@@ -400,9 +400,6 @@ class TableList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleAddModalVisible(true)}>
-                新建
-              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   <Button onClick={this.handleDeleteRows}>批量删除</Button>

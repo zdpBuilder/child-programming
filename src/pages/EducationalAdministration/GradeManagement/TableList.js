@@ -179,6 +179,10 @@ class TableList extends PureComponent {
       dataIndex: 'courseName',
     },
     {
+      title: '老师',
+      dataIndex: 'teacherName',
+    },
+    {
       title: '创建时间',
       dataIndex: 'createTime',
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,

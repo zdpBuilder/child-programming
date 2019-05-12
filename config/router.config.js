@@ -162,6 +162,11 @@ export default [
             name: 'paymentRecordManagement',
             component: './educationalAdministration/paymentRecordManagement/TableList',
           },
+          {
+            path: '/educationalAdministration/suggestionManagement',
+            name: 'suggestionManagement',
+            component: './educationalAdministration/suggestionManagement/TableList',
+          },
         ],
       },
 

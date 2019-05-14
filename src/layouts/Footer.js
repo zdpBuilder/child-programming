@@ -15,15 +15,15 @@ const FooterView = () => (
           blankTarget: true,
         },
         {
-          key: '贝壳编程屋',
-          title: '贝壳编程屋',
+          key: '小童在线编程屋',
+          title: '小童在线编程屋',
           href: globalData.codeSquare,
           blankTarget: true,
         },
         {
-          key: '贝壳官网',
-          title: '贝壳官网',
-          href: globalData.bastCodingUrl,
+          key: '小童官网',
+          title: '小童官网',
+          href: globalData.Url,
           blankTarget: true,
         },
       ]}

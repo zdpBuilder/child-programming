@@ -11,7 +11,7 @@ import globalData from '../../utils/globalData';
 const links = [
   {
     title: '贝壳官网',
-    href: globalData.bastCodingUrl,
+    href: globalData.Url,
   },
   {
     title: '贝壳编辑器',

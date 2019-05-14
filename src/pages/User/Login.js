@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import { Alert, Checkbox } from 'antd';
+import { Alert } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
 import globalData from '@/utils/globalData';
@@ -15,7 +15,7 @@ const { Tab, UserName, Password, Submit } = Login;
 class LoginPage extends Component {
   state = {
     type: 'account',
-    autoLogin: false,
+    // autoLogin: false,
   };
 
   current = {};
@@ -55,11 +55,11 @@ class LoginPage extends Component {
     }
   };
 
-  changeAutoLogin = e => {
+  /* changeAutoLogin = e => {
     this.setState({
       autoLogin: e.target.checked,
     });
-  };
+  }; */
 
   renderMessage = content => (
     <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
@@ -67,7 +67,7 @@ class LoginPage extends Component {
 
   render() {
     const { login, submitting } = this.props;
-    const { type, autoLogin } = this.state;
+    const { type } = this.state;
     return (
       <div className={styles.main}>
         <Login
@@ -142,13 +142,13 @@ class LoginPage extends Component {
             />
           </Tab> */}
           <div>
-            <Checkbox
+            {/* <Checkbox
               style={{ float: 'right' }}
               checked={autoLogin}
               onChange={this.changeAutoLogin}
             >
               <FormattedMessage id="app.login.remember-me" />
-            </Checkbox>
+            </Checkbox> */}
             {/* <a style={{ float: 'right' }} href=""> */}
             {/* <FormattedMessage id="app.login.forgot-password" /> */}
             {/* </a> */}

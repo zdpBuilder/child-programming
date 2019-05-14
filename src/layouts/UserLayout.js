@@ -53,10 +53,12 @@ class UserLayout extends React.PureComponent {
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>BestCoding贝壳编程</span>
+                <span className={styles.title}>青少年课程培训系统-数据管理平台</span>
               </Link>
             </div>
-            <div className={styles.desc}>贝壳编程后台管理系统,不是每一种编程叫贝壳编程！</div>
+            <div className={styles.desc}>
+              服务于课程培训的设计体系，采用业界最前沿的技术开发，提供安全平稳的线上运行，让用户拥有良好的体验。
+            </div>
           </div>
           {children}
         </div>

@@ -10,6 +10,6 @@ describe('Homepage', () => {
       timeout: 5000,
     });
     const text = await page.evaluate(() => document.getElementsByTagName('h1')[0].innerText);
-    expect(text).toContain('青少年课程培训系统-数据管理平台');
+    expect(text).toContain('贝壳编程数据管理平台');
   });
 });

@@ -116,14 +116,14 @@ class BasicLayout extends React.PureComponent {
     const currRouterData = this.matchParamsPath(pathname, breadcrumbNameMap);
 
     if (!currRouterData) {
-      return '青少年课程培训系统-数据管理平台';
+      return '贝壳编程';
     }
     const pageName = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name,
     });
 
-    return `${pageName} - 青少年课程培训系统-数据管理平台`;
+    return `${pageName} - 贝壳编程数据管理平台`;
   };
 
   getLayoutStyle = () => {

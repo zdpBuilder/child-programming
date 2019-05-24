@@ -92,7 +92,7 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="联系电话" {...formLayout}>
         {getFieldDecorator('chargeUserPhone', {
-          rules: [{ required: true, message: '请输入联系电话！', max: 50 }],
+          rules: [{ required: true, message: '请输入正确联系电话！', max: 11, min: 11 }],
           initialValue: current.chargeUserPhone,
         })(<Input placeholder="请输入联系电话" />)}
       </FormItem>

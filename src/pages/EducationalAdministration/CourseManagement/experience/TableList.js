@@ -11,7 +11,6 @@ import {
   Modal,
   message,
   Divider,
-  InputNumber,
   DatePicker,
   Badge,
 } from 'antd';
@@ -22,6 +21,7 @@ import DescriptionList from '@/components/DescriptionList';
 import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
 import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
+import regExp from '@/utils/regExp';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -112,9 +112,11 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="价格" {...formLayout}>
         {getFieldDecorator('money', {
-          rules: [{ required: true, message: '请输入价格！' }],
+          rules: [
+            { required: true, message: '请输入正确价格！', pattern: regExp.positiveIntegerPattern },
+          ],
           initialValue: current.money,
-        })(<InputNumber style={{ width: 255 }} min={0} placeholder="请输入价格" />)}
+        })(<Input style={{ width: 255 }} min={0} placeholder="请输入价格" />)}
       </FormItem>
       <FormItem label="截至报名时间" {...formLayout}>
         {getFieldDecorator('signUpEndDate', {
@@ -124,7 +126,7 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="联系电话" {...formLayout}>
         {getFieldDecorator('telephone', {
-          rules: [{ required: true, message: '请输入联系电话！' }],
+          rules: [{ required: true, message: '请输入联系电话！', max: 11, min: 11 }],
           initialValue: current.telephone,
         })(<Input placeholder="请输入联系电话" />)}
       </FormItem>

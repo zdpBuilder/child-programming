@@ -87,7 +87,7 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="登陆账号" {...formLayout}>
         {getFieldDecorator('loginId', {
-          rules: [{ required: true, message: '请输入不超过十五位登陆账号！', max: 15 }],
+          rules: [{ required: false, message: '请输入不超过十五位登陆账号！', max: 15 }],
           initialValue: current.loginId,
         })(<Input placeholder="请输入登陆账号" />)}
       </FormItem>
@@ -114,7 +114,7 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="手机号" {...formLayout}>
         {getFieldDecorator('phone', {
-          rules: [{ required: true, message: '请输入手机号！' }],
+          rules: [{ required: true, message: '请输入正确手机号！', max: 11, min: 11 }],
           initialValue: current.phone,
         })(<Input placeholder="请输入手机号" />)}
       </FormItem>

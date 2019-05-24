@@ -10,6 +10,7 @@ import DescriptionList from '@/components/DescriptionList';
 import styles from '@/layouts/TableList.less';
 import globalData from '@/utils/globalData';
 import UpLoadPicExample from '@/components/UpLoad/UpLoadPicExample';
+import regExp from '@/utils/regExp';
 
 const FormItem = Form.Item;
 const { Description } = DescriptionList;
@@ -110,7 +111,9 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="学生年龄" {...formLayout}>
         {getFieldDecorator('age', {
-          rules: [{ required: true, message: '请输入监护人年龄！', max: 50 }],
+          rules: [
+            { required: true, message: '请输入正确年龄！', pattern: regExp.positiveIntegerPattern },
+          ],
           initialValue: current.age,
         })(<Input placeholder="请输入学生年龄" />)}
       </FormItem>
@@ -129,7 +132,7 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="监护人电话" {...formLayout}>
         {getFieldDecorator('guardianPhone', {
-          rules: [{ required: true, message: '请输入监护人电话！', max: 50 }],
+          rules: [{ required: true, message: '请输入正确的监护人电话！', max: 11, min: 11 }],
           initialValue: current.guardianPhone,
         })(<Input placeholder="请输入监护人电话" />)}
       </FormItem>
@@ -395,11 +398,14 @@ class TableList extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="学生管理">
+      <PageHeaderWrapper title="学生信息管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <div className={styles.tableListOperator}>
+              <Button icon="plus" type="primary" onClick={() => this.handleAddModalVisible(true)}>
+                新建
+              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   <Button onClick={this.handleDeleteRows}>批量删除</Button>

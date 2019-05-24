@@ -147,6 +147,15 @@ class NestTableForm extends PureComponent {
     const newData = data.map(item => ({ ...item }));
     const target = this.getRowByKey(key, newData);
     if (target) {
+      // 不能选统一班级
+      if (fieldName === 'gradeSelect') {
+        const addKey = value.key;
+        const array = data.filter(item => item.gradeSelect.key === addKey);
+        if (array.length > 0) {
+          message.warning('该班级已经安排课程!');
+          return;
+        }
+      }
       // 时间处理
       if (fieldName === 'startHour' || fieldName === 'endHour') {
         if (value) target.timeRange[fieldName] = value.format(timeFormat);

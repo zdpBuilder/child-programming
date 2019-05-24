@@ -11,7 +11,6 @@ import {
   Modal,
   message,
   Divider,
-  InputNumber,
   Badge,
   Dropdown,
   Menu,
@@ -218,9 +217,11 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem label="价格" {...formLayout}>
         {getFieldDecorator('money', {
-          rules: [{ required: true, message: '请输入价格！' }],
+          rules: [
+            { required: true, message: '请输入价格！', pattern: regExp.positiveIntegerPattern },
+          ],
           initialValue: current.money,
-        })(<InputNumber style={{ width: 255 }} min={0} placeholder="请输入价格" />)}
+        })(<Input placeholder="请输入价格" />)}
       </FormItem>
       <FormItem label="课时数量" {...formLayout}>
         {getFieldDecorator('periodCount', {

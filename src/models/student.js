@@ -1,4 +1,5 @@
 import * as studentService from '@/services/student';
+import { getStudentCourseScheduleList } from '@/services/studentCourseSchedule';
 import globalData from '@/utils/globalData';
 
 export default {
@@ -7,6 +8,7 @@ export default {
   state: {
     list: [],
     pagination: globalData.initPagination,
+    courseSchduleList: [],
   },
 
   effects: {
@@ -36,6 +38,17 @@ export default {
       yield put({
         type: 'save',
         payload: response,
+      });
+      if (callback) callback(response);
+    },
+
+    *fetchCourseScheduleList({ payload, callback }, { call, put }) {
+      const response = yield call(getStudentCourseScheduleList, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          courseSchduleList: response || [],
+        },
       });
       if (callback) callback(response);
     },

@@ -2,7 +2,20 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Modal, message, Divider, Radio } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Modal,
+  message,
+  Divider,
+  Radio,
+  Badge,
+  Calendar,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
@@ -19,6 +32,8 @@ const formLayout = {
   labelCol: { span: 7 },
   wrapperCol: { span: 13 },
 };
+const dateFormat = 'YYYY-MM-DD';
+const timeFormat = 'HH:mm:ss';
 
 const ShowViewModal = props => {
   const { showModalVisible, handleShowModalVisible, current = {} } = props;
@@ -146,6 +161,85 @@ const CreateForm = Form.create()(props => {
   );
 });
 
+// 课程表展示
+const ShowScheduleCalendarModal = props => {
+  const {
+    scheduleCalendarModalVisible,
+    handleScheduleCalendarModalVisible,
+    courseSchduleList,
+  } = props;
+
+  // 根据日期，获取当天课程
+  const getRowByDate = value => {
+    const date = value.format(dateFormat);
+    const result = courseSchduleList.filter(
+      item => date === moment(item.studentCourseSchedule.startTime).format(dateFormat)
+    );
+    return result;
+  };
+
+  const getListData = value => {
+    const currentScheduleList = getRowByDate(value);
+    const listData = [];
+    if (currentScheduleList.length > 0) listData.push({ type: 'warning' });
+    return listData || [];
+  };
+
+  // 日期渲染
+  const dateCellRender = value => {
+    const listData = getListData(value);
+    return (
+      <ul>
+        {listData.map(item => (
+          <li key={item.content}>
+            <Badge status={item.type} />
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  // 处理日期选择
+  const handleDateSelect = value => {
+    const currentScheduleList = getRowByDate(value);
+    if (currentScheduleList.length > 0) {
+      Modal.info({
+        title: '课程安排',
+        width: 540,
+        okText: '关闭',
+        content: (
+          <div>
+            {currentScheduleList.map(item => (
+              <div key={item.courseDetail.gradeId}>
+                {`${item.courseDetail.schoolName}, ${item.courseDetail.classroomCode}教室, ${
+                  item.courseDetail.gradeName
+                },
+                 ${item.courseDetail.courseName},课时${item.studentCourseSchedule.period}, ${moment(
+                  item.studentCourseSchedule.startTime
+                ).format(timeFormat)}~${moment(item.studentCourseSchedule.endTime).format(
+                  timeFormat
+                )}`}
+              </div>
+            ))}
+          </div>
+        ),
+      });
+    }
+  };
+  return (
+    <Modal
+      destroOnClose
+      width={1000}
+      title="课程表"
+      visible={scheduleCalendarModalVisible}
+      onCancel={() => handleScheduleCalendarModalVisible(false)}
+      footer={null}
+    >
+      <Calendar dateCellRender={dateCellRender} onSelect={handleDateSelect} />
+    </Modal>
+  );
+};
+
 /* eslint react/no-multi-comp:0 */
 @connect(({ student, loading }) => ({
   student,
@@ -158,6 +252,7 @@ class TableList extends PureComponent {
     selectedRows: [],
     current: {},
     showModalVisible: false,
+    scheduleCalendarModalVisible: false,
   };
 
   columns = [
@@ -186,11 +281,6 @@ class TableList extends PureComponent {
       dataIndex: 'guardianPhone',
     },
     {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
-    {
       title: '操作',
       render: (text, record) => (
         <Fragment>
@@ -199,6 +289,8 @@ class TableList extends PureComponent {
           <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
           <Divider type="vertical" />
           <a onClick={() => this.deleteStudent(record.id)}>删除</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleScheduleCalendarModalVisible(true, record.id)}>课程表</a>
         </Fragment>
       ),
     },
@@ -210,6 +302,26 @@ class TableList extends PureComponent {
       type: 'student/fetchList',
     });
   }
+
+  // 查看学生课表
+  handleScheduleCalendarModalVisible = (flag, studentId) => {
+    // 如果flag为true，则请求该学生课表数据
+    if (flag) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'student/fetchCourseScheduleList',
+        payload: {
+          studentId,
+        },
+        callback: response => {
+          if (!response || !response.length > 0) message.error('暂无课程表');
+        },
+      });
+    }
+    this.setState({
+      scheduleCalendarModalVisible: !!flag,
+    });
+  };
 
   // 处理表格分页
   handleStandardTableChange = pagination => {
@@ -386,11 +498,16 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      student: { list, pagination },
+      student: { list, pagination, courseSchduleList },
       loading,
     } = this.props;
-    console.log(loading);
-    const { selectedRows, modalVisible, current, showModalVisible } = this.state;
+    const {
+      selectedRows,
+      modalVisible,
+      current,
+      showModalVisible,
+      scheduleCalendarModalVisible,
+    } = this.state;
 
     const parentMethods = {
       handleAddAndEdit: this.handleAddAndEdit,
@@ -430,6 +547,13 @@ class TableList extends PureComponent {
           current={current}
           handleShowModalVisible={this.handleShowModalVisible}
         />
+        {courseSchduleList.length > 0 && (
+          <ShowScheduleCalendarModal
+            scheduleCalendarModalVisible={scheduleCalendarModalVisible}
+            handleScheduleCalendarModalVisible={this.handleScheduleCalendarModalVisible}
+            courseSchduleList={courseSchduleList}
+          />
+        )}
       </PageHeaderWrapper>
     );
   }

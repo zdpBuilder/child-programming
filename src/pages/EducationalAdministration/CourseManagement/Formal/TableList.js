@@ -89,6 +89,8 @@ const CreateForm = Form.create()(props => {
     form: { getFieldDecorator },
   } = props;
 
+  console.log(gradeSelectData);
+
   // 处理参数
   // TODO 未校验不保存时间安排，直接新增的空字段
   const handleFormData = fieldsValue => {
@@ -100,7 +102,7 @@ const CreateForm = Form.create()(props => {
         ...item,
         gradeId: item.gradeSelect.key,
       };
-      const { key, editable, gradeSelect, childrenData, ...otherValues } = data;
+      const { key, editable, childrenData, ...otherValues } = data;
       // 处理子元素属性
       const childrenDataArray = [];
       childrenData.forEach(element => {
@@ -524,13 +526,13 @@ class TableList extends PureComponent {
       message.warning('仅开课前允许编辑!');
       return;
     }
-    if (flag) {
-      const gradeIdArray = [];
+    const gradeIdArray = [];
+    if (flag && item.timeSchedule) {
       item.timeSchedule.forEach(element => {
         gradeIdArray.push(element.gradeId);
       });
-      this.fetchGradeSelect(gradeIdArray);
     }
+    this.fetchGradeSelect(gradeIdArray);
     this.setState({
       modalVisible: !!flag,
       current: item,

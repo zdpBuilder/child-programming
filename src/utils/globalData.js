@@ -16,8 +16,8 @@ export default {
     // 分页信息初始化
     total: 0, // 数据量
     current: 1, // 当前页
-    pageSize: 5, // 每页显示的数据量
-    pageSizeOptions: ['5', '10', '20'], // 可选数据数量
+    pageSize: 10, // 每页显示的数据量
+    // pageSizeOptions: ['5', '10', '20'], // 可选数据数量
   },
   upLoadImgSetting: {
     url: 'http://localhost:8080/child-programming-background/upload/uploadFile?businessType=',

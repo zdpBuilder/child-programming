@@ -1,5 +1,6 @@
 import * as teacherService from '@/services/teacher';
 import * as roleService from '@/services/role';
+import { getTeacherCourseScheduleList } from '@/services/teacherCourseSchedule';
 import globalData from '@/utils/globalData';
 
 export default {
@@ -9,6 +10,7 @@ export default {
     list: [],
     pagination: globalData.initPagination,
     roleListData: [],
+    courseSchduleList: [],
   },
 
   effects: {
@@ -56,6 +58,16 @@ export default {
       yield put({
         type: 'save',
         payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *fetchCourseScheduleList({ payload, callback }, { call, put }) {
+      const response = yield call(getTeacherCourseScheduleList, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          courseSchduleList: response || [],
+        },
       });
       if (callback) callback(response);
     },

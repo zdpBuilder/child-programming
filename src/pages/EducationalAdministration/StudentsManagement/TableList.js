@@ -15,6 +15,9 @@ import {
   Radio,
   Badge,
   Calendar,
+  Dropdown,
+  Menu,
+  Icon,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -240,6 +243,25 @@ const ShowScheduleCalendarModal = props => {
   );
 };
 
+// 更多按钮
+const MoreBtn = props => {
+  const { handleMoreBtn, current } = props;
+  return (
+    <Dropdown
+      overlay={
+        <Menu onClick={({ key }) => handleMoreBtn(key, current)}>
+          <Menu.Item key="view">查看</Menu.Item>
+          <Menu.Item key="edit">编辑</Menu.Item>
+          <Menu.Item key="del">删除</Menu.Item>
+        </Menu>
+      }
+    >
+      <a>
+        更多 <Icon type="down" />
+      </a>
+    </Dropdown>
+  );
+};
 /* eslint react/no-multi-comp:0 */
 @connect(({ student, loading }) => ({
   student,
@@ -284,13 +306,9 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.deleteStudent(record.id)}>删除</a>
-          <Divider type="vertical" />
           <a onClick={() => this.handleScheduleCalendarModalVisible(true, record.id)}>课程表</a>
+          <Divider type="vertical" />
+          <MoreBtn handleMoreBtn={this.handleMoreBtn} current={record} />
         </Fragment>
       ),
     },
@@ -321,6 +339,23 @@ class TableList extends PureComponent {
     this.setState({
       scheduleCalendarModalVisible: !!flag,
     });
+  };
+
+  // 更多按钮处理
+  handleMoreBtn = (key, record) => {
+    switch (key) {
+      case 'view':
+        this.handleShowModalVisible(true, record);
+        break;
+      case 'edit':
+        this.handleEditModalVisible(true, record);
+        break;
+      case 'del':
+        this.deleteStudent(record.id);
+        break;
+      default:
+        break;
+    }
   };
 
   // 处理表格分页

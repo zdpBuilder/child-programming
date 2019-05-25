@@ -14,6 +14,9 @@ import {
   Select,
   Badge,
   Calendar,
+  Dropdown,
+  Menu,
+  Icon,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -155,7 +158,6 @@ const timeFormat = 'HH:mm:ss';
 // 课程表展示
 const ShowScheduleCalendarModal = props => {
   const {
-    current = {},
     scheduleCalendarModalVisible,
     handleScheduleCalendarModalVisible,
     courseSchduleList,
@@ -164,7 +166,7 @@ const ShowScheduleCalendarModal = props => {
   const getRowByDate = value => {
     const date = value.format(dateFormat);
     const result = courseSchduleList.filter(
-      item => date === moment(item.startTime).format(dateFormat)
+      item => date === moment(item.teacherCourseSchedule.startTime).format(dateFormat)
     );
     return result;
   };
@@ -197,13 +199,15 @@ const ShowScheduleCalendarModal = props => {
       Modal.info({
         title: '课程安排',
         okText: '关闭',
+        width: 540,
         content: (
           <div>
             {currentScheduleList.map(item => (
-              <div key={item.id}>
-                {`${current.courseName}, ${current.gradeName}, 课时${item.period}, ${moment(
-                  item.startTime
-                ).format(timeFormat)}~${moment(item.endTime).format(timeFormat)}`}
+              <div key={item.courseDetail.gradeId}>
+                {`${item.courseDetail.schoolName}, ${item.courseDetail.classroomCode}教室, 
+                ${item.courseDetail.gradeName},${item.courseDetail.courseName},
+                ${moment(item.teacherCourseSchedule.startTime).format(timeFormat)}
+                ~${moment(item.teacherCourseSchedule.endTime).format(timeFormat)}`}
               </div>
             ))}
           </div>
@@ -222,6 +226,26 @@ const ShowScheduleCalendarModal = props => {
     >
       <Calendar dateCellRender={dateCellRender} onSelect={handleDateSelect} />
     </Modal>
+  );
+};
+
+// 更多按钮
+const MoreBtn = props => {
+  const { handleMoreBtn, current } = props;
+  return (
+    <Dropdown
+      overlay={
+        <Menu onClick={({ key }) => handleMoreBtn(key, current)}>
+          <Menu.Item key="view">查看</Menu.Item>
+          <Menu.Item key="edit">编辑</Menu.Item>
+          <Menu.Item key="del">删除</Menu.Item>
+        </Menu>
+      }
+    >
+      <a>
+        更多 <Icon type="down" />
+      </a>
+    </Dropdown>
   );
 };
 
@@ -266,15 +290,11 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleShowModalVisible(true, record)}>查看</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleEditModalVisible(true, record)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.deleteOne(record.id)}>删除</a>
-          <Divider type="vertical" />
           <a onClick={() => this.resetPassword(record.id)}>重置密码</a>
           <Divider type="vertical" />
           <a onClick={() => this.handleScheduleCalendarModalVisible(true, record.id)}>课程表</a>
+          <Divider type="vertical" />
+          <MoreBtn handleMoreBtn={this.handleMoreBtn} current={record} />
         </Fragment>
       ),
     },
@@ -308,6 +328,23 @@ class TableList extends PureComponent {
     this.setState({
       scheduleCalendarModalVisible: !!flag,
     });
+  };
+
+  // 更多按钮处理
+  handleMoreBtn = (key, record) => {
+    switch (key) {
+      case 'view':
+        this.handleShowModalVisible(true, record);
+        break;
+      case 'edit':
+        this.handleEditModalVisible(true, record);
+        break;
+      case 'del':
+        this.deleteOne(record.id);
+        break;
+      default:
+        break;
+    }
   };
 
   // 处理表格分页
@@ -576,7 +613,6 @@ class TableList extends PureComponent {
         />
         {courseSchduleList.length > 0 && (
           <ShowScheduleCalendarModal
-            current={current}
             scheduleCalendarModalVisible={scheduleCalendarModalVisible}
             handleScheduleCalendarModalVisible={this.handleScheduleCalendarModalVisible}
             courseSchduleList={courseSchduleList}

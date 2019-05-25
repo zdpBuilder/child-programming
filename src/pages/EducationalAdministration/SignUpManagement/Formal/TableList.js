@@ -112,7 +112,7 @@ class TableList extends PureComponent {
 
   columns = [
     {
-      title: '学生姓名',
+      title: '学生',
       dataIndex: 'studentName',
     },
     {
@@ -120,7 +120,7 @@ class TableList extends PureComponent {
       dataIndex: 'gradeName',
     },
     {
-      title: '课程名称',
+      title: '课程',
       dataIndex: 'courseName',
     },
     {
@@ -132,8 +132,13 @@ class TableList extends PureComponent {
       dataIndex: 'studentPhone',
     },
     {
-      title: '是否付费',
+      title: '付费',
       dataIndex: 'isPayment',
+      render: val => <span>{val === 1 ? '是' : '否'}</span>,
+    },
+    {
+      title: '中途报名',
+      dataIndex: 'isHalfway',
       render: val => <span>{val === 1 ? '是' : '否'}</span>,
     },
     {
@@ -170,10 +175,12 @@ class TableList extends PureComponent {
       return;
     }
     // 仅开课前可缴费
+    /*
     if (record.courseStatus !== 1) {
       message.warning('仅开课前可以缴费!');
       return;
     }
+    */
     this.setState({
       payMoneyModalVisible: !!flag,
       payCurrent: record,
@@ -336,7 +343,21 @@ class TableList extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
+            <FormItem label="是否中途报名">
+              {getFieldDecorator('isHalfway')(
+                <Select>
+                  <Option key="0" value="0">
+                    否
+                  </Option>
+                  <Option key="1" value="1">
+                    是
+                  </Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
